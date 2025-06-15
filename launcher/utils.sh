@@ -1,4 +1,4 @@
-get_desktop_files() {
+get_entries() {
     # search all the system paths for .desktop entries
     local desktop_files=(
         /usr/share/applications/
@@ -6,6 +6,7 @@ get_desktop_files() {
         ~/.local/share/applications/
         )
 
+    # get all the desktop files locations
     local entries=()
     for folder in "${desktop_files[@]}"; do
         [[ -d "$folder" ]] || continue
@@ -14,25 +15,28 @@ get_desktop_files() {
         done < <(find $folder -type f -name "*.desktop")
     done 
 
-    printf "%s\n" "${entries[@]}" | sort -u 
+    printf "%s\n" "${entries[@]}" 
 }
 
-create_map(){
-    local desktop_files=($(get_desktop_files))
-    local map=()
+process_entries() {
+    # process the entries to extract name and exec command into splittable format
+    local desktop_files=($(get_entries))
     for file in "${desktop_files[@]}"; do
-        local name=$(grep -m1 '^Name=' "$file" | cut -d'=' -f2)
-        local exec=$(grep -m1 '^Exec=' "$file" | cut -d'=' -f2)
-        map+=("$name|$exec")
-    done
-    printf "%s\n" "${map[@]}"
+        (
+            name=$(grep -m1 '^Name=' "$file" | cut -d'=' -f2)
+            exec=$(grep -m1 '^Exec=' "$file" | cut -d'=' -f2)
+            echo "$name|$exec"
+        ) &
+    done 
 }
 
 show_launcher() {
-    local selected=$(create_map | fzf \
+    local selected=$(process_entries | fzf \
         --prompt "Search: " \
         --no-multi \
         --layout reverse \
+        --no-scrollbar \
+        --border none \
         --delimiter '|' \
         --with-nth '{1}' \
         --accept-nth 2) 

@@ -30,6 +30,14 @@ process_entries() {
     done 
 }
 
+# double fork 
+# setsid(on its own), disown, and nohup didnt work
+launch_detached() {
+  (
+    setsid bash -c "$1" < /dev/null > /dev/null 2>&1 &
+  ) &
+}
+
 show_launcher() {
     local selected=$(process_entries | fzf \
         --prompt "Search: " \
@@ -41,10 +49,7 @@ show_launcher() {
         --with-nth '{1}' \
         --accept-nth 2) 
 
-    if [[ -n "$selected" ]]; then
-        local exec_command=$(echo "$selected" | sed 's/%[fFuU]//g')
-        if [[ -n "$exec_command" ]]; then
-            eval "$exec_command &"
-        fi
-    fi
+    local exec_command=$(echo "$selected" | sed 's/%[fFuU]//g')
+    launch_detached "$exec_command"
+    sleep 0.01 # give it a moment to launch
 }

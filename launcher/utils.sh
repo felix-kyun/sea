@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 get_entries() {
     # search paths for .desktop entries
     local desktop_files=(

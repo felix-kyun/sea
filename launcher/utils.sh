@@ -23,6 +23,10 @@ process_entries() {
     local desktop_files=($(get_entries))
     for file in "${desktop_files[@]}"; do
         (
+            # skip entries that are marked as NoDisplay=true
+            nodisplay=$(grep -m1 '^NoDisplay=' "$file" | cut -d'=' -f2)
+            [[ "$nodisplay" == "true" ]] && return
+
             name=$(grep -m1 '^Name=' "$file" | cut -d'=' -f2)
             exec=$(grep -m1 '^Exec=' "$file" | cut -d'=' -f2)
             echo "$name|$exec"

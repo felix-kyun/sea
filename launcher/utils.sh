@@ -1,9 +1,16 @@
 get_entries() {
-    # search all the system paths for .desktop entries
+    # search paths for .desktop entries
     local desktop_files=(
+        # system wide applications
         /usr/share/applications/
         /usr/local/share/applications/
+        /var/lib/flatpak/exports/share/applications/
+
+        # user specific applications
         ~/.local/share/applications/
+
+        # for flatpak apps
+        ~/.local/share/flatpak/exports/share/applications/
         )
 
     # get all the desktop files locations
@@ -12,7 +19,7 @@ get_entries() {
         [[ -d "$folder" ]] || continue
         while IFS= read -r file; do
             entries+=("${file}")
-        done < <(find $folder -type f -name "*.desktop")
+        done < <(find $folder -type f -o -type l -name "*.desktop")
     done 
 
     printf "%s\n" "${entries[@]}" 
@@ -29,6 +36,10 @@ process_entries() {
 
             name=$(grep -m1 '^Name=' "$file" | cut -d'=' -f2)
             exec=$(grep -m1 '^Exec=' "$file" | cut -d'=' -f2)
+
+            # skip entries without a name or exec command
+            [[ -z "$name" || -z "$exec" ]] && return
+
             echo "$name|$exec"
         ) &
     done 
@@ -53,6 +64,7 @@ show_launcher() {
         --with-nth '{1}' \
         --accept-nth 2) 
 
+    echo $(process_entries) > /tmp/sea-shell-debug
     local exec_command=$(echo "$selected" | sed 's/%[fFuU]//g')
     launch_detached "$exec_command"
     sleep 0.01 # give it a moment to launch

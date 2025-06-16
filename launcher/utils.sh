@@ -35,7 +35,7 @@ process_entries() {
             [[ "$nodisplay" == "true" ]] && return
 
             name=$(grep -m1 '^Name=' "$file" | cut -d'=' -f2)
-            exec=$(grep -m1 '^Exec=' "$file" | cut -d'=' -f2)
+            exec=$(grep -m1 '^Exec=' "$file" | sed 's/^Exec=//')
 
             # skip entries without a name or exec command
             [[ -z "$name" || -z "$exec" ]] && return
@@ -64,7 +64,6 @@ show_launcher() {
         --with-nth '{1}' \
         --accept-nth 2) 
 
-    echo $(process_entries) > /tmp/sea-shell-debug
     local exec_command=$(echo "$selected" | sed 's/%[fFuU]//g')
     launch_detached "$exec_command"
     sleep 0.01 # give it a moment to launch

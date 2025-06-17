@@ -3,7 +3,6 @@
 # deps 
 # - figlet
 # - toilet ?
-# - tput
 # - awk 
 # - grep 
 # - cut 
@@ -11,51 +10,25 @@
 # setting ?
 # You want settings ?
 # Look no further, adjust the variables below lmao
+
+CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
+source $CURRENT_DIR/../utils/formatting.sh
 COLUMN=6
-BLACK=0
-RED=1
-GREEN=2
-YELLOW=3
-BLUE=4
-MAGENTA=5
-CYAN=6
-WHITE=7
-DEFAULT=9
-
-show_fonts() {
-  for font in $(ls /usr/share/figlet/fonts | sed 's/\(.*\.flc\|\.flf\)//g')
-  do
-    figlet -f $font $font
-  done
-}
-
-show_logo() {
-  DISTRO_NAME=$(cat /etc/os-release | grep "PRETTY_NAME=" | cut -d "=" -f 2 | sed 's/\("\| .*\)//g')
-  echo $(tput bold) $(tput setaf 4) 
-  figlet -f smslant $DISTRO_NAME
-  echo -n $(tput sgr0)
-}
 
 print_mod() {
   # format to be used 
   # print_mod(COLOR, ICON, NAME, VALUE)
   
-  echo -n $(tput bold)
-  echo -n "│ "
+  echo -ne "${BOLD}│ "
 
   # print the colored icon 
-  echo -n $(tput setaf $1) 
-  echo -n "${2} "
-  echo -n $(tput setaf $WHITE)
+  echo -ne "${1}${2} ${WHITE}"
 
   printf " %-${COLUMN}s" $3
 
-  echo -n " │ "
-  echo -n $(tput setaf $1) 
+  echo -ne " │ ${1}"
   shift 3
-  echo -n "${@}"
-  echo $(tput setaf $DEFAULT)
-  echo -n $(tput sgr0)
+  echo -e "${@}${RESET}"
 }
 
 dummy_print() {
@@ -167,6 +140,10 @@ main() {
   print_mod $YELLOW "󰍛" "memory" $ZETCH_MEMORY
 
   show_bottom
+}
+
+debug() {
+    print_mod $RED "" "debug" "This is a debug message"
 }
 
 main

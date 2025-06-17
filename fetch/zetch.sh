@@ -1,8 +1,6 @@
 #! /usr/bin/env bash 
 
 # deps 
-# - figlet
-# - toilet ?
 # - awk 
 # - grep 
 # - cut 
@@ -140,10 +138,6 @@ main() {
   print_mod $YELLOW "󰍛" "memory" $ZETCH_MEMORY
 
   show_bottom
-}
-
-debug() {
-    print_mod $RED "" "debug" "This is a debug message"
 }
 
 main

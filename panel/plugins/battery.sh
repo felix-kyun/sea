@@ -6,3 +6,7 @@ battery-level() {
 
     echo $BATTERY_PERCENTAGE
 }
+
+battery_onload() {
+    echo "starting battery plugin"
+}

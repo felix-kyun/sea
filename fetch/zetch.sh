@@ -97,14 +97,14 @@ show_memory() {
 load_async() {
   ZETCH_TMP=$(mktemp -d)
 
+  # show_packages > $ZETCH_TMP/zetch_packages.tmp &
+  show_memory > $ZETCH_TMP/zetch_memory.tmp &
+  show_pretty_disro > $ZETCH_TMP/zetch_pretty_disro.tmp &
   show_user > $ZETCH_TMP/zetch_user.tmp &
   show_hname > $ZETCH_TMP/zetch_hname.tmp &
-  show_pretty_disro > $ZETCH_TMP/zetch_pretty_disro.tmp &
   # show_kernel > $ZETCH_TMP/zetch_kernel.tmp &
   # show_shell > $ZETCH_TMP/zetch_shell.tmp &
-  # show_packages > $ZETCH_TMP/zetch_packages.tmp &
   show_uptime > $ZETCH_TMP/zetch_uptime.tmp &
-  show_memory > $ZETCH_TMP/zetch_memory.tmp &
 
   # wait for all background jobs to finish
   wait

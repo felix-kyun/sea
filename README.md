@@ -1,6 +1,6 @@
-# Sea Shell
+# 🌊 Sea
 
-A kitty based shell for wm.
+A kitty based shell and utilities for wm.
 Simple, fast and heavily opinionated.
 
 ## Utilities

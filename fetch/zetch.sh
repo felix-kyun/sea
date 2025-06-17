@@ -93,7 +93,7 @@ show_hname() {
 }
 
 show_pretty_disro() {
-  cat /etc/os-release | grep "PRETTY_NAME=" | cut -d "=" -f 2 | sed 's/"//g'
+    cat /etc/os-release | grep "PRETTY_NAME=" | cut -d "=" -f 2 | sed 's/"//g; s/(.*)//g'
 }
 
 show_kernel() {

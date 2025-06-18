@@ -19,6 +19,7 @@ BLUE="\033[34m"
 MAGENTA="\033[35m"
 CYAN="\033[36m"
 WHITE="\033[37m"
+DEFAULT="\033[39m"
 
 # background colors
 BLACK_BG="\033[40m"
@@ -29,4 +30,5 @@ BLUE_BG="\033[44m"
 MAGENTA_BG="\033[45m"
 CYAN_BG="\033[46m"
 WHITE_BG="\033[47m"
+DEFAULT_BG="\033[49m"
 

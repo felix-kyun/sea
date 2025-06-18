@@ -34,7 +34,10 @@ render() {
 
     for plugin in "${PLUGINS[@]}"; do
         data_var="${plugin}_data"
-        [[ -n "${plugin}_data" ]] && echo -ne "${!data_var}"
+        fg_var="${plugin}_fg"
+        bg_var="${plugin}_bg"
+
+        [[ -n "${plugin}_data" ]] && echo -ne "${!bg_var}${!fg_var} ${!data_var} ${RESET}"
     done
 }
 
@@ -59,10 +62,12 @@ for plugin in "${PLUGINS[@]}"; do
     
     {
         source "${CURRENT_DIR}/plugins/${plugin}.sh"
-        declare ${plugin}_state=""
+        declare ${plugin}_data=""
+        declare ${plugin}_fg="${DEFAULT}"
+        declare ${plugin}_bg="${DEFAULT_BG}"
 
         # wait for the socket to be ready
-        sleep 1 
+        sleep 0.1
 
         # exec onload if it exists
         declare -f ${plugin}_onload &> /dev/null \
@@ -85,9 +90,24 @@ socat -u UNIX-LISTEN:"$SOCKET",fork - | while read msg; do
         exit 0
     fi
 
-    IFS=':' read -r plugin_id data <<< "$msg"
-    log debug "Processing message for plugin: $plugin_id with data: $data"
+    IFS=':' read -r plugin_id event data <<< "$msg"
+    log debug "received ${plugin_id}(${event}, ${#data}): $(echo ${data} | sed 's/\x1b/\\e/g')"
     eval "${plugin_id}_data"='${data}' # update the plugin data 
+    
+    case "$event" in 
+        "update")
+            eval "${plugin_id}_data"='${data}' # update the plugin data 
+            ;;
+        "fg")
+            eval "${plugin_id}_fg"='${data}' # update the plugin data 
+            ;;
+        "bg")
+            eval "${plugin_id}_bg"='${data}' # update the plugin data 
+            ;;
+        *)
+            log warning "Unknown event: ${event} for plugin: ${plugin_id}"
+            ;;
+    esac
 
     render
 done

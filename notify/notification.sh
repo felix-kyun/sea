@@ -14,5 +14,5 @@ printf '\e[?1000h'
 echo -e "${HIDE_CURSOR}${BOLD}${CYAN}${app_name}${WHITE} ${summary}${RESET}"
 echo -e "${body}${RESET}"
 
-read -rsn6 
+read -rsn6 -t3 
 printf '\e[?1000l'

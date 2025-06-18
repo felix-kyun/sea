@@ -20,6 +20,7 @@ log () {
 }
 
 send () {
-    echo -e "${PLUGIN_ID}:${@}" | socat - UNIX-CONNECT:"${SOCKET}" 
+    echo -e "${PLUGIN_ID}:${1}:${@:2}" | socat - UNIX-CONNECT:"${SOCKET}" 
+    sleep 0.1 # give some time for the socket to process the message
 }
 

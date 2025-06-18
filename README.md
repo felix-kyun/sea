@@ -6,12 +6,13 @@ Simple, fast and heavily opinionated.
 ## Utilities
 
 - launcher
+- notification daemon
+- panel
 
 ## ToDo
 
-- [ ] panel
 - [ ] systray
-- [ ] notifications
+- [ ] notification manager
 - [ ] screen recorder frontend
 - [ ] clipboard management
 - [ ] bluetooth menu

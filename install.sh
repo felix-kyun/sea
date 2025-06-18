@@ -2,11 +2,12 @@
 
 # set up the deps
 DEPS=(
-    "kitty" # ofc 
+    "kitty"     # the 🐐
 
-    "gum" # for all the pretty output
-    "upower" # for battery level
-    "fzf" # for fuzzy searching
+    "gum"       # (core) log
+    "upower"    # (panel:module) battery level
+    "fzf"       # (launcher) fuzzy searching
+    "socat"     # (panel) IPC 
 
     # core utils
     "grep"

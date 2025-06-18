@@ -17,5 +17,6 @@ Simple, fast and heavily opinionated.
 - [ ] bluetooth menu
 - [ ] wifi menu
 - [ ] osd (is it even possible) ??
+- [ ] emoji picker
 
 Feel free to contribute more utilities or features, after all its just bash.

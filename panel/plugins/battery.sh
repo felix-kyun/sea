@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 
-battery-level() {
-    local BATTERY=$(upower -e | grep battery)
-    local BATTERY_PERCENTAGE=$(upower -i "$BATTERY" | grep "percentage" | awk '{print $2}' | tr -d '%')
+CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
+source $CURRENT_DIR/../config.sh
 
-    echo $BATTERY_PERCENTAGE
+battery-level() {
+        upower -e | grep -m 1 battery | xargs -I {} upower -i {} | awk '/percentage/ { print $2 }'
 }
 
 battery_onload() {
-    echo "starting battery plugin"
+    log info "Battery plugin loaded"
+}
+
+battery_start() {
+    PLUGIN_ID=$1
+    while :; do 
+        sleep 5
+        send "$(battery-level)"
+    done
 }

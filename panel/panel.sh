@@ -30,11 +30,16 @@ done
 # implement later
 render() {
     log debug "Rendering Sea Panel"
-    clear
-    echo -ne "${HIDE_CURSOR}${BOLD}${RED}sea panel"
+    [[  -n "$DEBUG" && "$DEBUG" == true ]] || clear
+
+    for plugin in "${PLUGINS[@]}"; do
+        data_var="${plugin}_data"
+        [[ -n "${plugin}_data" ]] && echo -ne "${!data_var}"
+    done
 }
 
 # do the first render 
+echo -ne "${HIDE_CURSOR}"
 render
 
 cleanup() {
@@ -44,17 +49,20 @@ cleanup() {
         kill "$pid" 2>/dev/null || true
     done
     log info "Sea Panel stopped."
+    echo -ne "${SHOW_CURSOR}"
 }
 
 trap cleanup SIGINT SIGHUP SIGTERM EXIT
 
 # start the plugins
 for plugin in "${PLUGINS[@]}"; do
-    sleep 1 # give some time for the panel to start
     
-    # start a subshell for each plugin
-    (
+    {
         source "${CURRENT_DIR}/plugins/${plugin}.sh"
+        declare ${plugin}_state=""
+
+        # wait for the socket to be ready
+        sleep 1 
 
         # exec onload if it exists
         declare -f ${plugin}_onload &> /dev/null \
@@ -62,7 +70,7 @@ for plugin in "${PLUGINS[@]}"; do
 
         # start the plugin
         ${plugin}_start "${plugin}" 
-    ) &
+    } &
 
     log debug "Started plugin: ${plugin} with PID: ${!}"
     echo $! >> /tmp/sea_panel_override.pids
@@ -71,11 +79,15 @@ done
 
 # start the socket listener
 socat -u UNIX-LISTEN:"$SOCKET",fork - | while read msg; do
-    log debug "Received message: $msg"
     if [[ "$msg" == "exit" ]]; then
         log info "Exit command received, stopping Sea Panel."
         cleanup
         exit 0
     fi
+
+    IFS=':' read -r plugin_id data <<< "$msg"
+    log debug "Processing message for plugin: $plugin_id with data: $data"
+    eval "${plugin_id}_data"='${data}' # update the plugin data 
+
     render
 done

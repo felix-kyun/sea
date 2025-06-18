@@ -20,6 +20,6 @@ log () {
 }
 
 send () {
-    echo "${PLUGIN_ID}:${@}" | socat - UNIX-CONNECT:"${SOCKET}" 
+    echo -e "${PLUGIN_ID}:${@}" | socat - UNIX-CONNECT:"${SOCKET}" 
 }
 

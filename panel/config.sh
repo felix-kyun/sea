@@ -2,6 +2,8 @@
 
 PLUGINS=(
     "battery"
+    "brightness"
     )
 LOG_FILE="/tmp/sea-panel.log"
-SOCKET="/tmp/sea-panel-001.sock"
+LOCK_FILE="/tmp/sea-panel.lock"
+SOCKET="/tmp/sea-panel.sock"

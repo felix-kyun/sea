@@ -23,13 +23,11 @@ battery_onload() {
 
 battery_start() {
     PLUGIN_ID=$1
-    local battery_bg=${GREEN_BG}
-    local battery_fg=${BLACK}
+    send bg "${YELLOW_BG}"
+    send fg "${BLACK}"
     while :; do 
         level=$(battery-level)
         icon=$(battery_icon $level)
-        send bg "${battery_bg}"
-        send fg "${battery_fg}"
         send update "${icon} ${level}%"
 
         sleep 5

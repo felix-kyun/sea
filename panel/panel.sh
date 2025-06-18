@@ -30,14 +30,15 @@ done
 # implement later
 render() {
     log debug "Rendering Sea Panel"
-    [[  -n "$DEBUG" && "$DEBUG" == true ]] || clear
+    echo -ne "\r\033[2K"
 
     for plugin in "${PLUGINS[@]}"; do
         data_var="${plugin}_data"
         fg_var="${plugin}_fg"
         bg_var="${plugin}_bg"
 
-        [[ -n "${plugin}_data" ]] && echo -ne "${!bg_var}${!fg_var} ${!data_var} ${RESET}"
+        echo -ne "${!bg_var}${!fg_var} ${!data_var} ${RESET}"
+
     done
 }
 
@@ -84,25 +85,21 @@ done
 
 # start the socket listener
 socat -u UNIX-LISTEN:"$SOCKET",fork - | while read msg; do
-    if [[ "$msg" == "exit" ]]; then
-        log info "Exit command received, stopping Sea Panel."
-        cleanup
-        exit 0
-    fi
+    exec 200>${LOCK_FILE}
+    flock 200
 
     IFS=':' read -r plugin_id event data <<< "$msg"
     log debug "received ${plugin_id}(${event}, ${#data}): $(echo ${data} | sed 's/\x1b/\\e/g')"
-    eval "${plugin_id}_data"='${data}' # update the plugin data 
     
     case "$event" in 
         "update")
-            eval "${plugin_id}_data"='${data}' # update the plugin data 
+            eval "${plugin_id}_data"='${data}'  
             ;;
         "fg")
-            eval "${plugin_id}_fg"='${data}' # update the plugin data 
+            eval "${plugin_id}_fg"='${data}'  
             ;;
         "bg")
-            eval "${plugin_id}_bg"='${data}' # update the plugin data 
+            eval "${plugin_id}_bg"='${data}'  
             ;;
         *)
             log warning "Unknown event: ${event} for plugin: ${plugin_id}"
@@ -110,4 +107,5 @@ socat -u UNIX-LISTEN:"$SOCKET",fork - | while read msg; do
     esac
 
     render
+    exec 200>&- 
 done

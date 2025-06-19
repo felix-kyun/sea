@@ -29,7 +29,7 @@ done
 
 # implement later
 render() {
-    log debug "Rendering Sea Panel"
+    # log debug "Rendering Sea Panel"
     echo -ne "\r\033[2K"
     buffered_output=""
 
@@ -74,7 +74,8 @@ trap cleanup SIGINT SIGHUP
 for plugin in "${PLUGINS[@]}"; do
 
     source "${CURRENT_DIR}/plugins/${plugin}.sh"
-    declare ${plugin}_data=""
+    default_data="${plugin}_default"
+    declare ${plugin}_data="${!default_data}"
     declare ${plugin}_fg="${DEFAULT}"
     declare ${plugin}_bg="${DEFAULT_BG}"
     

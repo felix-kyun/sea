@@ -6,7 +6,6 @@
 CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source ${CURRENT_DIR}/config.sh
 source ${CURRENT_DIR}/utils.sh
-source ${CURRENT_DIR}/../utils/formatting.sh
 
 echo > "${LOG_FILE}" # clear the log file
 log info "Starting Sea Panel"
@@ -33,24 +32,52 @@ for plugin in "${PLUGINS[@]}"; do
 done
 PLUGINS=("${tmp_plugins_names[@]}") 
 
-log debug "Plugins loaded: ${tmp_plugins_names[*]}"
-
-# implement later
+# rendering part
+COLS=$(tput cols)
 render() {
-    # log debug "Rendering Sea Panel"
-    echo -ne "\r\033[2K"
-    buffered_output=""
+    # maintain seperate buffers
+    buffer_main="\r\033[2K${PANEL_BG}"
+    buffer_left=""
+    buffer_right=""
+    buffer_center=""
 
-    for plugin in "${PLUGINS[@]}"; do
-        IFS=':' read name id <<< "${plugin}"
-
-        data_var="${id}_data"
-        fg_var="${id}_fg"
-        bg_var="${id}_bg"
-
-        buffered_output+="${!bg_var}${!fg_var} ${!data_var} ${RESET} "
+    # render the left side
+    for plugin in "${PLUGIN_LEFT[@]}"; do
+        buffer_left+=$(process_plugin)
     done
-    echo -ne "${buffered_output}"
+    left_len=$(true_length "${buffer_left}")
+
+    # render the center side
+    for plugin in "${PLUGIN_CENTER[@]}"; do
+        buffer_center+=$(process_plugin)
+    done
+    center_len=$(true_length "${buffer_center}")
+
+    # render the right side
+    for plugin in "${PLUGIN_RIGHT[@]}"; do
+        buffer_right+=$(process_plugin)
+    done
+    right_len=$(true_length "${buffer_right}")
+
+    # calculate padding 
+    left_padding_len=$(( ((COLS - center_len ) / 2) - left_len ))
+    right_padding_len=$(( (COLS - center_len - left_len - left_padding_len) - right_len ))
+
+    log debug "Left: ${left_len}, Center: ${center_len}, Right: ${right_len}, Left Padding: ${left_padding_len}, Right Padding: ${right_padding_len}"
+
+    # left padding
+    left_padding=""
+    for ((i=0; i<left_padding_len; i++)); do
+        left_padding+=" "
+    done
+
+    # right padding
+    right_padding=""
+    for ((i=0; i<right_padding_len; i++)); do
+        right_padding+=" "
+    done
+
+    echo -ne "${buffer_main}${buffer_left}${left_padding}${buffer_center}${right_padding}${buffer_right}"
 }
 
 # do the first render 
@@ -89,8 +116,6 @@ for plugin in "${PLUGINS[@]}"; do
     source "${CURRENT_DIR}/plugins/${name}.sh"
     default_data="${name}_default"
     declare ${id}_data="${!default_data}"
-    declare ${id}_fg="${DEFAULT}"
-    declare ${id}_bg="${DEFAULT_BG}"
     
     {
         # wait for the socket to be ready

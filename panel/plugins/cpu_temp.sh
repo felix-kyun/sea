@@ -2,8 +2,6 @@
 
 cpu_temp_start() {
     PLUGIN_ID=$1
-    send bg "${RED_BG}"
-    send fg "${BLACK}"
 
     while :; do 
         cpu_temp=$(awk '{print $1/1000 "°C"}' /sys/class/thermal/thermal_zone*/temp)

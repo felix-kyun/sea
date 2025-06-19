@@ -4,8 +4,6 @@ cpu_default="  0%"
 
 cpu_start() {
     PLUGIN_ID=$1
-    send bg "${CYAN_BG}"
-    send fg "${BLACK}"
     while true; do 
         read cpu user nice system idle iowait irq softirq steal guest guest_nice< /proc/stat
         # Calculate CPU usage

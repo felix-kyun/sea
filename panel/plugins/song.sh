@@ -9,8 +9,6 @@ song_fetch() {
 
 song_start() {
     PLUGIN_ID=$1
-    send bg "${BLUE_BG}"
-    send fg "${BLACK}${BOLD}"
 
     song_fetch | while read song; do 
         if [[ -z "$song" ]]; then

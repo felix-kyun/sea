@@ -2,8 +2,6 @@
 
 net_speed_start() {
     PLUGIN_ID=$1
-    send bg "${BLUE_BG}"
-    send fg "${BLACK}"
     read rx_current tx_current <<< $(awk 'NR>2 { rx+=$2; tx+=$10 } END { print rx, tx }' /proc/net/dev)
 
     while :; do 

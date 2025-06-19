@@ -25,8 +25,6 @@ battery_onload() {
 battery_start() {
     log info "battery args $@"
     PLUGIN_ID=$1
-    send bg "${YELLOW_BG}"
-    send fg "${BLACK}"
     while :; do 
         level=$(battery-level)
         icon=$(battery_icon $level)

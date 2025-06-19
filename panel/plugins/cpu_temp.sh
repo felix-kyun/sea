@@ -1,4 +1,4 @@
-!#/usr/bin/env bash
+#!/usr/bin/env bash
 
 cpu_temp_start() {
     PLUGIN_ID=$1

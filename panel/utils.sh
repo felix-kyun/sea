@@ -50,3 +50,12 @@ true_length() {
       # Use perl Unicode::GCString to count grapheme clusters (visual characters)
       perl -CSDA -MUnicode::GCString -E 'print Unicode::GCString->new($ARGV[0])->length, "\n"' "$clean"
 }
+
+transform() {
+    declare -n arr=$1
+    for i in "${!arr[@]}"; do
+        id=$(getid "${arr[$i]}")
+        name=$(getname "${arr[$i]}")
+        arr[$i]="${name}:${id}"
+    done
+}

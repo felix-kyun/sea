@@ -18,19 +18,17 @@ if [[ -n "$DEBUG" && "$DEBUG" == true ]]; then
     set -x
 fi
 
-# check plugins files
-tmp_plugins_names=()
-for plugin in "${PLUGINS[@]}"; do
-    id=$(getid "${plugin}")
-    name=$(getname "${plugin}")
-    tmp_plugins_names+=("${name}:${id}")
+# process plugin entries
+# basically adds plugin id if missing
+transform PLUGIN_LEFT
+transform PLUGIN_RIGHT
+transform PLUGIN_CENTER
+PLUGINS=()
 
-    [[ -f "${CURRENT_DIR}/plugins/${name}.sh" ]] || {
-        log error "Plugin file not found: ${CURRENT_DIR}/plugins/${name}.sh"
-        exit 1
-    }
+for plugin in "${PLUGIN_LEFT[@]}" "${PLUGIN_RIGHT[@]}" "${PLUGIN_CENTER[@]}"; do
+    IFS=':' read name id <<< "${plugin}"
+    PLUGINS+=("${name}:${id}")
 done
-PLUGINS=("${tmp_plugins_names[@]}") 
 
 # rendering part
 COLS=$(tput cols)

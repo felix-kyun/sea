@@ -1,34 +1,23 @@
 #!/usr/bin/env bash
 
 source "$(dirname "${BASH_SOURCE[0]}")/../utils/formatting.sh"
-PLUGINS=(
-    "battery"
-    "brightness"
-    "cpu"
-    "ram"
-    "song"
-    "time"
-    "date"
-    "net_speed"
-    "cpu_temp"
-    )
 
 PLUGIN_LEFT=(
-    "song:song"
+    "song"
     )
 
 PLUGIN_RIGHT=(
-    "net_speed:net_speed"
-    "brightness:brightness"
-    "battery:battery"
-    "cpu:cpu"
-    "ram:ram"
-    "cpu_temp:cpu_temp"
+    "net_speed"
+    "brightness"
+    "battery"
+    "cpu"
+    "ram"
+    "cpu_temp"
     )
 
 PLUGIN_CENTER=(
-    "time:time"
-    "date:date"
+    "time"
+    "date"
     )
 
 LOG_FILE="/tmp/sea-panel.log"

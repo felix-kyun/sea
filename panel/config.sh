@@ -7,6 +7,7 @@ PLUGINS=(
     "ram"
     "song"
     "time"
+    "date"
     )
 LOG_FILE="/tmp/sea-panel.log"
 LOCK_FILE="/tmp/sea-panel.lock"

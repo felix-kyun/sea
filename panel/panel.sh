@@ -31,27 +31,39 @@ done
 render() {
     log debug "Rendering Sea Panel"
     echo -ne "\r\033[2K"
+    buffered_output=""
 
     for plugin in "${PLUGINS[@]}"; do
         data_var="${plugin}_data"
         fg_var="${plugin}_fg"
         bg_var="${plugin}_bg"
 
-        echo -ne "${!bg_var}${!fg_var} ${!data_var} ${RESET}"
-
+        buffered_output+="${!bg_var}${!fg_var} ${!data_var} ${RESET} "
     done
+    echo -ne "${buffered_output}"
 }
 
 # do the first render 
+reset
 echo -ne "${HIDE_CURSOR}"
 render
 
 cleanup() {
+    log info "Unloading plugins..."
+    for plugin in "${PLUGINS[@]}"; do
+        # check if the plugin has a unload function
+        if declare -f ${plugin}_unload &> /dev/null; then
+            log debug "Unloading plugin: ${plugin}"
+            ${plugin}_unload "${plugin}" 
+        fi
+    done
+
     log info "Cleaning up..."
     for pid in "${plugin_pids[@]}"; do
         log debug "Killing plugin with PID: $pid"
         kill "$pid" 2>/dev/null || true
     done
+
     log info "Sea Panel stopped."
     echo -ne "${SHOW_CURSOR}"
 }
@@ -60,13 +72,13 @@ trap cleanup SIGINT SIGHUP
 
 # start the plugins
 for plugin in "${PLUGINS[@]}"; do
+
+    source "${CURRENT_DIR}/plugins/${plugin}.sh"
+    declare ${plugin}_data=""
+    declare ${plugin}_fg="${DEFAULT}"
+    declare ${plugin}_bg="${DEFAULT_BG}"
     
     {
-        source "${CURRENT_DIR}/plugins/${plugin}.sh"
-        declare ${plugin}_data=""
-        declare ${plugin}_fg="${DEFAULT}"
-        declare ${plugin}_bg="${DEFAULT_BG}"
-
         # wait for the socket to be ready
         sleep 0.1
 

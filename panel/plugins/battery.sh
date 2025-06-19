@@ -19,6 +19,7 @@ battery_icon() {
 
 battery_onload() {
     log info "Battery plugin loaded"
+    touch /tmp/battery.state
 }
 
 battery_start() {
@@ -34,4 +35,8 @@ battery_start() {
     done
 }
 
+battery_unload() {
+    log info "Battery plugin unloaded"
+    rm -f /tmp/battery.state
+}
 

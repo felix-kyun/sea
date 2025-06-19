@@ -4,6 +4,7 @@ PLUGINS=(
     "battery"
     "brightness"
     "cpu"
+    "ram"
     )
 LOG_FILE="/tmp/sea-panel.log"
 LOCK_FILE="/tmp/sea-panel.lock"

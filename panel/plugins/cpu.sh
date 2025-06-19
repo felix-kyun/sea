@@ -2,10 +2,6 @@
 
 cpu_default="󰒡 CPU: 0%"
 
-cpu_onload() {
-    log info "CPU plugin loaded"
-}
-
 cpu_start() {
     PLUGIN_ID=$1
     send bg "${GREEN_BG}"

@@ -6,6 +6,7 @@ PLUGINS=(
     "cpu"
     "ram"
     "song"
+    "time"
     )
 LOG_FILE="/tmp/sea-panel.log"
 LOCK_FILE="/tmp/sea-panel.lock"

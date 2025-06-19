@@ -20,12 +20,20 @@ if [[ -n "$DEBUG" && "$DEBUG" == true ]]; then
 fi
 
 # check plugins files
+tmp_plugins_names=()
 for plugin in "${PLUGINS[@]}"; do
-    [[ -f "${CURRENT_DIR}/plugins/${plugin}.sh" ]] || {
-        log error "Plugin file not found: ${CURRENT_DIR}/plugins/${plugin}.sh"
+    id=$(getid "${plugin}")
+    name=$(getname "${plugin}")
+    tmp_plugins_names+=("${name}:${id}")
+
+    [[ -f "${CURRENT_DIR}/plugins/${name}.sh" ]] || {
+        log error "Plugin file not found: ${CURRENT_DIR}/plugins/${name}.sh"
         exit 1
     }
 done
+PLUGINS=("${tmp_plugins_names[@]}") 
+
+log debug "Plugins loaded: ${tmp_plugins_names[*]}"
 
 # implement later
 render() {
@@ -34,9 +42,11 @@ render() {
     buffered_output=""
 
     for plugin in "${PLUGINS[@]}"; do
-        data_var="${plugin}_data"
-        fg_var="${plugin}_fg"
-        bg_var="${plugin}_bg"
+        IFS=':' read name id <<< "${plugin}"
+
+        data_var="${id}_data"
+        fg_var="${id}_fg"
+        bg_var="${id}_bg"
 
         buffered_output+="${!bg_var}${!fg_var} ${!data_var} ${RESET} "
     done
@@ -51,10 +61,12 @@ render
 cleanup() {
     log info "Unloading plugins..."
     for plugin in "${PLUGINS[@]}"; do
+        IFS=':' read name id <<< "${plugin}"
+
         # check if the plugin has a unload function
-        if declare -f ${plugin}_unload &> /dev/null; then
-            log debug "Unloading plugin: ${plugin}"
-            ${plugin}_unload "${plugin}" 
+        if declare -f ${name}_unload &> /dev/null; then
+            log debug "Unloading plugin: ${name}:${id}"
+            ${name}_unload "${id}" 
         fi
     done
 
@@ -72,28 +84,29 @@ trap cleanup SIGINT SIGHUP
 
 # start the plugins
 for plugin in "${PLUGINS[@]}"; do
+    IFS=':' read name id <<< "${plugin}"
 
-    source "${CURRENT_DIR}/plugins/${plugin}.sh"
-    default_data="${plugin}_default"
-    declare ${plugin}_data="${!default_data}"
-    declare ${plugin}_fg="${DEFAULT}"
-    declare ${plugin}_bg="${DEFAULT_BG}"
+    source "${CURRENT_DIR}/plugins/${name}.sh"
+    default_data="${name}_default"
+    declare ${id}_data="${!default_data}"
+    declare ${id}_fg="${DEFAULT}"
+    declare ${id}_bg="${DEFAULT_BG}"
     
     {
         # wait for the socket to be ready
         sleep 0.1
 
         # exec onload if it exists
-        declare -f ${plugin}_onload &> /dev/null \
-        && ${plugin}_onload "${plugin}" 
+        declare -f ${name}_onload &> /dev/null \
+        && ${name}_onload "${id}" 
 
         # start the plugin
-        ${plugin}_start "${plugin}" 
+        ${name}_start "${id}" 
     } &
 
     plugin_pids+=("${!}")
     # log after storing as logger uses subshell so it changes $!
-    log debug "Started plugin: ${plugin} with PID: ${!}"
+    log debug "Started plugin: ${name}:${id} with PID: ${!}"
 done
 
 # start the socket listener

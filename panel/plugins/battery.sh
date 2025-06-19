@@ -23,6 +23,7 @@ battery_onload() {
 }
 
 battery_start() {
+    log info "battery args $@"
     PLUGIN_ID=$1
     send bg "${YELLOW_BG}"
     send fg "${BLACK}"

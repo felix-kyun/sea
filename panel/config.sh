@@ -9,6 +9,7 @@ PLUGINS=(
     "time"
     "date"
     "net_speed"
+    "cpu_temp"
     )
 LOG_FILE="/tmp/sea-panel.log"
 LOCK_FILE="/tmp/sea-panel.lock"

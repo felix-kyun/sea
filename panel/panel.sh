@@ -61,8 +61,6 @@ render() {
     left_padding_len=$(( ((COLS - center_len ) / 2) - left_len ))
     right_padding_len=$(( (COLS - center_len - left_len - left_padding_len) - right_len ))
 
-    log debug "Left: ${left_len}, Center: ${center_len}, Right: ${right_len}, Left Padding: ${left_padding_len}, Right Padding: ${right_padding_len}"
-
     # left padding
     left_padding=""
     for ((i=0; i<left_padding_len; i++)); do

@@ -10,7 +10,7 @@ brightness_start() {
     send fg "${BLACK}"
     while :; do 
         send update " 󰃠 $(brightnessctl -P get | sed 's/[^0-9]//g')% "
-        sleep 0.2
+        sleep 1
     done
 }
 

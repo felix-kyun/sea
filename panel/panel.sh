@@ -11,7 +11,7 @@ source ${CURRENT_DIR}/../utils/formatting.sh
 echo > "${LOG_FILE}" # clear the log file
 log info "Starting Sea Panel"
 
-# declare an associative array to hold plugin PIDs
+# declare an array to hold plugin PIDs
 plugin_pids=()
 
 # enable debugging and tracing 
@@ -56,7 +56,7 @@ cleanup() {
     echo -ne "${SHOW_CURSOR}"
 }
 
-trap cleanup SIGINT SIGHUP SIGTERM EXIT
+trap cleanup SIGINT SIGHUP
 
 # start the plugins
 for plugin in "${PLUGINS[@]}"; do
@@ -78,9 +78,9 @@ for plugin in "${PLUGINS[@]}"; do
         ${plugin}_start "${plugin}" 
     } &
 
+    plugin_pids+=("${!}")
+    # log after storing as logger uses subshell so it changes $!
     log debug "Started plugin: ${plugin} with PID: ${!}"
-    echo $! >> /tmp/sea_panel_override.pids
-    plugin_pids+="${!}"
 done
 
 # start the socket listener

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-cpu_default="󰒡 CPU: 0%"
+cpu_default="  0%"
 
 cpu_start() {
     PLUGIN_ID=$1
-    send bg "${GREEN_BG}"
+    send bg "${CYAN_BG}"
     send fg "${BLACK}"
     while true; do 
         read cpu user nice system idle iowait irq softirq steal guest guest_nice< /proc/stat
@@ -26,6 +26,6 @@ cpu_start() {
         # Calculate CPU usage percentage
         cpu_usage=$((100 * diff_used / diff_total))
 
-        send update "󰒡 CPU: ${cpu_usage}%"
+        send update "  ${cpu_usage}%"
     done
 }

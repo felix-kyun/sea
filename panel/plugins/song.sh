@@ -3,7 +3,8 @@
 song_fetch() {
     playerctl \
         -p plasma-browser-integration,firefox,chromium,chrome,instance metadata \
-        -f '{{ artist }} - {{ title }}' -F 
+        -f '{{ title }}' -F
+        # -f '{{ artist }} - {{ title }}' -F 
 }
 
 song_start() {
@@ -15,6 +16,10 @@ song_start() {
         if [[ -z "$song" ]]; then
             send update "󰎆 No song playing"
         else
+            song=$(echo "${song}" | tr -cd '\0-\177')
+            if [[ ${#song} -gt 30 ]]; then
+                song="${song:0:30}..."
+            fi
             send update "󰎆 ${song}"
         fi
     done

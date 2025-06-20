@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
+song_limit=40
 
 song_fetch() {
-    playerctl \
+    stdbuf -oL playerctl \
         -p plasma-browser-integration,firefox,chromium,chrome,instance metadata \
-        -f '{{ title }}' -F
-        # -f '{{ artist }} - {{ title }}' -F 
+        -f '{{ artist }} - {{ title }}' -F 
 }
 
 song_start() {
@@ -15,10 +15,12 @@ song_start() {
             send update "󰎆 No song playing"
         else
             song=$(echo "${song}" | tr -cd '\0-\177')
-            if [[ ${#song} -gt 30 ]]; then
-                song="${song:0:30}..."
+            if [[ ${#song} -gt ${song_limit} ]]; then
+                song="${song:0:${song_limit}}..."
             fi
             send update "󰎆 ${song}"
         fi
     done
+
+    ehile
 }

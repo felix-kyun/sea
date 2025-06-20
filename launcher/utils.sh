@@ -56,6 +56,8 @@ launch_detached() {
 }
 
 show_launcher() {
+    CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
+    source "${CURRENT_DIR}/../utils/fzf_theme_override.sh"
     local selected=$(process_entries | fzf \
         --prompt "Search: " \
         --no-multi \

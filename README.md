@@ -19,5 +19,7 @@ Simple, fast and heavily opinionated.
 - [ ] wifi menu
 - [ ] osd (is it even possible) ??
 - [ ] emoji picker
+- [ ] dotfile manager
+- [ ] installer
 
 Feel free to contribute more utilities or features, after all its just bash.

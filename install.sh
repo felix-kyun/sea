@@ -4,7 +4,7 @@
 DEPS=(
     "kitty"     # the 🐐
 
-    "gum"       # (core) log
+    # "gum"       # (core) log
     "upower"    # (panel:module) battery level
     "fzf"       # (launcher) fuzzy searching
     "socat"     # (panel) IPC 
@@ -17,4 +17,8 @@ DEPS=(
     "find"
     "sed"
     "setsid"
+    "tput"
+    "perl"
+    "xargs"
+    "flock"
     )

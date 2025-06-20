@@ -8,13 +8,13 @@ Simple, fast and heavily opinionated.
 - launcher
 - notification daemon
 - panel
+- clipboard manager
 
 ## ToDo
 
 - [ ] systray
 - [ ] notification manager
 - [ ] screen recorder frontend
-- [ ] clipboard management
 - [ ] bluetooth menu
 - [ ] wifi menu
 - [ ] osd (is it even possible) ??

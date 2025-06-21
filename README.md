@@ -9,6 +9,7 @@ Simple, fast and heavily opinionated.
 - notification daemon
 - panel
 - clipboard manager
+- cli
 
 ## ToDo
 
@@ -20,6 +21,5 @@ Simple, fast and heavily opinionated.
 - [ ] osd (is it even possible) ??
 - [ ] emoji picker
 - [ ] dotfile manager
-- [ ] installer
 
 Feel free to contribute more utilities or features, after all its just bash.

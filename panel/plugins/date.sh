@@ -8,6 +8,6 @@ date_start() {
     while :; do 
         current_date=$(date +"%a %b %d %Y")
         send update "󰃰 ${current_date}"
-        sleep 1
+        sleep 60
     done
 }

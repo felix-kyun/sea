@@ -30,7 +30,7 @@ battery_start() {
         icon=$(battery_icon $level)
         send update "${icon} ${level}%"
 
-        sleep 5
+        sleep 60
     done
 }
 

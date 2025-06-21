@@ -10,7 +10,7 @@ cpu_start() {
         total=$((user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice))
         used=$((total - idle - iowait))
 
-        sleep 1
+        sleep 2
 
         read cpu user nice system idle iowait irq softirq steal guest guest_nice< /proc/stat
         # Calculate CPU usage again

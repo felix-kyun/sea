@@ -8,6 +8,6 @@ ram_start() {
     while :; do 
         ram=$(free --mebi | awk '/^Mem:/ {print $3/$2 * 100.0}' | awk '{printf "%.0f", $1}')
         send update "  ${ram}%"
-        sleep 1
+        sleep 5
     done
 }

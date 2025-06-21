@@ -2,9 +2,12 @@
 
 net_speed_start() {
     PLUGIN_ID=$1
-    read rx_current tx_current <<< $(awk 'NR>2 { rx+=$2; tx+=$10 } END { print rx, tx }' /proc/net/dev)
 
     while :; do 
+        read rx_current tx_current <<< $(awk 'NR>2 { rx+=$2; tx+=$10 } END { print rx, tx }' /proc/net/dev)
+
+        sleep 2
+
         # store the new network usage
         read rx_new tx_new <<< $(awk 'NR>2 { rx+=$2; tx+=$10 } END { print rx, tx }' /proc/net/dev)
 
@@ -16,6 +19,5 @@ net_speed_start() {
         rx_current=$rx_new
         tx_current=$tx_new
 
-        sleep 1
     done
 }

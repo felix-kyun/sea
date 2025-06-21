@@ -9,6 +9,6 @@ cpu_temp_start() {
             cpu_temp="N/A"
         fi
         send update " ${cpu_temp}"
-        sleep 1
+        sleep 10
     done
 }

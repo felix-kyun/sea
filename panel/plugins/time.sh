@@ -6,8 +6,8 @@ time_start() {
     PLUGIN_ID=$1
 
     while :; do 
-        current_time=$(date +"%H:%M:%S")
+        current_time=$(date +"%H:%M")
         send update " ${current_time}"
-        sleep 1
+        sleep 60
     done
 }

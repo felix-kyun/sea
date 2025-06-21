@@ -3,6 +3,6 @@
 CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 kitty \
-    --title sea-launcher \
-    --config ${CURRENT_DIR}/launcher.conf \
+    --title sea-emoji \
+    --config ${CURRENT_DIR}/emoji.conf \
     -- bash -c "source ${CURRENT_DIR}/utils.sh && show_emoji_picker" 

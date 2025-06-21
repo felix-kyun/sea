@@ -21,6 +21,4 @@ song_start() {
             send update "󰎆 ${song}"
         fi
     done
-
-    ehile
 }

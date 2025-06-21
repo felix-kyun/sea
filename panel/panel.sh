@@ -131,7 +131,13 @@ for plugin in "${PLUGINS[@]}"; do
 done
 
 # start the socket listener
+[[ -e "${LOCK_FILE}" ]] && rm -f "${LOCK_FILE}"
+[[ -e "${SOCKET}" ]] && rm -f "${SOCKET}"
+
 socat -u UNIX-LISTEN:"$SOCKET",fork - 2>/dev/null | while read msg; do
+    exec 200>${LOCK_FILE}
+    flock 200
+
     IFS=':' read -r plugin_id event data <<< "$msg"
     log debug "received ${plugin_id}(${event}, ${#data}): $(echo ${data} | sed 's/\x1b/\\e/g')"
     
@@ -151,4 +157,5 @@ socat -u UNIX-LISTEN:"$SOCKET",fork - 2>/dev/null | while read msg; do
     esac
 
     render
+    exec 200>&- 
 done

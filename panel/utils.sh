@@ -9,7 +9,7 @@ log () {
 }
 
 send () {
-    echo -e "${PLUGIN_ID}:${1}:${@:2}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+    echo -e "${PLUGIN_ID}:${1}:${@:2}" > "${PIPE_FILE}"
 }
 
 getid() {

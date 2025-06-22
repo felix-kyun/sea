@@ -7,8 +7,13 @@ CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source ${CURRENT_DIR}/config.sh
 source ${CURRENT_DIR}/utils.sh
 
-echo > "${LOG_FILE}" # clear the log file
+[[ -e "${LOCK_FILE}" ]] && rm -f "${LOCK_FILE}"
+[[ -e "${PIPE_FILE}" ]] && rm -f "${PIPE_FILE}"
+
+echo > "${LOG_FILE}" 
 log info "Starting Sea Panel"
+mkfifo "${PIPE_FILE}"
+exec 99<> "${PIPE_FILE}" || { log error "Failed to open pipe file: ${PIPE_FILE}"; exit 1; }
 
 # declare an array to hold plugin PIDs
 plugin_pids=()
@@ -114,14 +119,12 @@ for plugin in "${PLUGINS[@]}"; do
     declare ${id}_data="${!default_data}"
     
     {
-        # wait for the socket to be ready
-        sleep 0.1
-
         # exec onload if it exists
         declare -f ${name}_onload &> /dev/null \
         && ${name}_onload "${id}" 
 
         # start the plugin
+        sleep 0.1 # give some time for the plugin to load
         ${name}_start "${id}" 
     } &
 
@@ -130,32 +133,25 @@ for plugin in "${PLUGINS[@]}"; do
     log debug "Started plugin: ${name}:${id} with PID: ${!}"
 done
 
-# start the socket listener
-[[ -e "${LOCK_FILE}" ]] && rm -f "${LOCK_FILE}"
-[[ -e "${SOCKET}" ]] && rm -f "${SOCKET}"
+while :; do
+    while IFS=':' read -r plugin_id event data < ${PIPE_FILE}; do
+        log debug "received ${plugin_id}(${event}, ${#data}): $(echo ${data} | sed 's/\x1b/\\e/g')"
+        
+        case "$event" in 
+            "update")
+                eval "${plugin_id}_data"='${data}'  
+                ;;
+            "fg")
+                eval "${plugin_id}_fg"='${data}'  
+                ;;
+            "bg")
+                eval "${plugin_id}_bg"='${data}'  
+                ;;
+            *)
+                log warning "Unknown event: ${event} for plugin: ${plugin_id}"
+                ;;
+        esac
 
-socat -u UNIX-LISTEN:"$SOCKET",fork - 2>/dev/null | while read msg; do
-    exec 200>${LOCK_FILE}
-    flock 200
-
-    IFS=':' read -r plugin_id event data <<< "$msg"
-    log debug "received ${plugin_id}(${event}, ${#data}): $(echo ${data} | sed 's/\x1b/\\e/g')"
-    
-    case "$event" in 
-        "update")
-            eval "${plugin_id}_data"='${data}'  
-            ;;
-        "fg")
-            eval "${plugin_id}_fg"='${data}'  
-            ;;
-        "bg")
-            eval "${plugin_id}_bg"='${data}'  
-            ;;
-        *)
-            log warning "Unknown event: ${event} for plugin: ${plugin_id}"
-            ;;
-    esac
-
-    render
-    exec 200>&- 
+        render
+    done
 done

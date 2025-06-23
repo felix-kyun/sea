@@ -22,3 +22,7 @@ song_start() {
         fi
     done
 }
+
+song_onclick() {
+    playerctl play-pause
+}

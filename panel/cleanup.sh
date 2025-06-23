@@ -20,5 +20,9 @@ cleanup() {
 
     log info "Sea Panel stopped."
     echo -ne "${SHOW_CURSOR}"
+    printf '\033[?1000l'
+    printf '\033[?1006l'
+    printf '\033[?1002l'
+    stty sane
 }
 

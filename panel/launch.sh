@@ -8,7 +8,7 @@ kitten panel \
         --name sea-panel \
         --class sea-panel \
         --lines 1 \
-        -- bash ${CURRENT_DIR}/panel.sh
+        -- bash ${CURRENT_DIR}/main.sh \
         # --margin-top 5 \
         # --margin-left 30 \
         # --margin-right 30 \

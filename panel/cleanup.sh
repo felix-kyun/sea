@@ -13,10 +13,12 @@ cleanup() {
     done
 
     log info "Cleaning up..."
-    for pid in "${plugin_pids[@]}"; do
-        log debug "Killing plugin with PID: $pid"
-        kill "$pid" 2>/dev/null || true
-    done
+    while IFS= read -r pid; do
+        if [[ -n "$pid" && -e /proc/$pid ]]; then
+            log debug "Killing process with PID: $pid"
+            kill "$pid" 2>/dev/null || true
+        fi
+    done < "${PID_FILE}"
 
     log info "Sea Panel stopped."
     echo -ne "${SHOW_CURSOR}"
@@ -24,5 +26,7 @@ cleanup() {
     printf '\033[?1006l'
     printf '\033[?1002l'
     stty sane
+
+    exit 0
 }
 

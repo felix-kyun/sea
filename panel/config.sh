@@ -23,6 +23,7 @@ PLUGIN_CENTER=(
 LOG_FILE="/tmp/sea-panel.log"
 LOCK_FILE="/tmp/sea-panel.lock"
 SOCKET="/tmp/sea-panel.sock"
+PID_FILE="/tmp/sea-panel.pid"
 
 # plugin_colors
 battery_fg="${YELLOW}"

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-echo > "${LOG_FILE}" # clear the log file
 log () {
     (
         LOG_SOURCE="${BASH_SOURCE[1]}"

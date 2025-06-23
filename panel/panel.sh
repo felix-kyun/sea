@@ -19,7 +19,7 @@ panel_loop(){
             ${name}_start "${id}" 
         } &
 
-        plugin_pids+=("${!}")
+        echo "$!" >> "${PID_FILE}"
         # log after storing as logger uses subshell so it changes $!
         log debug "Started plugin: ${name}:${id} with PID: ${!}"
     done

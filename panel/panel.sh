@@ -6,6 +6,7 @@ panel_loop(){
         source "${CURRENT_DIR}/plugins/${name}.sh"
         default_data="${name}_default"
         declare ${id}_data="${!default_data}"
+        declare ${id}_len=0
         
         {
             # wait for the socket to be ready
@@ -31,11 +32,13 @@ panel_loop(){
         exec 200>${LOCK_FILE}
         flock 200
 
-        log debug "received ${plugin_id}(${event}, ${#data}): $(echo ${data} | sed 's/\x1b/\\e/g')"
+        log event "${plugin_id}:${event}:${data}"
         
         case "$event" in 
             "update")
                 eval "${plugin_id}_data"='${data}'  
+                plugin_len=$(true_length "${data}")
+                eval "${plugin_id}_len=${plugin_len}"
                 ;;
             "fg")
                 eval "${plugin_id}_fg"='${data}'  

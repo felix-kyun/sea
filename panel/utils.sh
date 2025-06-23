@@ -25,10 +25,10 @@ getname() {
 }
 
 process_plugin() {
-        IFS=':' read name id <<< "${plugin}"
-        data_var="${id}_data"
-        fg_var="${id}_fg"
-        bg_var="${id}_bg"
+        local plugin_id="$1"
+        data_var="${plugin_id}_data"
+        fg_var="${plugin_id}_fg"
+        bg_var="${plugin_id}_bg"
 
         echo "${!bg_var}${!fg_var} ${!data_var} ${RESET}"
 }

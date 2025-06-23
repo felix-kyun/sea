@@ -11,22 +11,34 @@ render() {
     buffer_center=""
 
     # render the left side
+    left_len=0
     for plugin in "${PLUGIN_LEFT[@]}"; do
-        buffer_left+=$(process_plugin)
+        IFS=':' read name id <<< "${plugin}"
+
+        buffer_left+=$(process_plugin "${id}")
+        plugin_len=${id}_len
+        left_len=$(( left_len + ${!plugin_len} + 2))
     done
-    left_len=$(true_length "${buffer_left}")
 
     # render the center side
+    center_len=0
     for plugin in "${PLUGIN_CENTER[@]}"; do
-        buffer_center+=$(process_plugin)
+        IFS=':' read name id <<< "${plugin}"
+
+        buffer_center+=$(process_plugin "${id}")
+        plugin_len=${id}_len
+        center_len=$(( center_len + ${!plugin_len} + 2))
     done
-    center_len=$(true_length "${buffer_center}")
 
     # render the right side
+    right_len=0
     for plugin in "${PLUGIN_RIGHT[@]}"; do
-        buffer_right+=$(process_plugin)
+        IFS=':' read name id <<< "${plugin}"
+
+        buffer_right+=$(process_plugin "${id}")
+        plugin_len=${id}_len
+        right_len=$(( right_len + ${!plugin_len} + 2))
     done
-    right_len=$(true_length "${buffer_right}")
 
     # calculate padding 
     left_padding_len=$(( ((COLS - center_len ) / 2) - left_len ))

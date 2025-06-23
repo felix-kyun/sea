@@ -25,9 +25,10 @@ getname() {
 }
 
 process_plugin() {
-        data_var="${1}_data"
-        fg_var="${1}_fg"
-        bg_var="${1}_bg"
+        local plugin_id="$1"
+        data_var="${plugin_id}_data"
+        fg_var="${plugin_id}_fg"
+        bg_var="${plugin_id}_bg"
 
         echo "${!bg_var}${!fg_var} ${!data_var} ${RESET}"
 }

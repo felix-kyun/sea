@@ -2,7 +2,6 @@
 
 # rendering part
 COLS=$(tput cols)
-declare -A render_data
 
 render() {
     # maintain seperate buffers
@@ -40,7 +39,6 @@ render() {
         plugin_len=${id}_len
         right_len=$(( right_len + ${!plugin_len} + 2))
     done
-    right_len=$(true_length "${buffer_right}")
 
     # calculate padding 
     left_padding_len=$(( ((COLS - center_len ) / 2) - left_len ))

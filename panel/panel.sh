@@ -43,10 +43,11 @@ panel_loop(){
             "bg")
                 eval "${plugin_id}_bg"='${data}'  
                 ;;
-            *)
-                log warning "Unknown event: ${event} for plugin: ${plugin_id}"
-                ;;
         esac
+
+        if [[ ${plugin_id} == "mouse" ]]; then 
+            mouse_handler "${event}" "${data}"
+        fi
 
         render
         exec 200>&- 

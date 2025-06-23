@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 parse_sgr_mouse() {
+    PLUGIN_ID="mouse"
     local seq="$1"
     local btn x y act
 
@@ -10,14 +11,18 @@ parse_sgr_mouse() {
 
       local event_type="unknown"
       case "$btn" in
-        0|1|2) event_type="press" ;;
-        3)     event_type="release" ;;
+        0|1|2|3)  
+            [[ $act == "M" ]] && event_type="press"
+            [[ $act == "m" ]] && event_type="release"
+            ;;
         64)    event_type="scroll-up" ;;
         65)    event_type="scroll-down" ;;
         *)     event_type="unknown" ;;
       esac
 
-    send "panel:${event_type}:${x};${y}"
+      if [[ $event_type != "unknown" ]]; then 
+        send "${event_type}" "${x};${y}"
+      fi
 }
 
 event_reader() {

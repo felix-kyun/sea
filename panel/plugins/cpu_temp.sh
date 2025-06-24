@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+cpu_temp_default=" N/A"
+
 cpu_temp_start() {
     PLUGIN_ID=$1
 

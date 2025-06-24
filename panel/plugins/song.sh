@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 song_limit=40
+song_default="󰎆 No song playing"
 
 song_fetch() {
     stdbuf -oL playerctl \
@@ -23,6 +24,14 @@ song_start() {
     done
 }
 
-song_onclick() {
+song_on_click() {
     playerctl play-pause
+}
+
+song_on_scrollup() {
+    playerctl next
+}
+
+song_on_scrolldown() {
+    playerctl previous
 }

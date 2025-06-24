@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 # rendering part
-COLS=$(tput cols)
 
 render() {
+    COLS=$(tput cols)
+
     # maintain seperate buffers
     buffer_main="\r\033[2K${PANEL_BG}"
     buffer_left=""

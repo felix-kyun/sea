@@ -6,11 +6,12 @@ panel_loop(){
         source "${CURRENT_DIR}/plugins/${name}.sh"
         default_data="${name}_default"
         declare ${id}_data="${!default_data}"
-        declare ${id}_len=0
+        declare ${id}_len=$(true_length "${!default_data}")
+
         
         {
             # wait for the socket to be ready
-            sleep 0.1
+            sleep 0.5
 
             # exec onload if it exists
             declare -f ${name}_onload &> /dev/null \

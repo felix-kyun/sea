@@ -8,7 +8,7 @@ PLUGIN_LEFT=(
 
 PLUGIN_RIGHT=(
     "net_speed"
-    # "brightness"
+    "brightness"
     "battery"
     "cpu"
     "ram"

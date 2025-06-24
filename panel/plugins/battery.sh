@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+battery_default="󰁹 100%"
+
 battery-level() {
         upower -e | grep -m 1 battery | xargs -I {} upower -i {} | awk '/percentage/ { print $2 }' | tr -d '%'
 }

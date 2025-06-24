@@ -14,12 +14,14 @@ brightness_start() {
 }
 
 brightness_on_scrollup() {
+    PLUGIN_ID=$1
     brightnessctl set +5%
     send update "󰃠 $(brightness_get)%"
 
 }
 
 brightness_on_scrolldown() {
+    PLUGIN_ID=$1
     brightnessctl set 5%-
     send update "󰃠 $(brightness_get)%"
 }

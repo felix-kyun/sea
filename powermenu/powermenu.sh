@@ -11,6 +11,13 @@ actions=(
     "󰍃 Logout:loginctl terminate-session ${XDG_SESSION_ID}"
 )
 
+launch_detached() {
+  (
+    setsid bash -c "$1" < /dev/null > /dev/null 2>&1 &
+  ) &
+}
+
+
 selected=$(printf '%s\n' "${actions[@]}" \
     | fzf      \
     --reverse   \
@@ -23,5 +30,6 @@ selected=$(printf '%s\n' "${actions[@]}" \
     --accept-nth 2)
 
 if [[ -n "$selected" ]]; then
-        setsid bash -c "${selected}" < /dev/null > /dev/null 2>&1 &
+    launch_detached "${selected}"
+    sleep 0.1
 fi

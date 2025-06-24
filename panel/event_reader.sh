@@ -26,7 +26,7 @@ parse_sgr_mouse() {
       esac
 
       if [[ $event_type != "unknown" ]]; then 
-        send "${event_type}" "${x};${y}"
+        send_noncached "${event_type}" "${x};${y}"
       fi
 }
 

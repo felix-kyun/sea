@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 cpu_temp_default=" N/A"
+cpu_temp_delay=10
 
 cpu_temp_start() {
     PLUGIN_ID=$1
@@ -11,6 +12,6 @@ cpu_temp_start() {
             cpu_temp="N/A"
         fi
         send update " ${cpu_temp}"
-        sleep 10
+        sleep "${cpu_temp_delay}"
     done
 }

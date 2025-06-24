@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 cpu_default="  0%"
+cpu_delay=4
 
 cpu_start() {
     PLUGIN_ID=$1
@@ -10,7 +11,7 @@ cpu_start() {
         total=$((user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice))
         used=$((total - idle - iowait))
 
-        sleep 2
+        sleep "${cpu_delay}"
 
         read cpu user nice system idle iowait irq softirq steal guest guest_nice< /proc/stat
         # Calculate CPU usage again

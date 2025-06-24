@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 battery_default="󰁹 100%"
+battery_delay=60
 
 battery-level() {
         upower -e | grep -m 1 battery | xargs -I {} upower -i {} | awk '/percentage/ { print $2 }' | tr -d '%'
@@ -32,7 +33,7 @@ battery_start() {
         icon=$(battery_icon $level)
         send update "${icon} ${level}%"
 
-        sleep 60
+        sleep "${battery_delay}"
     done
 }
 

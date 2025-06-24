@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 brightness_default="󰃠 0%"
+brightness_delay=60
+
 brightness_get() {
     brightnessctl -P get | sed 's/[^0-9]//g'
 }
@@ -9,7 +11,7 @@ brightness_start() {
     PLUGIN_ID=$1
     while :; do 
         send update "󰃠 $(brightness_get)%"
-        sleep 60
+        sleep "${brightness_delay}"
     done
 }
 

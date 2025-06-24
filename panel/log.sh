@@ -2,7 +2,7 @@
 
 log () {
     # disable logging when $LOG set to false
-    [[ $LOG == false ]] && return
+    [[ $LOG != true ]] && return
 
     (
         source $(dirname "${BASH_SOURCE[0]}")/config.sh

@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# valid events
+# - click
+# - release
+# - scrollup
+# - scrolldown
 parse_sgr_mouse() {
     PLUGIN_ID="mouse"
     local seq="$1"
@@ -12,11 +17,11 @@ parse_sgr_mouse() {
       local event_type="unknown"
       case "$btn" in
         0|1|2|3)  
-            [[ $act == "M" ]] && event_type="press"
+            [[ $act == "M" ]] && event_type="click"
             [[ $act == "m" ]] && event_type="release"
             ;;
-        64)    event_type="scroll-up" ;;
-        65)    event_type="scroll-down" ;;
+        64)    event_type="scrollup" ;;
+        65)    event_type="scrolldown" ;;
         *)     event_type="unknown" ;;
       esac
 

@@ -6,9 +6,9 @@ handler_plugin_mouse_event() {
 
     log mouse "${event} on ${plugin_id}"
 
-    [[ "${event}" == "press" ]] \
-        && declare -f "${name}_onclick" &> /dev/null \
-        && "${name}_onclick" "${id}"
+    [[ "${event}" != "unknown" ]] \
+        && declare -f "${plugin_id}_on_${event}" &> /dev/null \
+        && "${plugin_id}_on_${event}" "${plugin_id}" &> /dev/null
 }
 
 handler_left() {
@@ -36,7 +36,7 @@ handler_center() {
         plugin_x_end=$(( keep_x + "${id}_len" + 2 ));
 
         if (( x <= plugin_x_end && x >= keep_x )); then
-            handler_plugin_mouse_event "${plugin}" "${event}"
+            handler_plugin_mouse_event "${id}" "${event}"
         fi
 
         keep_x=$plugin_x_end
@@ -52,7 +52,7 @@ handler_right() {
         plugin_x_end=$(( keep_x + "${id}_len" + 2 ));
 
         if (( x <= plugin_x_end && x >= keep_x )); then
-            handler_plugin_mouse_event "${plugin}" "${event}"
+            handler_plugin_mouse_event "${id}" "${event}"
         fi
 
         keep_x=$plugin_x_end

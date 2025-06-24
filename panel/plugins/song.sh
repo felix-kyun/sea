@@ -3,8 +3,7 @@ song_limit=40
 song_default="󰎆 No song playing"
 
 song_fetch() {
-    stdbuf -oL playerctl \
-        -p plasma-browser-integration,firefox,chromium,chrome,instance metadata \
+    stdbuf -oL playerctl metadata \
         -f '{{ artist }} - {{ title }}' -F 
 }
 

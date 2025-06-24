@@ -6,7 +6,15 @@ include() {
 }
 
 send () {
-    echo -e "${PLUGIN_ID}:${1}:${@:2}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+    data_var="${PLUGIN_ID}_${1}"
+
+    if [[ ! "${!data_var}" == ${2} ]]; then
+            echo -e "${PLUGIN_ID}:${1}:${2}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+            eval "${data_var}='${2}'"
+    fi
+}
+send_noncached () {
+    echo -e "${PLUGIN_ID}:${1}:${2}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
 }
 
 getid() {

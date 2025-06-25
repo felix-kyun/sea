@@ -7,14 +7,16 @@ include() {
 
 send () {
     data_var="${PLUGIN_ID}_${1}"
+    escaped_string=$(echo ${2} | sed 's/"/\\"/g; s/\\/\\\\/g')
 
     if [[ ! "${!data_var}" == ${2} ]]; then
             echo -e "${PLUGIN_ID}:${1}:${2}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
-            eval "${data_var}='${2}'"
+            eval "${data_var}=\"${escaped_string}\""
     fi
 }
 send_noncached () {
-    echo -e "${PLUGIN_ID}:${1}:${2}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+    escaped_string=$(echo ${2} | sed 's/"/\\"/g; s/\\/\\\\/g')
+    echo -e "${PLUGIN_ID}:${1}:${escaped_string}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
 }
 
 getid() {

@@ -11,12 +11,7 @@ launch_util() {
         exit 1
     }
 
-    bash "${CURRENT_DIR}/${1}/launch.sh" "${@:3}" &>/dev/null & disown
-}
-
-util_handler() {
-    # launch if no other args are given
-    [[ -z "$2" ]] && launch_util "$1"
+    bash "${CURRENT_DIR}/${1}/launch.sh" "${@:3}" & disown
 }
 
 install() {
@@ -101,15 +96,23 @@ monitor() {
     done
 }
 
+kill_util() {
+    ps aux | awk "/bash.*sea.*${1}.*sh$/ { print \$2 }" | xargs kill
+}
+
+killall_util() {
+    ps aux | awk "/bash.*sea.*sh$/ { print \$2 }" | xargs kill
+}
+
 case "$1" in
     kill)
-        pkill -f "$2" || {
-            echo "Error: Unable to kill sea processes"
+        kill_util $2  &>/dev/null || {
+            echo "Error: Unable to kill $2"
             exit 1
         }
     ;;
     killall)
-        pkill -f "sea" || {
+         killall_util &>/dev/null || {
             echo "Error: Unable to kill all sea processes"
             exit 1
         }
@@ -134,11 +137,7 @@ case "$1" in
         }
         launch_util "$2" "${@:3}"
     ;;
-    help|--help|-h)
+    help|--help|-h|*)
         show_help
-    ;;
-    *)
-        [[ -z "$1" ]] && show_help
-        util_handler ${@}
     ;;
 esac

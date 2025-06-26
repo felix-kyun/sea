@@ -11,7 +11,7 @@ launch_util() {
         exit 1
     }
 
-    bash "${CURRENT_DIR}/${1}/launch.sh" "${@:3}" & disown
+    bash "${CURRENT_DIR}/${1}/launch.sh" "${@:3}" &>/dev/null & disown
 }
 
 util_handler() {
@@ -55,10 +55,13 @@ install() {
 show_help() {
     echo "Usage: sea [command] [args]"
     echo "Commands:"
+    echo "  launch <utility_name> [args] - Launch a specific sea utility"
+    echo "  monitor <process_name> [interval] - Monitor CPU and memory usage of a process"
     echo "  kill <process_name>   - Kill a specific sea process"
     echo "  killall               - Kill all sea processes"
     echo "  install               - Install the sea utility"
-    echo "  <util_name> [args]   - Launch a specific sea utility"
+    echo "  remove                - Remove the sea utility"
+    echo "  help, --help, -h      - Show this help message"
     exit 0
 }
 
@@ -75,6 +78,27 @@ remove() {
         echo "Error: $target_path does not exist."
         exit 1
     fi
+}
+
+monitor() {
+    local process_name="$1"
+    local interval="${2:-5}"
+    local process_pid=$(ps aux | awk " /sea.*${process_name}.*launch\.sh$/ { print \$2 }")
+
+    [[ -z "$process_pid" ]] && {
+        echo "Error: Process $process_name not found"
+        exit 1
+    }
+
+    echo "Process: $process_name (PID: $process_pid)"
+    while true; do
+        pids=$(pstree -p $process_pid | grep -oP '\(\K[0-9]+')
+        cpu_usage=$(ps --no-headers -o %cpu -p $(echo $pids | tr ' ' ',') | awk '{s+=$1} END {print s}')
+        mem_usage=$(ps --no-headers -o %mem -p $(echo $pids | tr ' ' ',') | awk '{s+=$1} END {print s}')
+        echo -ne "\rCPU Usage: $cpu_usage% | Memory Usage: $mem_usage%    "
+
+        sleep "$interval"
+    done
 }
 
 case "$1" in
@@ -95,6 +119,20 @@ case "$1" in
     ;;
     remove)
         remove
+    ;;
+    monitor)
+        [[ -z "$2" ]] && {
+            echo "Error: Process name is required for monitoring"
+            exit 1
+        }
+        monitor "$2" "$3"
+    ;;
+        launch)
+        [[ -z "$2" ]] && {
+            echo "Error: Utility name is required to launch"
+            exit 1
+        }
+        launch_util "$2" "${@:3}"
     ;;
     help|--help|-h)
         show_help

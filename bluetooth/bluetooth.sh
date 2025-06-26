@@ -71,25 +71,25 @@ trusted() {
 
 toggle_connected() {
     if connected "$1"; then
-        bluetoothctl disconnect "$1"
+        bluetoothctl disconnect "$1" &>/dev/null
     else
-        bluetoothctl connect "$1"
+        bluetoothctl connect "$1" &>/dev/null
     fi
 }
 
 toggle_paired() {
     if paired "$1"; then
-        bluetoothctl remove "$1"
+        bluetoothctl remove "$1" &>/dev/null
     else
-        bluetoothctl pair "$1"
+        bluetoothctl pair "$1" &>/dev/null
     fi
 }
 
 toggle_trusted() {
     if trusted "$1"; then
-        bluetoothctl untrust "$1"
+        bluetoothctl untrust "$1" &>/dev/null
     else
-        bluetoothctl trust "$1"
+        bluetoothctl trust "$1" &>/dev/null
     fi
 }
 
@@ -119,9 +119,10 @@ device_list() {
 device_menu() {
     IFS='|' read -r device name <<< "$1"
     local actions=(
-        "Connected: $(state connected "$device")|toggle_connected"
-        "Paired: $(state paired "$device")|toggle_paired"
-        "Trusted: $(state trusted "$device")|toggle_trusted"
+        "Connected: $(ternery yes no connected "$device")|toggle_connected"
+        "Paired: $(ternery yes no paired "$device")|toggle_paired"
+        "Trusted: $(ternery yes no trusted "$device")|toggle_trusted"
+        "Back to main menu|back"
     )
 
     local selected=$(printf '%s\n' "${actions[@]}" \
@@ -133,13 +134,18 @@ device_menu() {
             --no-scrollbar \
             --delimiter '|' \
             --layout reverse \
-            --with-nth '{1}')
+            --with-nth '{1}' \
+            --accept-nth 2)
 
     if [[ -n "$selected" ]]; then
         case "$selected" in
-            toggle_connected*) toggle_connected "$device" ;;
-            toggle_paired*) toggle_paired "$device" ;;
-            toggle_trusted*) toggle_trusted "$device" ;;
+            toggle_connected) toggle_connected "$device" ;;
+            toggle_paired) toggle_paired "$device" ;;
+            toggle_trusted) toggle_trusted "$device" ;;
+            back) 
+                main_menu
+                return
+            ;;
         esac
         sleep "$MENU_INTERVAL"
         device_menu "$1"
@@ -183,11 +189,11 @@ main_menu() {
 
 # utils
 ternery() {
-    $1 && echo $2 || echo $3
+    ${@:3} && echo $1 || echo $2
 }
 
 state() {
-    ternery "$1" on off
+    ternery on off "$1" 
 }
 
 trap cleanup EXIT SIGINT SIGTERM

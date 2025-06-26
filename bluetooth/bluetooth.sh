@@ -5,6 +5,9 @@ SCAN_TIMEOUT=10
 # time in seconds to wait between menu transitions
 MENU_INTERVAL=0.5
 
+CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
+source "$CURRENT_DIR/../utils/fzf_theme_override.sh"
+
 # controller function
 power() {
     bluetoothctl show | grep -q "Powered: yes"
@@ -128,6 +131,7 @@ device_menu() {
     local selected=$(printf '%s\n' "${actions[@]}" \
         | fzf \
             --header "Device: $name" \
+            --no-info \
             --reverse \
             --no-multi \
             --border none \
@@ -165,6 +169,7 @@ main_menu() {
     local selected=$(printf '%s\n' "${actions[@]}" \
         | fzf \
             --reverse \
+            --no-info \
             --no-multi \
             --border none \
             --no-scrollbar \

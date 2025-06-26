@@ -19,7 +19,8 @@ launch_detached() {
 
 
 selected=$(printf '%s\n' "${actions[@]}" \
-    | fzf      \
+    | fzf     \
+    --no-info  \
     --reverse   \
     --no-multi   \
     --border none \

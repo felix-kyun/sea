@@ -12,13 +12,13 @@ Simple, fast and heavily opinionated.
 - cli
 - emoji picker
 - powermenu
+- bluetooth menu
 
 ## ToDo
 
 - [ ] systray
 - [ ] notification manager
 - [ ] screen recorder frontend
-- [ ] bluetooth menu
 - [ ] wifi menu
 - [ ] osd (is it even possible) ??
 - [ ] dotfile manager

@@ -146,7 +146,10 @@ device_menu() {
             --with-nth '{1}' \
             --accept-nth 2)
 
-    if [[ -n "$selected" ]]; then
+    if [[ -z "$selected" ]]; then
+        device_list
+        return
+    elif [[ -n "$selected" ]]; then
         case "$selected" in
             toggle_connected) toggle_connected "$device" ;;
             toggle_paired) toggle_paired "$device" ;;
@@ -194,6 +197,8 @@ main_menu() {
                 main_menu
                 ;;
         esac
+    elif [[ -z "$selected" ]]; then
+        exit 0
     fi
 }
 

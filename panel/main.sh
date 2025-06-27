@@ -51,7 +51,7 @@ done
 [[ -e "${LOCK_FILE}" ]] && rm -f "${LOCK_FILE}"
 [[ -e "${SOCKET}" ]] && rm -f "${SOCKET}"
 
-panel_loop &
+panel_loop & 2>/tmp/sea-panel-errors.log
 echo "$!" > "${PID_FILE}"
 
 event_reader

@@ -12,8 +12,8 @@ PLUGIN_CENTER=(
     )
 
 PLUGIN_RIGHT=(
-    "bluetooth"
     "net_speed"
+    "bluetooth"
     "brightness"
     "battery"
     "cpu"

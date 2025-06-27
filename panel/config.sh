@@ -6,7 +6,13 @@ PLUGIN_LEFT=(
     "song"
     )
 
+PLUGIN_CENTER=(
+    "time"
+    "date"
+    )
+
 PLUGIN_RIGHT=(
+    "bluetooth"
     "net_speed"
     "brightness"
     "battery"
@@ -15,17 +21,13 @@ PLUGIN_RIGHT=(
     "cpu_temp"
     )
 
-PLUGIN_CENTER=(
-    "time"
-    "date"
-    )
-
 LOG_FILE="/tmp/sea-panel.log"
 LOCK_FILE="/tmp/sea-panel.lock"
 SOCKET="/tmp/sea-panel.sock"
 PID_FILE="/tmp/sea-panel.pid"
 
 # plugin_colors
+bluetooth_fg="${MAGENTA}"
 battery_fg="${YELLOW}"
 brightness_fg="${GREEN}"
 cpu_fg="${CYAN}"

@@ -101,13 +101,13 @@ toggle_trusted() {
 device_list() {
     local selection=$(bluetoothctl devices \
         | awk '{
-            printf "%s|", $2;
+            printf "%s|󰂯 ", $2;
             for (i=3; i<=NF; i++) {
                 printf "%s ", $i;
             }
             printf "\n";
         }
-        END { print "back|Back"; }' \
+        END { print "back|󰁭 Back"; }' \
         | fzf \
             --delimiter '|' \
             --reverse \
@@ -127,10 +127,10 @@ device_list() {
 device_menu() {
     IFS='|' read -r device name <<< "$1"
     local actions=(
-        "Connected: $(ternery yes no connected "$device")|toggle_connected"
-        "Paired: $(ternery yes no paired "$device")|toggle_paired"
-        "Trusted: $(ternery yes no trusted "$device")|toggle_trusted"
-        "Back|back"
+        " Connected: $(ternery yes no connected "$device")|toggle_connected"
+        "󱈘 Paired: $(ternery yes no paired "$device")|toggle_paired"
+        " Trusted: $(ternery yes no trusted "$device")|toggle_trusted"
+        "󰁭 Back|back"
     )
 
     local selected=$(printf '%s\n' "${actions[@]}" \
@@ -167,11 +167,11 @@ device_menu() {
 
 main_menu() {
     local actions=(
-        "Devices|devices"
-        "Power: $(state power)|toggle_power"
-        "Scan: $(state scan)|toggle_scan"
-        "Pairable: $(state pairable)|toggle_pairable"
-        "Discoverable: $(state discoverable)|toggle_discoverable"
+        "󰾰 Devices|devices"
+        "⏻ Power: $(state power)|toggle_power"
+        "󰍉 Scan: $(state scan)|toggle_scan"
+        "󰿨 Pairable: $(state pairable)|toggle_pairable"
+        " Discoverable: $(state discoverable)|toggle_discoverable"
     )
 
     local selected=$(printf '%s\n' "${actions[@]}" \

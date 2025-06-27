@@ -98,14 +98,15 @@ toggle_trusted() {
 
 # menu
 device_list() {
-    local device=$(bluetoothctl devices \
+    local selection=$(bluetoothctl devices \
         | awk '{
             printf "%s|", $2;
             for (i=3; i<=NF; i++) {
                 printf "%s ", $i;
             }
             printf "\n";
-        }' \
+        }
+        END { print "back|Back"; }' \
         | fzf \
             --delimiter '|' \
             --reverse \
@@ -114,8 +115,11 @@ device_list() {
             --no-multi \
             --with-nth '{2}')
 
-    if [[ -n "$device" ]]; then
-        device_menu "$device"
+    if [[ -z "$selection" || "$selection" == "back" ]]; then
+        main_menu
+        return
+    elif [[ -n "$selection" ]]; then
+        device_menu "$selection"
     fi
 }
 
@@ -125,12 +129,12 @@ device_menu() {
         "Connected: $(ternery yes no connected "$device")|toggle_connected"
         "Paired: $(ternery yes no paired "$device")|toggle_paired"
         "Trusted: $(ternery yes no trusted "$device")|toggle_trusted"
-        "Back to main menu|back"
+        "Back|back"
     )
 
     local selected=$(printf '%s\n' "${actions[@]}" \
         | fzf \
-            --header "Device: $name" \
+            --header "$name" \
             --no-info \
             --reverse \
             --no-multi \
@@ -147,7 +151,7 @@ device_menu() {
             toggle_paired) toggle_paired "$device" ;;
             toggle_trusted) toggle_trusted "$device" ;;
             back) 
-                main_menu
+                device_list
                 return
             ;;
         esac
@@ -159,11 +163,11 @@ device_menu() {
 
 main_menu() {
     local actions=(
+        "Devices|devices"
         "Power: $(state power)|toggle_power"
         "Scan: $(state scan)|toggle_scan"
         "Pairable: $(state pairable)|toggle_pairable"
         "Discoverable: $(state discoverable)|toggle_discoverable"
-        "Devices|devices"
     )
 
     local selected=$(printf '%s\n' "${actions[@]}" \

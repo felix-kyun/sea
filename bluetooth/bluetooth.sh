@@ -35,8 +35,9 @@ toggle_power() {
 
 toggle_scan() {
     if scan; then
-        bluetoothctl scan off
+        kill_scan
     else
+        kill_scan
         bluetoothctl --timeout "$SCAN_TIMEOUT" scan on &>/dev/null & disown
         scan_pid=$!
     fi
@@ -210,5 +211,18 @@ trap cleanup EXIT SIGINT SIGTERM
 cleanup() {
     if [[ -n "${scan_pid}" ]]; then
         kill "$scan_pid" &>/dev/null
+    fi
+}
+
+alive() {
+    if [[ -n "$1" ]]; then
+        kill -0 "$1" &>/dev/null
+    fi
+}
+
+kill_scan() {
+    if alive "$scan_pid"; then
+        kill "$scan_pid" &>/dev/null
+        scan_pid=""
     fi
 }

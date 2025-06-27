@@ -116,7 +116,7 @@ device_list() {
             --no-multi \
             --with-nth '{2}')
 
-    if [[ -z "$selection" || "$selection" == "back" ]]; then
+    if [[ -z "$selection" || "${selection%|*}" == "back" ]]; then
         main_menu
         return
     elif [[ -n "$selection" ]]; then

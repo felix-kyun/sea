@@ -4,16 +4,14 @@ song_default="󰎆 No song playing"
 song_format="{{ title }}"
 song_filters=(
     "\( -\)\? YouTube Music$"
-    )
+)
 
 song_fetch() {
     stdbuf -oL playerctl metadata -f "$song_format" -F
 }
 
 song_start() {
-    PLUGIN_ID=$1
-
-    song_fetch | while read song; do 
+    song_fetch | while read song; do
         if [[ -z "$song" ]]; then
             send update "${song_default}"
         else
@@ -33,7 +31,6 @@ song_start() {
             send update "󰎆 ${song}"
         fi
     done
-
 }
 
 song_on_click() {

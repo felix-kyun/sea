@@ -4,9 +4,7 @@ date_default="󰃰 00/00/00"
 date_delay=60
 
 date_start() {
-    PLUGIN_ID=$1
-
-    while :; do 
+    while :; do
         current_date=$(date +"%a %b %d %Y")
         send update "󰃰 ${current_date}"
         sleep "${date_delay}"

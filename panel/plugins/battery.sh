@@ -4,19 +4,19 @@ battery_default="󰁹 100%"
 battery_delay=60
 
 battery-level() {
-        upower -e | grep -m 1 battery | xargs -I {} upower -i {} | awk '/percentage/ { print $2 }' | tr -d '%'
+    upower -e | grep -m 1 battery | xargs -I {} upower -i {} | awk '/percentage/ { print $2 }' | tr -d '%'
 }
 
 battery_icon() {
     local level=$1
     if [ "$level" -ge 80 ]; then
-        echo "󰁹"  
+        echo "󰁹"
     elif [ "$level" -ge 50 ]; then
-        echo "󰂃"  
+        echo "󰂃"
     elif [ "$level" -ge 20 ]; then
-        echo "󰂄"  
+        echo "󰂄"
     else
-        echo "󰁺"  
+        echo "󰁺"
     fi
 }
 
@@ -26,9 +26,7 @@ battery_onload() {
 }
 
 battery_start() {
-    log info "battery args $@"
-    PLUGIN_ID=$1
-    while :; do 
+    while :; do
         level=$(battery-level)
         icon=$(battery_icon $level)
         send update "${icon} ${level}%"
@@ -41,4 +39,3 @@ battery_unload() {
     log info "Battery plugin unloaded"
     rm -f /tmp/battery.state
 }
-

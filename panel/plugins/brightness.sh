@@ -8,22 +8,19 @@ brightness_get() {
 }
 
 brightness_start() {
-    PLUGIN_ID=$1
-    while :; do 
+    while :; do
         send update "󰃠 $(brightness_get)%"
         sleep "${brightness_delay}"
     done
 }
 
 brightness_on_scrollup() {
-    PLUGIN_ID=$1
     brightnessctl set +5%
     send update "󰃠 $(brightness_get)%"
 
 }
 
 brightness_on_scrolldown() {
-    PLUGIN_ID=$1
     brightnessctl set 5%-
     send update "󰃠 $(brightness_get)%"
 }

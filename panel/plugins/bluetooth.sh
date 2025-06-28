@@ -5,24 +5,22 @@ bluetooth_len=0
 bluetooth_pipe="/tmp/bluetooth.pipe"
 
 bluetooth_onload() {
-    PLUGIN_ID=$1
     local initial_device=$(bluetooth_get_first_connected_device)
     send update "$initial_device"
 }
 
 bluetooth_start() {
-    PLUGIN_ID=$1
     local current_dir=$(dirname "${BASH_SOURCE[0]}")
 
     # create named pipe for bluetoothctl output
     # keep it open or else bluetoothctl will exit
-    [[ -p "$bluetooth_pipe" ]] || mkfifo /tmp/bluetooth.pipe 
-    exec 99<> "$bluetooth_pipe"
+    [[ -p "$bluetooth_pipe" ]] || mkfifo /tmp/bluetooth.pipe
+    exec 99<>"$bluetooth_pipe"
 
-    bluetoothctl --monitor < "$bluetooth_pipe" \
-        | stdbuf -oL awk -f "${current_dir}/utils/bluetooth.awk" \
-        | while read -r data; do
-            IFS='|' read -r status name <<< "${data}"
+    bluetoothctl --monitor <"$bluetooth_pipe" |
+        stdbuf -oL awk -f "${current_dir}/utils/bluetooth.awk" |
+        while read -r data; do
+            IFS='|' read -r status name <<<"${data}"
             if [[ "$status" == "connected" ]]; then
                 send update "󰂯 $(bluetooth_get_device_name "$name")"
             else
@@ -30,7 +28,7 @@ bluetooth_start() {
                 send update "$top_device"
             fi
         done
-    
+
     exec 99<&-
 }
 

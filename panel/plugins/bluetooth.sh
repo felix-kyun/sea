@@ -6,7 +6,12 @@ bluetooth_len=0
 bluetooth_onload() {
     PLUGIN_ID=$1
     local initial_device=$(bluetoothctl devices Connected | awk 'NR==1 { for(i=3; i<=NF; i++) printf "%s ", $i; print "\b" }')
-    send update "󰂯 $initial_device"
+    if [[ -n "$initial_device" ]]; then
+        local device_name=$(bluetooth_get_device_name "$initial_device")
+        send update "󰂯 $device_name"
+    else
+        send update "$bluetooth_default"
+    fi
 }
 
 bluetooth_start() {
@@ -18,7 +23,7 @@ bluetooth_start() {
         if [[ "$status" == "connected" ]]; then
             send update "󰂯 $(bluetooth_get_device_name "$name")"
         else
-            send update "󰂯 Disconnected"
+            send update "$bluetooth_default"
         fi
     done
 

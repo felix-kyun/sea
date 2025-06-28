@@ -6,28 +6,28 @@
 # - scrollup
 # - scrolldown
 parse_sgr_mouse() {
-    PLUGIN_ID="mouse"
+    id="mouse"
     local seq="$1"
     local btn x y act
 
-      IFS=';' read -r btn x rest <<< "$seq"
-      y="${rest%[mM]*}"      # Remove trailing M or m for y
-      act="${rest: -1}"      # Last character is M (press/scroll) or m (release)
+    IFS=';' read -r btn x rest <<<"$seq"
+    y="${rest%[mM]*}" # Remove trailing M or m for y
+    act="${rest: -1}" # Last character is M (press/scroll) or m (release)
 
-      local event_type="unknown"
-      case "$btn" in
-        0|1|2|3)  
-            [[ $act == "M" ]] && event_type="click"
-            [[ $act == "m" ]] && event_type="release"
-            ;;
-        64)    event_type="scrollup" ;;
-        65)    event_type="scrolldown" ;;
-        *)     event_type="unknown" ;;
-      esac
+    local event_type="unknown"
+    case "$btn" in
+    0 | 1 | 2 | 3)
+        [[ $act == "M" ]] && event_type="click"
+        [[ $act == "m" ]] && event_type="release"
+        ;;
+    64) event_type="scrollup" ;;
+    65) event_type="scrolldown" ;;
+    *) event_type="unknown" ;;
+    esac
 
-      if [[ $event_type != "unknown" ]]; then 
+    if [[ $event_type != "unknown" ]]; then
         send_noncached "${event_type}" "${x};${y}"
-      fi
+    fi
 }
 
 event_reader() {

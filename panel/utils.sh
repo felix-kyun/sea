@@ -6,31 +6,32 @@ include() {
 
 send() {
     data_var="${id}_${1}"
-    escaped_string=$(echo ${2} | sed 's/"/\\"/g; s/\\/\\\\/g')
+    escaped_string=$(echo "$2" | sed 's/"/\\"/g; s/\\/\\\\/g')
 
-    if [[ ! "${!data_var}" == ${2} ]]; then
+    if [[ ! "${!data_var}" == "$2" ]]; then
         echo -e "${id}:${1}:${2}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
         eval "${data_var}=\"${escaped_string}\""
     fi
 }
+
 send_noncached() {
-    escaped_string=$(echo ${2} | sed 's/"/\\"/g; s/\\/\\\\/g')
+    escaped_string=$(echo "$2" | sed 's/"/\\"/g; s/\\/\\\\/g')
     echo -e "${id}:${1}:${escaped_string}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
 }
 
 getid() {
-    IFS=':' read name id <<<"$1"
+    IFS=':' read -r name id <<<"$1"
 
     if [[ -z "${id}" ]]; then
-        echo ${name}
+        echo "${name}"
     else
-        echo ${id}
+        echo "${id}"
     fi
 }
 
 getname() {
-    IFS=':' read name id <<<"$1"
-    echo ${name}
+    IFS=':' read -r name id <<<"$1"
+    echo "${name}"
 }
 
 process_plugin() {
@@ -62,6 +63,6 @@ transform() {
     for i in "${!arr[@]}"; do
         id=$(getid "${arr[$i]}")
         name=$(getname "${arr[$i]}")
-        arr[$i]="${name}:${id}"
+        arr[i]="${name}:${id}"
     done
 }

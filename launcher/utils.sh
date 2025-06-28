@@ -13,7 +13,7 @@ get_entries() {
 
         # for flatpak apps
         ~/.local/share/flatpak/exports/share/applications/
-        )
+    )
 
     # get all the desktop files locations
     local entries=()
@@ -22,9 +22,9 @@ get_entries() {
         while IFS= read -r file; do
             entries+=("${file}")
         done < <(find $folder -type f -o -type l -name "*.desktop")
-    done 
+    done
 
-    printf "%s\n" "${entries[@]}" 
+    printf "%s\n" "${entries[@]}"
 }
 
 process_entries() {
@@ -44,15 +44,15 @@ process_entries() {
 
             echo "$name|$exec"
         ) &
-    done 
+    done
 }
 
-# double fork 
+# double fork
 # setsid(on its own), disown, and nohup didnt work
 launch_detached() {
-  (
-    setsid bash -c "$1" < /dev/null > /dev/null 2>&1 &
-  ) &
+    (
+        setsid bash -c "$1" </dev/null >/dev/null 2>&1 &
+    ) &
 }
 
 show_launcher() {
@@ -66,7 +66,7 @@ show_launcher() {
         --border none \
         --delimiter '|' \
         --with-nth '{1}' \
-        --accept-nth 2) 
+        --accept-nth 2)
 
     local exec_command=$(echo "$selected" | sed 's/%[fFuU]//g')
     launch_detached "$exec_command"

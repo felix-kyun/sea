@@ -3,12 +3,12 @@
 cleanup() {
     log info "Unloading plugins..."
     for plugin in "${PLUGINS[@]}"; do
-        IFS=':' read name id <<< "${plugin}"
+        IFS=':' read -r name id <<<"${plugin}"
 
         # check if the plugin has a unload function
-        if declare -f ${name}_unload &> /dev/null; then
+        if declare -f "${name}_unload" &>/dev/null; then
             log debug "Unloading plugin: ${name}:${id}"
-            ${name}_unload "${id}" 
+            "${name}_unload" "${id}"
         fi
     done
 
@@ -18,7 +18,7 @@ cleanup() {
             log debug "Killing process with PID: $pid"
             kill "$pid" 2>/dev/null || true
         fi
-    done < "${PID_FILE}"
+    done <"${PID_FILE}"
 
     log info "Sea Panel stopped."
     echo -ne "${SHOW_CURSOR}"
@@ -29,4 +29,3 @@ cleanup() {
 
     exit 0
 }
-

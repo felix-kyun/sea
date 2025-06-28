@@ -3,6 +3,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../utils/formatting.sh"
 
 PLUGIN_LEFT=(
+    "bluetooth"
     "song"
     )
 
@@ -13,7 +14,6 @@ PLUGIN_CENTER=(
 
 PLUGIN_RIGHT=(
     "net_speed"
-    "bluetooth"
     "brightness"
     "battery"
     "cpu"

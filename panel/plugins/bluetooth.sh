@@ -6,12 +6,8 @@ bluetooth_pipe="/tmp/bluetooth.pipe"
 
 bluetooth_onload() {
     PLUGIN_ID=$1
-    local initial_device=$(bluetoothctl devices Connected | awk 'NR==1 { for(i=3; i<=NF; i++) printf "%s ", $i; print "\b" }')
-    if [[ -n "$initial_device" ]]; then
-        send update "󰂯 $initial_device"
-    else
-        send update "$bluetooth_default"
-    fi
+    local initial_device=$(bluetooth_get_first_connected_device)
+    send update "$initial_device"
 }
 
 bluetooth_start() {
@@ -30,7 +26,8 @@ bluetooth_start() {
             if [[ "$status" == "connected" ]]; then
                 send update "󰂯 $(bluetooth_get_device_name "$name")"
             else
-                send update "$bluetooth_default"
+                local top_device=$(bluetooth_get_first_connected_device)
+                send update "$top_device"
             fi
         done
     
@@ -39,4 +36,13 @@ bluetooth_start() {
 
 bluetooth_get_device_name() {
     echo "$(bluetoothctl info $1 | awk '/^.*Name:/ { for(i=2; i<=NF; i++) printf "%s ", $i; print "" }')"
+}
+
+bluetooth_get_first_connected_device() {
+    local device=$(bluetoothctl devices Connected | awk 'NR==1 { for(i=3; i<=NF; i++) printf "%s ", $i; print "\b" }')
+    if [[ -n "$device" ]]; then
+        echo "󰂯 ${device}"
+    else
+        echo "${bluetooth_default}"
+    fi
 }

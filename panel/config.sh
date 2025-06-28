@@ -26,7 +26,7 @@ LOCK_FILE="/tmp/sea-panel.lock"
 SOCKET="/tmp/sea-panel.sock"
 PID_FILE="/tmp/sea-panel.pid"
 
-# plugin_colors
+# plugin settings
 bluetooth_fg="${MAGENTA}"
 battery_fg="${YELLOW}"
 brightness_fg="${GREEN}"
@@ -37,3 +37,4 @@ time_fg="${CYAN}"
 date_fg="${YELLOW}"
 net_speed_fg="${BLUE}"
 cpu_temp_fg="${RED}"
+

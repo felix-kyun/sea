@@ -25,7 +25,7 @@ show_notification() {
 
     rendered_notification="$notification"
 
-    for ((i = 0; i < main_len; i += 2)); do
+    for ((i = 1; i <= main_len; i += 2)); do
         local show_buffer="${main_buffer::$i}"
         local padding_len=$(((COLS - i - 5) / 2))
         padding=$(pad "${padding_len}")

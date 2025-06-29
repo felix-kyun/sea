@@ -11,7 +11,8 @@ launch_util() {
         exit 1
     }
 
-    bash "${CURRENT_DIR}/${1}/launch.sh" "${@:3}" & disown
+    bash "${CURRENT_DIR}/${1}/launch.sh" "${@:3}" &
+    disown
 }
 
 launch_util_if_exists() {
@@ -21,6 +22,17 @@ launch_util_if_exists() {
         show_help
         exit 1
     }
+}
+
+run() {
+    [[ ! -f "${CURRENT_DIR}/${1}.sh" ]] && {
+        echo "Error: Script ${CURRENT_DIR}/${1}.sh does not exist"
+        exit 1
+    }
+
+    bash "${CURRENT_DIR}/${1}.sh" "${@:2}" &
+    disown
+
 }
 
 install() {
@@ -114,42 +126,49 @@ killall_util() {
 }
 
 case "$1" in
-    kill)
-        kill_util $2  &>/dev/null || {
-            echo "Error: Unable to kill $2"
-            exit 1
-        }
+kill)
+    kill_util $2 &>/dev/null || {
+        echo "Error: Unable to kill $2"
+        exit 1
+    }
     ;;
-    killall)
-         killall_util &>/dev/null || {
-            echo "Error: Unable to kill all sea processes"
-            exit 1
-        }
+killall)
+    killall_util &>/dev/null || {
+        echo "Error: Unable to kill all sea processes"
+        exit 1
+    }
     ;;
-    install)
-        install "$0"
+install)
+    install "$0"
     ;;
-    remove)
-        remove
+remove)
+    remove
     ;;
-    monitor)
-        [[ -z "$2" ]] && {
-            echo "Error: Process name is required for monitoring"
-            exit 1
-        }
-        monitor "$2" "$3"
+monitor)
+    [[ -z "$2" ]] && {
+        echo "Error: Process name is required for monitoring"
+        exit 1
+    }
+    monitor "$2" "$3"
     ;;
-        launch)
-        [[ -z "$2" ]] && {
-            echo "Error: Utility name is required to launch"
-            exit 1
-        }
-        launch_util "$2" "${@:3}"
+launch)
+    [[ -z "$2" ]] && {
+        echo "Error: Utility name is required to launch"
+        exit 1
+    }
+    launch_util "$2" "${@:3}"
     ;;
-    help|--help|-h)
-        show_help
+run)
+    [[ -z "$2" ]] && {
+        echo "Error: Script name is required to execute"
+        exit 1
+    }
+    run "$2" "${@:3}"
     ;;
-    *)
+help | --help | -h)
+    show_help
+    ;;
+*)
     launch_util_if_exists "$1" "${@:2}"
     ;;
 esac

@@ -11,6 +11,18 @@ render() {
     buffer_right=""
     buffer_center=""
 
+    # if notification is set, only render that and exit
+    if [[ -n "${notification}" ]]; then
+        buffer_main+="${notify_fg} 󰎟 ${notification}"
+
+        for ((i = 0; i < COLS - ${#notification} - 3; i++)); do # -3 for 󰎟 and spaces
+            buffer_main+=" "
+        done
+
+        echo -ne "${buffer_main}"
+        return
+    fi
+
     # render the left side
     left_len=0
     for plugin in "${PLUGIN_LEFT[@]}"; do

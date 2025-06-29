@@ -5,29 +5,17 @@
 render() {
     COLS=$(tput cols)
 
+    # if notification is set, only render that and exit
+    if [[ -n "${notification}" ]]; then
+        show_notification "${notification}"
+        return
+    fi
+
     # maintain seperate buffers
     buffer_main="\r\033[2K${PANEL_BG}"
     buffer_left=""
     buffer_right=""
     buffer_center=""
-
-    # if notification is set, only render that and exit
-    if [[ -n "${notification}" ]]; then
-        padding_len=$((COLS - ${#notification} - 3)) # -3 for 󰎟 and spaces
-
-        for ((i = 0; i < (padding_len / 2); i++)); do
-            buffer_main+=" "
-        done
-
-        buffer_main+="${notify_fg} 󰎟 ${notification}"
-
-        for ((i = 0; i < (padding_len / 2); i++)); do
-            buffer_main+=" "
-        done
-
-        echo -ne "${buffer_main}"
-        return
-    fi
 
     # render the left side
     left_len=0

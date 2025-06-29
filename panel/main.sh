@@ -11,6 +11,7 @@ include log.sh
 include event_reader.sh
 include panel.sh
 include mouse_handler.sh
+include notification.sh
 
 reset
 

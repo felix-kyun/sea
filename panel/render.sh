@@ -13,9 +13,15 @@ render() {
 
     # if notification is set, only render that and exit
     if [[ -n "${notification}" ]]; then
+        padding_len=$((COLS - ${#notification} - 3)) # -3 for 󰎟 and spaces
+
+        for ((i = 0; i < (padding_len / 2); i++)); do
+            buffer_main+=" "
+        done
+
         buffer_main+="${notify_fg} 󰎟 ${notification}"
 
-        for ((i = 0; i < COLS - ${#notification} - 3; i++)); do # -3 for 󰎟 and spaces
+        for ((i = 0; i < (padding_len / 2); i++)); do
             buffer_main+=" "
         done
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 net_speed_default=" 0KiB/s  0KiB/s"
-net_speed_delay=5
+net_speed_delay="${net_speed_delay:-5}"
 
 net_speed_start() {
     while :; do

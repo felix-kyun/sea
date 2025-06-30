@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-song_limit=60
+song_limit=${song_limit:-50}
 song_default="󰎆 No song playing"
-song_format="{{ title }}"
-song_modifiers=(
-    "( - )?YouTube Music$/"
-)
+song_format="${song_format:-'{{ title }}'}"
 
 song_fetch() {
     stdbuf -oL playerctl metadata -f "$song_format" -F

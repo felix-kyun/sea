@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 cpu_temp_default=" N/A"
-cpu_temp_delay=10
+cpu_temp_delay="${cpu_temp_delay:-10}"
 
 cpu_temp_start() {
     while :; do

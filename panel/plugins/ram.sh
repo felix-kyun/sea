@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ram_default="  0%"
-ram_delay=5
+ram_delay=${ram_delay:-5}
 
 ram_start() {
     while :; do

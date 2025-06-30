@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
+bluetooth_pipe=${bluetooth_pipe:-"/tmp/bluetooth.pipe"}
 bluetooth_default="󰂯 Disconnected"
-bluetooth_len=0
-bluetooth_pipe="/tmp/bluetooth.pipe"
 
 bluetooth_onload() {
     local initial_device=$(bluetooth_get_first_connected_device)

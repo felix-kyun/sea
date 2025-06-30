@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # default value before the plugin send update
-example_default="example" 
+example_default="example"
 
 # runs once when the plugin is loaded
 example_onload() {
@@ -11,15 +11,13 @@ example_onload() {
 # runs when the plugin is started
 # this function must be defined
 example_start() {
-    # important: this line *must* be defined before calling send
-    PLUGIN_ID=$1 
 
     # example controls
     send bg "${BLUE_BG}"
     send fg "${WHITE}"
     send update "󰒡 Example Plugin"
 
-    while :; do 
+    while :; do
         # Simulate some work
         sleep 2
         send update "Example Plugin is running"

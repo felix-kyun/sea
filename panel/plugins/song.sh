@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-song_limit=40
+song_limit=60
 song_default="󰎆 No song playing"
 song_format="{{ title }}"
-song_filters=(
-    "\( -\)\? YouTube Music$"
+song_modifiers=(
+    "( - )?YouTube Music$/"
 )
 
 song_fetch() {
@@ -11,16 +11,16 @@ song_fetch() {
 }
 
 song_start() {
-    song_fetch | while read song; do
+    song_fetch | while read -r song; do
         if [[ -z "$song" ]]; then
             send update "${song_default}"
         else
             song=$(echo "${song}" | tr -cd '\0-\177')
 
             # filter out unwanted stuff
-            if [[ ${#song_filters[@]} -gt 0 ]]; then
-                for filter in "${song_filters[@]}"; do
-                    song=$(echo "$song" | sed "s/${filter}//g")
+            if [[ ${#song_modifiers[@]} -gt 0 ]]; then
+                for modifier in "${song_modifiers[@]}"; do
+                    song=$(echo "$song" | sed -E "s/${modifier}/g")
                 done
             fi
 

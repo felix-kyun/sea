@@ -165,6 +165,14 @@ run)
     }
     run "$2" "${@:3}"
     ;;
+restart)
+    [[ -z "$2" ]] && {
+        echo "Error: Utility name is required to restart"
+        exit 1
+    }
+    kill_util "$2" &>/dev/null
+    launch_util "$2" "${@:3}"
+    ;;
 help | --help | -h)
     show_help
     ;;

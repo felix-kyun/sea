@@ -50,15 +50,8 @@ panel_loop() {
 
             if [[ ${plugin_id} == "mouse" ]]; then
                 mouse_handler "${event}" "${data}"
-            elif [[ ${plugin_id} == "notify" ]]; then
-                case "${event}" in
-                "set")
-                    notification="${data}"
-                    ;;
-                "clear")
-                    notification=""
-                    ;;
-                esac
+            elif [[ ${plugin_id} == "notify" && ${event} == "set" ]]; then
+                notification="${data}"
             fi
 
             render

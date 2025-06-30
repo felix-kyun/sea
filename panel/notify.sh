@@ -7,5 +7,3 @@ source "${CURRENT_DIR}/utils.sh"
 source "${CURRENT_DIR}/config.sh"
 
 echo "notify:set:${1}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
-sleep "${notification_timeout:-5}"
-echo "notify:clear:" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null

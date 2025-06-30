@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 notification_icon="󰎟 "
-rendered_notification=""
+prev_notification=""
 
 pad() {
     local padding_len="$1"
@@ -15,15 +15,14 @@ pad() {
 }
 
 show_notification() {
-    [[ "$1" == "$rendered_notification" ]] && return # no change in notification
+    if [[ "${notification}" == "${prev_notification}" ]]; then
+        return
+    fi
 
-    local notification="$1"
     local buffer="\r\033[2K${notify_fg}"
-    local main_len=$((${#notification} + 2))
+    local main_len=$((${#notification} + 3))
     local main_buffer="${notification_icon}${notification}"
     local padding=""
-
-    rendered_notification="$notification"
 
     for ((i = 1; i <= main_len; i += 2)); do
         local show_buffer="${main_buffer::$i}"
@@ -33,4 +32,9 @@ show_notification() {
         echo -ne "${buffer}${padding}${show_buffer}${padding}"
         sleep 0.01
     done
+
+    sleep "${notification_timeout:-5}"
+
+    prev_notification="${notification}"
+    notification=""
 }

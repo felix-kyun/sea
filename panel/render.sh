@@ -7,7 +7,7 @@ render() {
 
     # if notification is set, only render that and exit
     if [[ -n "${notification}" ]]; then
-        show_notification "${notification}"
+        show_notification
         return
     fi
 

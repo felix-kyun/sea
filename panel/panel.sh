@@ -29,9 +29,6 @@ panel_loop() {
     socat -u UNIX-LISTEN:"$SOCKET",fork - 2>/dev/null |
         while IFS=':' read -r plugin_id event data; do
 
-            exec 200>"${LOCK_FILE}"
-            flock 200
-
             log event "${plugin_id}:${event}:${data}"
 
             case "$event" in
@@ -50,11 +47,22 @@ panel_loop() {
 
             if [[ ${plugin_id} == "mouse" ]]; then
                 mouse_handler "${event}" "${data}"
-            elif [[ ${plugin_id} == "notify" && ${event} == "set" ]]; then
-                notification="${data}"
+            elif [[ ${plugin_id} == "notify" ]]; then
+                case "${event}" in
+                "set")
+                    notification="${data}"
+                    notification_id="$(date +%s%N | sha256sum | head -c 16)"
+                    show_notification "${notification_id}" &
+                    ;;
+                "clear")
+                    if [[ "${notification_id}" == "${data}" ]]; then
+                        notification=""
+                        notification_id=""
+                    fi
+                    ;;
+                esac
             fi
 
             render
-            exec 200>&-
         done
 }

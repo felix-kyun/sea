@@ -5,11 +5,8 @@
 render() {
     COLS=$(tput cols)
 
-    # if notification is set, only render that and exit
-    if [[ -n "${notification}" ]]; then
-        show_notification
-        return
-    fi
+    # if notification is set, skip render
+    [[ -n "${notification}" ]] && return
 
     # maintain seperate buffers
     buffer_main="\r\033[2K${PANEL_BG}"

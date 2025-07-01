@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 notification_icon="󰎟 "
-prev_notification=""
+notification_timeout="${notification_timeout:-5}"
+notification_id=""
 
 pad() {
     local padding_len="$1"
@@ -15,26 +16,31 @@ pad() {
 }
 
 show_notification() {
-    if [[ "${notification}" == "${prev_notification}" ]]; then
-        return
-    fi
+    local my_id="$1"
+    local buffer main_len main_buffer padding show_buffer padding_len
 
-    local buffer="\r\033[2K${notify_fg}"
-    local main_len=$((${#notification} + 3))
-    local main_buffer="${notification_icon}${notification}"
-    local padding=""
+    buffer="\r\033[2K${notify_fg}"
+    main_len=$((${#notification} + 3))
+    main_buffer="${notification_icon}${notification}"
+    padding=""
 
+    # show notification animation
     for ((i = 1; i <= main_len; i += 2)); do
-        local show_buffer="${main_buffer::$i}"
-        local padding_len=$(((COLS - i - 5) / 2))
+        # while rendering, if another notification comes, return
+        [[ "${notification_id}" != "${my_id}" ]] && return
+
+        show_buffer="${main_buffer::$i}"
+        padding_len=$(((COLS - i - 5) / 2))
         padding=$(pad "${padding_len}")
 
         echo -ne "${buffer}${padding}${show_buffer}${padding}"
         sleep 0.01
     done
 
-    sleep "${notification_timeout:-5}"
-
-    prev_notification="${notification}"
-    notification=""
+    # send clear event after timeout with the id
+    {
+        local my_id="$notification_id"
+        sleep "${notification_timeout}"
+        echo "notify:clear:${my_id}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+    } &
 }

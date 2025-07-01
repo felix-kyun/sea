@@ -50,14 +50,25 @@ panel_loop() {
             elif [[ ${plugin_id} == "notify" ]]; then
                 case "${event}" in
                 "set")
+                    # kill if a previous notification is still writing
+                    if kill -0 "${notification_pid}" 2>/dev/null; then
+                        kill "${notification_pid}" 2>/dev/null
+                    fi
+
+                    # create notification
                     notification="${data}"
                     notification_id="$(date +%s%N | sha256sum | head -c 16)"
+
+                    # show and store pid
                     show_notification "${notification_id}" &
+                    notification_pid="$!"
                     ;;
                 "clear")
+                    # clear notification if the id matches
                     if [[ "${notification_id}" == "${data}" ]]; then
                         notification=""
                         notification_id=""
+                        notification_pid=""
                     fi
                     ;;
                 esac

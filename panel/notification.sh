@@ -24,10 +24,10 @@ show_notification() {
     main_buffer="${notification_icon}${notification}"
     padding=""
 
+    delay_clear "${my_id}" &
+
     # show notification animation
     for ((i = 1; i <= main_len; i += 2)); do
-        # while rendering, if another notification comes, return
-        [[ "${notification_id}" != "${my_id}" ]] && return
 
         show_buffer="${main_buffer::$i}"
         padding_len=$(((COLS - i - 5) / 2))
@@ -37,10 +37,11 @@ show_notification() {
         sleep 0.01
     done
 
+}
+
+delay_clear() {
     # send clear event after timeout with the id
-    {
-        local my_id="$notification_id"
-        sleep "${notification_timeout}"
-        echo "notify:clear:${my_id}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
-    } &
+    local my_id="$1"
+    sleep "${notification_timeout}"
+    echo "notify:clear:${my_id}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
 }

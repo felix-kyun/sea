@@ -10,6 +10,14 @@ osd_send() {
     echo "osd:set:${1}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
 }
 
+send_volume() {
+    echo "volume:update:$1" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+}
+
+send_brightness() {
+    echo "brightness:update:󰃠 ${1}%" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+}
+
 get_volume() {
     pactl get-sink-volume @DEFAULT_SINK@ | grep -Eo " [0-9]{2}% " | tr -d " %" | head -n1
 }
@@ -43,10 +51,12 @@ elif [[ "$1" == "brightness" ]]; then
     inc*)
         change_b "5%+"
         osd_send " Brightness: $(get_b)%"
+        send_brightness "$(get_b)"
         ;;
     dec*)
         change_b "5%-"
         osd_send " Brightness: $(get_b)%"
+        send_brightness "$(get_b)"
         ;;
     esac
 fi

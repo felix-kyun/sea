@@ -4,10 +4,11 @@ CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "${CURRENT_DIR}/utils.sh"
 
 include config.sh
+include log.sh
+include user_config_loader.sh
 include render.sh
 include plugins.sh
 include cleanup.sh
-include log.sh
 include event_reader.sh
 include panel.sh
 include mouse_handler.sh

@@ -25,6 +25,7 @@ export LOG_FILE="/tmp/sea-panel.log"
 export LOCK_FILE="/tmp/sea-panel.lock"
 export SOCKET="/tmp/sea-panel.sock"
 export PID_FILE="/tmp/sea-panel.pid"
+export USER_CONFIG="${HOME}/.config/sea/panel.sh"
 
 ######### plugin settings #########
 
@@ -36,7 +37,7 @@ export song_fg="${BLUE}"
 export song_limit=60
 export song_format="{{ title }}"
 export song_modifiers=(
-    "( - )?YouTube Music$/"
+    "^search$/replace" # syntax
 )
 
 # battery

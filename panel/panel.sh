@@ -47,7 +47,7 @@ panel_loop() {
 
             if [[ ${plugin_id} == "mouse" ]]; then
                 mouse_handler "${event}" "${data}"
-            elif [[ ${plugin_id} == "notify" ]]; then
+            elif [[ ${plugin_id} == "notify" || ${plugin_id} == "osd" ]]; then
                 case "${event}" in
                 "set")
                     # kill if a previous notification is still writing
@@ -60,7 +60,7 @@ panel_loop() {
                     notification_id="$(date +%s%N | sha256sum | head -c 16)"
 
                     # show and store pid
-                    show_notification "${notification_id}" &
+                    show_notification "${notification_id}" "${plugin_id}" &
                     notification_pid="$!"
                     ;;
                 "clear")

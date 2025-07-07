@@ -9,5 +9,5 @@ kitten panel \
     --name sea-panel \
     --class sea-panel \
     --lines 1 \
-    -- bash -c "${CURRENT_DIR}/main.sh" \
+    -- bash -c "while :; do ${CURRENT_DIR}/main.sh; done" \
     &>/tmp/sea-panel-launch.log

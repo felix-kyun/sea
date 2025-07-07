@@ -127,10 +127,18 @@ killall_util() {
 
 case "$1" in
 kill)
-    kill_util $2 &>/dev/null || {
-        echo "Error: Unable to kill $2"
-        exit 1
-    }
+    # if kill script exists, run it; otherwise, use kill_util
+    if [[ -f "${CURRENT_DIR}/${2}/kill.sh" ]]; then
+        run "${2}/kill" "${@:3}" &>/dev/null || {
+            echo "Error: Unable to run ${2}/kill.sh"
+            exit 1
+        }
+    else
+        kill_util "$2" &>/dev/null || {
+            echo "Error: Unable to kill $2"
+            exit 1
+        }
+    fi
     ;;
 killall)
     killall_util &>/dev/null || {

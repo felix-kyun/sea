@@ -19,7 +19,7 @@ send_brightness() {
 }
 
 get_volume() {
-    pactl get-sink-volume @DEFAULT_SINK@ | grep -Eo " [0-9]{2}% " | tr -d " %" | head -n1
+    pactl get-sink-volume @DEFAULT_SINK@ | grep -Eo " [0-9]+% " | tr -d " %" | head -n1
 }
 
 set_volume() {

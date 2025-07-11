@@ -13,6 +13,7 @@ Simple, fast and heavily opinionated.
 - emoji picker
 - powermenu
 - bluetooth menu
+- osd on panel
 
 ## ToDo
 
@@ -20,7 +21,6 @@ Simple, fast and heavily opinionated.
 - [ ] notification manager
 - [ ] screen recorder frontend
 - [ ] wifi menu
-- [ ] osd (is it even possible) ??
 - [ ] dotfile manager
 
 Feel free to contribute more utilities or features, after all its just bash.

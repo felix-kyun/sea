@@ -34,7 +34,7 @@ show_notification() {
 
         echo -ne "${buffer}${padding}${notification}${padding}"
     else
-        for ((i = 0; i <= main_len; i += 2)); do
+        for ((i = 0; i <= main_len + 1; i += 2)); do
             show_buffer="${main_buffer::$i}"
             padding_len=$(((COLS - i - 2) / 2))
             padding=$(pad "${padding_len}")

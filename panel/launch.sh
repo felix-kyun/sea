@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
-[[ -f "$HOME/.config/sea.sh" ]] && source "$HOME/.config/sea.sh"
+[[ -f "$HOME/.config/sea.conf" ]] && source "$HOME/.config/sea.conf"
 
 kitten panel \
     --config "${CURRENT_DIR}/panel.conf" \

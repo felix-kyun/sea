@@ -11,5 +11,5 @@ app_name=$1
 summary=$2
 body=$3
 
-sea run panel/notify \
+sea panel notify \
     "${HIDE_CURSOR}${BOLD}${CYAN}${app_name}${WHITE} ${summary}${RESET}: ${body}${RESET}"

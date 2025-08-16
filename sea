@@ -1,53 +1,29 @@
 #!/usr/bin/env bash
 
 # sea
-# utility helper for launching various sea tools
+# helper script to manage sub programs
 
 CURRENT_DIR=$(dirname "$(readlink -f "$0")")
 
-launch_util() {
-    [[ ! -f "${CURRENT_DIR}/${1}/launch.sh" ]] && {
-        echo "Error: Script ${CURRENT_DIR}/${1}/launch.sh does not exist"
-        exit 1
-    }
+_install() {
+    local target_path
+    local script_path
 
-    bash "${CURRENT_DIR}/${1}/launch.sh" "${@:3}" &
-    disown
-}
-
-launch_util_if_exists() {
-    [[ -f "${CURRENT_DIR}/${1}/launch.sh" ]] && {
-        launch_util "$1" "${@:2}"
-    } || {
-        show_help
-        exit 1
-    }
-}
-
-run() {
-    [[ ! -f "${CURRENT_DIR}/${1}.sh" ]] && {
-        echo "Error: Script ${CURRENT_DIR}/${1}.sh does not exist"
-        exit 1
-    }
-
-    bash "${CURRENT_DIR}/${1}.sh" "${@:2}" &
-    disown
-
-}
-
-install() {
-    local target_path="/usr/local/bin/sea"
-    local script_path=$(readlink -f "$0")
+    target_path="/usr/local/bin/sea"
+    script_path=$(readlink -f "$0")
 
     if [[ -f "$target_path" ]]; then
         echo "Error: $target_path already exists."
 
-        echo -n "Remove and install it ? (y/n) "
+        echo -n "Remove and install it ? (yes/no) "
         read -r answer
-        if [[ "$answer" != "y" ]]; then
+        case "$answer" in
+        [Yy][Ee][Ss] | [Yy]*) ;;
+        *)
             echo "Installation aborted."
             exit 1
-        fi
+            ;;
+        esac
 
         sudo rm -f "$target_path" || {
             echo "Error: Unable to remove existing $target_path"
@@ -68,21 +44,22 @@ install() {
     echo "sea utility installed successfully at $target_path"
 }
 
-show_help() {
-    echo "Usage: sea [command] [args]"
+_help() {
+    echo "Usage: sea [command | sub_program] [args]"
     echo "Commands:"
-    echo "  launch <utility_name> [args] - Launch a specific sea utility"
-    echo "  monitor <process_name> [interval] - Monitor CPU and memory usage of a process"
-    echo "  kill <process_name>   - Kill a specific sea process"
-    echo "  killall               - Kill all sea processes"
-    echo "  install               - Install the sea utility"
-    echo "  remove                - Remove the sea utility"
-    echo "  help, --help, -h      - Show this help message"
+    echo "  <sub_program>           - Launch a sub program (e.g., sea panel)"
+    echo "  <sub_program> <command> - Run a specific command in the sub program"
+    echo "  killall                 - Kill all sea processes"
+    echo "  install                 - Install the sea utility"
+    echo "  uninstall               - Remove the sea utility"
+    echo "  help, --help, -h        - Show this help message"
     exit 0
 }
 
-remove() {
-    local target_path="/usr/local/bin/sea"
+_uninstall() {
+    local target_path
+
+    target_path="/usr/local/bin/sea"
 
     if [[ -f "$target_path" ]]; then
         sudo rm -f "$target_path" || {
@@ -96,95 +73,55 @@ remove() {
     fi
 }
 
-monitor() {
-    local process_name="$1"
-    local interval="${2:-5}"
-    local process_pid=$(ps aux | awk " /sea.*${process_name}.*launch\.sh$/ { print \$2 }")
+_killall() {
+    ps aux | awk "/.*bash.*sea.*$/ { print \$2 }" | xargs kill
+}
 
-    [[ -z "$process_pid" ]] && {
-        echo "Error: Process $process_name not found"
+_run() {
+    local cmd
+
+    cmd="${CURRENT_DIR}/${1}/commands.sh"
+    if [[ -f "${cmd}" ]]; then
+        source "${CURRENT_DIR}/${1}/commands.sh"
+    else
+        echo "Sub program doesnt allow any commands"
         exit 1
-    }
+    fi
 
-    echo "Process: $process_name (PID: $process_pid)"
-    while true; do
-        pids=$(pstree -p $process_pid | grep -oP '\(\K[0-9]+')
-        cpu_usage=$(ps --no-headers -o %cpu -p $(echo $pids | tr ' ' ',') | awk '{s+=$1} END {print s}')
-        mem_usage=$(ps --no-headers -o %mem -p $(echo $pids | tr ' ' ',') | awk '{s+=$1} END {print s}')
-        echo -ne "\rCPU Usage: $cpu_usage% | Memory Usage: $mem_usage%    "
+    if [[ -z "$2" ]]; then
+        if declare -F "_launch" >/dev/null; then
+            _launch
+            exit 0
+        else
+            echo "No launch command found in ${1} sub program"
+            exit 1
+        fi
+    fi
 
-        sleep "$interval"
-    done
-}
-
-kill_util() {
-    ps aux | awk "/bash.*sea.*${1}.*sh$/ { print \$2 }" | xargs kill
-}
-
-killall_util() {
-    ps aux | awk "/bash.*sea.*sh$/ { print \$2 }" | xargs kill
+    if declare -F "_$2" >/dev/null; then
+        "_$2" "${@:3}"
+    else
+        echo "Command '$2' not found in ${1} sub program"
+        exit 1
+    fi
 }
 
 case "$1" in
-kill)
-    # if kill script exists, run it; otherwise, use kill_util
-    if [[ -f "${CURRENT_DIR}/${2}/kill.sh" ]]; then
-        run "${2}/kill" "${@:3}" &>/dev/null || {
-            echo "Error: Unable to run ${2}/kill.sh"
-            exit 1
-        }
-    else
-        kill_util "$2" &>/dev/null || {
-            echo "Error: Unable to kill $2"
-            exit 1
-        }
-    fi
-    ;;
-killall)
-    killall_util &>/dev/null || {
-        echo "Error: Unable to kill all sea processes"
-        exit 1
-    }
-    ;;
 install)
-    install "$0"
+    _install "$0"
     ;;
-remove)
-    remove
-    ;;
-monitor)
-    [[ -z "$2" ]] && {
-        echo "Error: Process name is required for monitoring"
-        exit 1
-    }
-    monitor "$2" "$3"
-    ;;
-launch)
-    [[ -z "$2" ]] && {
-        echo "Error: Utility name is required to launch"
-        exit 1
-    }
-    launch_util "$2" "${@:3}"
-    ;;
-run)
-    [[ -z "$2" ]] && {
-        echo "Error: Script name is required to execute"
-        exit 1
-    }
-    run "$2" "${@:3}"
-    ;;
-restart)
-    [[ -z "$2" ]] && {
-        echo "Error: Utility name is required to restart"
-        exit 1
-    }
-    kill_util "$2" &>/dev/null
-    launch_util "$2" "${@:3}"
+uninstall)
+    _uninstall
     ;;
 help | --help | -h)
-    show_help
+    _help
     ;;
 *)
-    launch_util_if_exists "$1" "${@:2}"
+    if [[ ! -d "${CURRENT_DIR}/${1}" ]]; then
+        echo "Sub program not found"
+        _help
+    fi
+
+    _run "$1" "${@:2}"
     ;;
 esac

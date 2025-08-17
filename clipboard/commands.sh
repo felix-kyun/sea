@@ -6,3 +6,7 @@ _launch() {
         --config ${CURRENT_DIR}/clipboard.conf \
         -- bash -c "source ${CURRENT_DIR}/clipboard.sh && cliphist-fzf-copy" &>/dev/null
 }
+
+_listen() {
+    wl-paste --watch cliphist -max-items=1000000 store
+}

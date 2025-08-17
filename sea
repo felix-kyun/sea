@@ -90,6 +90,11 @@ _run() {
 
     if [[ -z "$2" ]]; then
         if declare -F "_launch" >/dev/null; then
+            # try to kill if it exsists
+            if declare -F "_kill" >/dev/null; then
+                "_kill"
+            fi
+
             _launch
             exit 0
         else

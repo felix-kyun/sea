@@ -43,3 +43,7 @@ bluetooth_get_first_connected_device() {
         echo "${bluetooth_default}"
     fi
 }
+
+bluetooth_on_click() {
+    sea bluetooth
+}

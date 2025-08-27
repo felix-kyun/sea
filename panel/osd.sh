@@ -27,7 +27,8 @@ set_volume() {
 }
 
 get_b() {
-    brightnessctl -P get 2>/dev/null
+    # brightnessctl -P get 2>/dev/null
+    brightnessctl i | grep -m1 "Current brightness" | sed -E 's/.*\(([0-9]{1,3})%\)/\1/'
 }
 
 change_b() {

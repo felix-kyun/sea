@@ -4,7 +4,8 @@ brightness_default="󰃠 0%"
 brightness_delay="${brightness_delay:-30}"
 
 brightness_get() {
-    brightnessctl -P get | sed 's/[^0-9]//g'
+    # brightnessctl -P get | sed 's/[^0-9]//g'
+    brightnessctl i | grep -m1 "Current brightness" | sed -E 's/.*\(([0-9]{1,3})%\)/\1/'
 }
 
 brightness_start() {

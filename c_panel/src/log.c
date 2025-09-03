@@ -15,19 +15,17 @@ static const char* level_to_string(enum LogLevel level)
 {
     switch (level) {
     case LOG_DEBUG:
-        return " DEBUG ";
+        return "D";
     case LOG_SUCCESS:
-        return "SUCCESS";
+        return "S";
     case LOG_INFO:
-        return " INFO  ";
+        return "I";
     case LOG_WARN:
-        return " WARN  ";
+        return "W";
     case LOG_ERROR:
-        return " ERROR ";
-    case LOG_FATAL:
-        return " FATAL ";
+        return "E";
     default:
-        return "UNKNOWN";
+        return "?";
     }
 }
 
@@ -35,7 +33,7 @@ static const char* level_to_color(enum LogLevel level)
 {
     switch (level) {
     case LOG_DEBUG:
-        return CYAN;
+        return WHITE;
     case LOG_SUCCESS:
         return GREEN;
     case LOG_INFO:
@@ -43,8 +41,6 @@ static const char* level_to_color(enum LogLevel level)
     case LOG_WARN:
         return YELLOW;
     case LOG_ERROR:
-        return RED;
-    case LOG_FATAL:
         return BOLD_RED;
     default:
         return WHITE;

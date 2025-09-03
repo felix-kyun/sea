@@ -1,6 +1,6 @@
 # Makefile
 CC := clang
-CFLAGS := -Wall -Wextra -Werror -pedantic 
+CFLAGS := -Wall -Wextra -Werror -pedantic -pthread
 INCLUDE_DIR := include 
 SOURCE_DIR := src
 BUILD_DIR := build

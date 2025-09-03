@@ -6,7 +6,7 @@ SOURCE_DIR := src
 BUILD_DIR := build
 INCLUDES := -I$(INCLUDE_DIR)
 SOURCES := $(shell find $(SOURCE_DIR) -type f -name '*.c')
-TARGET := c_panel
+TARGET := panel
 
 _TARGET = $(addprefix $(BUILD_DIR)/, $(TARGET))
 _OBJS = $(patsubst $(SOURCE_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))

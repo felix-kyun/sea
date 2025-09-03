@@ -6,8 +6,8 @@ int main(int argc, char** argv)
     (void)argv;
 
     logger_init("app.log", true);
-    logger_log(LOG_INFO, "Starting sea panel");
+    logger_log(LOG_INFO, "starting sea panel");
 
-    logger_log(LOG_INFO, "Stopping sea panel");
+    logger_log(LOG_INFO, "stopping sea panel");
     return 0;
 }

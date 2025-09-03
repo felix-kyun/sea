@@ -15,19 +15,39 @@ static const char* level_to_string(enum LogLevel level)
 {
     switch (level) {
     case LOG_DEBUG:
-        return "DEBUG";
+        return " DEBUG ";
     case LOG_SUCCESS:
         return "SUCCESS";
     case LOG_INFO:
-        return "INFO";
+        return " INFO  ";
     case LOG_WARN:
-        return "WARN";
+        return " WARN  ";
     case LOG_ERROR:
-        return "ERROR";
+        return " ERROR ";
     case LOG_FATAL:
-        return "FATAL";
+        return " FATAL ";
     default:
         return "UNKNOWN";
+    }
+}
+
+static const char* level_to_color(enum LogLevel level)
+{
+    switch (level) {
+    case LOG_DEBUG:
+        return CYAN;
+    case LOG_SUCCESS:
+        return GREEN;
+    case LOG_INFO:
+        return BLUE;
+    case LOG_WARN:
+        return YELLOW;
+    case LOG_ERROR:
+        return RED;
+    case LOG_FATAL:
+        return BOLD_RED;
+    default:
+        return WHITE;
     }
 }
 
@@ -42,11 +62,13 @@ void logger_init(const char* filename, bool stdout_enabled)
 {
     logger = (Logger*)malloc(sizeof(Logger));
     logger->stdout_enabled = stdout_enabled;
-    logger->file = fopen(filename, "a");
+    logger->file = fopen(filename, "w");
 }
 
 void logger_free(void)
 {
+    // reset terminal colors
+    printf(RESET);
     if (logger->file) {
         fclose(logger->file);
     }
@@ -63,14 +85,15 @@ void logger_log(enum LogLevel level, const char* message, ...)
     va_start(args, message);
 
     get_timestamp();
+    printf("%s", level_to_color(level));
     if (logger->stdout_enabled) {
-        printf("%s | %s\t | ", timestamp_buffer, level_to_string(level));
+        printf("%s | %s | ", timestamp_buffer, level_to_string(level));
         vprintf(message, args);
-        printf("\n");
+        printf(RESET "\n");
     }
 
     if (logger->file) {
-        fprintf(logger->file, "%s | %s\t | ", timestamp_buffer, level_to_string(level));
+        fprintf(logger->file, "%s | %s | ", timestamp_buffer, level_to_string(level));
         vfprintf(logger->file, message, args);
         fprintf(logger->file, "\n");
         fflush(logger->file);

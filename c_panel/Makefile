@@ -17,16 +17,22 @@ $(_TARGET): $(_OBJS)
 	$(CC) -o $@ $^ $(INCLUDES) $(CFLAGS) 
 
 $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
-	[[ -d $(dir $@) ]] || mkdir -p $(dir $@)
+	@[[ -d $(dir $@) ]] || mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES)
 
 clean:
 	rm -rf build/*
 
-debug: CFLAGS += -g
+debug: CFLAGS += -g -fsanitize=address,undefined,leak
 debug: all
 
 dev:
 	bear -- make all
 
-.PHONY: clean all test dev debug
+test-string:
+	$(CC) -o $(BUILD_DIR)/test_string_utf8 tests/string.test.c src/string-utf8.c  $(CFLAGS) $(INCLUDES)
+	@$(BUILD_DIR)/test_string_utf8 && echo -e "\033[1;4;32mString Tests Passed!\033[0m" || echo -e "\033[1;4;31mString Tests Failed!\033[0m"
+	@echo -e "\n\033[1;4;34mChecking For Memory Leaks...\033[0m"
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./$(BUILD_DIR)/test_string_utf8 && echo -e "\033[1;4;32mNo Memory Leaks Detected!\033[0m" || echo -e "\033[1;4;31mMemory Leaks Detected!\033[0m"
+
+.PHONY: clean all test dev debug test-string

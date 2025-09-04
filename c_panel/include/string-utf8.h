@@ -42,3 +42,20 @@ char* string_cast(string* str);
 // @param str2: second string to concatenate
 // @return a new string which is the concatenation of str1 and str2
 string* string_concat(string* str1, string* str2);
+
+// @param str: a pointer to a utf-8 string struct
+// @param data: a c-style string (null-terminated) containing utf-8 data
+// Sets the content of the string to the given data
+// The previous content of the string is freed if necessary
+// prevents unnecessary allocations if the new data fits in the existing allocation
+void string_set(string* str, const char* data);
+
+// @param str1: first string to compare
+// @param str2: second string to compare
+// @return true if the strings are equal, false otherwise
+bool string_equals(string* str1, string* str2);
+
+// @param str1: first string to compare
+// @param str2: second c-style string (null-terminated) to compare
+// @return true if the strings are equal, false otherwise
+bool string_equals_cstr(string* str1, const char* str2);

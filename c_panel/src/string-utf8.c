@@ -73,3 +73,38 @@ string* string_concat(string* str1, string* str2)
 
     return new_string;
 }
+
+void string_set(string* str, const char* data)
+{
+    size_t new_byte_length = strlen(data);
+
+    if (new_byte_length > str->byte_length) {
+        if (str->data) {
+            free(str->data);
+        }
+        str->data = (char*)malloc(new_byte_length * sizeof(char));
+    }
+
+    memcpy(str->data, data, new_byte_length);
+    str->byte_length = new_byte_length;
+    str->char_length = string_length(data);
+}
+
+bool string_equals(string* str1, string* str2)
+{
+    if (str1->byte_length != str2->byte_length) {
+        return false;
+    }
+
+    return memcmp(str1->data, str2->data, str1->byte_length) == 0;
+}
+
+bool string_equals_cstr(string* str1, const char* str2)
+{
+    size_t str2_length = strlen(str2);
+    if (str1->byte_length != str2_length) {
+        return false;
+    }
+
+    return memcmp(str1->data, str2, str1->byte_length) == 0;
+}

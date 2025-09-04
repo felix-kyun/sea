@@ -6,6 +6,7 @@ void* plugin_text(void* _context)
     PluginState* context = _context;
     logger_log(LOG_SUCCESS, "text plugin started");
 
+    string_free(context->data);
     context->data = string_new("Hello there");
 
     return NULL;

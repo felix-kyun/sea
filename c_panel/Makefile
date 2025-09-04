@@ -17,18 +17,16 @@ $(_TARGET): $(_OBJS)
 	$(CC) -o $@ $^ $(INCLUDES) $(CFLAGS) 
 
 $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
-	mkdir -p $(dir $@)
+	[[ -d $(dir $@) ]] || mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES)
 
 clean:
 	rm -rf build/*
 
-setup: 
-	[ -d $(BUILD_DIR) ] || mkdir -p $(BUILD_DIR)
-	[ -d $(SOURCE_DIR) ] || mkdir -p $(SOURCE_DIR)
-	[ -d $(INCLUDE_DIR) ] || mkdir -p $(INCLUDE_DIR)
+debug: CFLAGS += -g
+debug: all
 
 dev:
 	bear -- make all
 
-.PHONY: clean all test dev 
+.PHONY: clean all test dev debug

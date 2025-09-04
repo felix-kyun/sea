@@ -1,31 +1,28 @@
 #include "log.h"
 #include "panel.h"
-#include "plugins/date_time.h"
+#include "state.h"
+#include <unistd.h>
 
 int main(void)
 {
-    StartRoutine enabled_plugins[] = {
-        plugin_date_time
-    };
 
-    logger_init("panel.log", false);
-    logger_log(LOG_SUCCESS, "starting sea panel");
-
-    panel_init_plugins(enabled_plugins, sizeof(enabled_plugins) / sizeof(enabled_plugins[0]));
+    logger_init("panel.log", true);
+    logger_log(LOG_SUCCESS, "starting sea panel with pid %d", getpid());
+    panel_init();
+    panel_init_plugins();
 
     // render loop
-    while (1) {
+    while (running) {
+        // wait for render signal
         pthread_mutex_lock(&render_signal.mutex);
         pthread_cond_wait(&render_signal.cond, &render_signal.mutex);
 
-        logger_log(LOG_DEBUG, "rendering panel");
+        // render panel
         panel_render();
-        logger_log(LOG_DEBUG, "panel rendered");
 
         pthread_mutex_unlock(&render_signal.mutex);
     }
 
-    logger_log(LOG_INFO, "stopping panel");
     logger_log(LOG_SUCCESS, "panel stopped");
     return 0;
 }

@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+string* string_init(void)
+{
+    string* str = (string*)malloc(sizeof(string));
+    str->data = NULL;
+    str->byte_length = 0;
+    str->char_length = 0;
+    return str;
+}
+
 string* string_new(const char* data)
 {
     string* str = (string*)malloc(sizeof(string));
@@ -33,8 +42,12 @@ size_t string_length(const char* str)
 
 void string_free(string* str)
 {
-    free(str->data);
-    free(str);
+    if (str) {
+        if (str->data) {
+            free(str->data);
+        }
+        free(str);
+    }
 }
 
 char* string_cast(string* str)

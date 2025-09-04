@@ -7,11 +7,6 @@ typedef struct RenderSignal {
     pthread_cond_t cond;
 } RenderSignal;
 
-typedef struct PluginContext {
-    PluginState* state;
-    RenderSignal* render_signal;
-} PluginContext;
-
 // singleton render signal instance to be shared between plugin threads
 extern RenderSignal render_signal;
 
@@ -19,8 +14,8 @@ extern RenderSignal render_signal;
 typedef void* (*StartRoutine)(void*);
 
 // methods
-void panel_spawn_plugin_thread(void* (*start_routine)(void*), PluginContext* context);
-void panel_signal_render(void);
+void panel_spawn_plugin_thread(void* (*start_routine)(void*), PluginState* context);
+void panel_init(void);
 void panel_render(void);
-void panel_init_plugins(StartRoutine* enabled_plugins, size_t plugin_count);
+void panel_init_plugins(void);
 void panel_free(void);

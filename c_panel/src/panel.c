@@ -1,15 +1,33 @@
 #include "panel.h"
+#include "config.h"
 #include "log.h"
+#include "plugins/plugins.h"
 #include <stdlib.h>
 
-RenderSignal render_signal = {
-    .mutex = PTHREAD_MUTEX_INITIALIZER,
-    .cond = PTHREAD_COND_INITIALIZER,
-};
+bool running;
+
+RenderSignal render_signal
+    = {
+          .mutex = PTHREAD_MUTEX_INITIALIZER,
+          .cond = PTHREAD_COND_INITIALIZER,
+      };
 
 PluginState* plugin_states;
 
-void panel_spawn_plugin_thread(void* (*start_routine)(void*), PluginContext* context)
+void panel_init(void)
+{
+    // set panel state to running
+    running = true;
+
+    // create plugin states
+    plugin_states = malloc(sizeof(PluginState) * PLUGIN_COUNT);
+
+    for (int i = 0; i < PLUGIN_COUNT; i++) {
+        plugin_states[i].data = string_init();
+    }
+}
+
+void panel_spawn_plugin_thread(void* (*start_routine)(void*), PluginState* context)
 {
     pthread_t thread;
     if (pthread_create(&thread, NULL, start_routine, context) != 0) {
@@ -25,28 +43,33 @@ void panel_signal_render(void)
     pthread_mutex_unlock(&render_signal.mutex);
 }
 
-void panel_init_plugins(StartRoutine* enabled_plugins, size_t plugin_count)
+#define X(name)                                                           \
+    panel_spawn_plugin_thread(plugin_##name, &plugin_states[name##_idx]); \
+    logger_log(LOG_SUCCESS, "started plugin: " #name);
+void panel_init_plugins(void)
 {
-    plugin_states = malloc(sizeof(PluginState) * plugin_count);
+    logger_log(LOG_INFO, "initializing plugins");
 
-    // spawn plugin
-    for (size_t i = 0; i < plugin_count; i++) {
-        // initialize the plugin context
-        PluginContext* context = malloc(sizeof(PluginContext));
-        context->state = &plugin_states[i];
-        context->state->data = string_new("");
-        context->render_signal = &render_signal;
+    // spawn enabled plugins
+    PLUGIN_LIST
 
-        panel_spawn_plugin_thread(enabled_plugins[i], context);
-    }
+    logger_log(LOG_SUCCESS, "all plugins started");
 }
-
-void panel_render(void)
-{
-}
+#undef X
 
 void panel_free(void)
 {
     pthread_mutex_destroy(&render_signal.mutex);
     pthread_cond_destroy(&render_signal.cond);
+}
+
+void panel_stop(void)
+{
+    running = false;
+    panel_signal_render();
+}
+
+void panel_render(void)
+{
+    logger_log(LOG_INFO, "rendering panel...");
 }

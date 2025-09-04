@@ -16,6 +16,10 @@ struct string {
 
 typedef struct string string;
 
+// @return a pointer to a newly allocated empty utf-8 string struct
+// don't forget to free the string with string_free
+string* string_init(void);
+
 // @param data: a c-style string (null-terminated)
 // @return a pointer to a newly allocated utf-8 string struct
 // don't forget to free the string with string_free

@@ -5,3 +5,7 @@
 typedef struct PluginState {
     string* data;
 } PluginState;
+
+// used to signal render to render the panel again
+// defined in panel.c
+void panel_signal_render(void);

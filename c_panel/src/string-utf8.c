@@ -74,7 +74,21 @@ string* string_concat(string* str1, string* str2)
     return new_string;
 }
 
-void string_set(string* str, const char* data)
+void string_set(string* str, string* data)
+{
+    if (data->byte_length > str->byte_length) {
+        if (str->data) {
+            free(str->data);
+        }
+        str->data = (char*)malloc(data->byte_length * sizeof(char));
+    }
+
+    memcpy(str->data, data->data, data->byte_length);
+    str->byte_length = data->byte_length;
+    str->char_length = data->char_length;
+}
+
+void string_set_cstr(string* str, const char* data)
 {
     size_t new_byte_length = strlen(data);
 

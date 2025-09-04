@@ -44,11 +44,16 @@ char* string_cast(string* str);
 string* string_concat(string* str1, string* str2);
 
 // @param str: a pointer to a utf-8 string struct
+// @param data: a pointer to a utf-8 string struct
+// Sets the content of the string to the given data
+// prevents unnecessary allocations if the new data fits in the existing allocation
+void string_set(string* str, string* data);
+
+// @param str: a pointer to a utf-8 string struct
 // @param data: a c-style string (null-terminated) containing utf-8 data
 // Sets the content of the string to the given data
-// The previous content of the string is freed if necessary
 // prevents unnecessary allocations if the new data fits in the existing allocation
-void string_set(string* str, const char* data);
+void string_set_cstr(string* str, const char* data);
 
 // @param str1: first string to compare
 // @param str2: second string to compare

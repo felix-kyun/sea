@@ -23,11 +23,14 @@ $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
 clean:
 	rm -rf build/*
 
-debug: CFLAGS += -g -fsanitize=address,undefined,leak
+debug: CFLAGS += -g -fsanitize=address,undefined,leak -O0 
 debug: all
 
 dev:
 	bear -- make all
+
+watch-log:
+	tail -f panel.log 2>&1 | awk '/tail: .* file truncated/ { system("clear"); next } {print}'
 
 test-string:
 	$(CC) -o $(BUILD_DIR)/test_string_utf8 tests/string.test.c src/string-utf8.c  $(CFLAGS) $(INCLUDES)

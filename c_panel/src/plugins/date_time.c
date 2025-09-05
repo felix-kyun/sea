@@ -1,3 +1,4 @@
+#include "colors.h"
 #include "plugins/plugins.h"
 #include "state.h"
 #include "string-utf8.h"
@@ -8,12 +9,12 @@
 void* plugin_date_time(void* _context)
 {
     PluginState* context = _context;
-    char* buffer = malloc(20);
+    char* buffer = malloc(64);
 
     while (running) {
         time_t now = time(NULL);
         struct tm* t = localtime(&now);
-        strftime(buffer, 20, "%Y-%m-%d %H:%M:%S", t);
+        strftime(buffer, 64, GREEN "󰃰 %Y-%m-%d " YELLOW " %H:%M:%S" RESET, t);
 
         // only signal render if the time has changed
         if (!string_equals_cstr(context->data, buffer)) {

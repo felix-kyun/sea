@@ -1,5 +1,6 @@
 #include "log.h"
 #include "panel.h"
+#include "signal_handler.h"
 #include "state.h"
 #include <unistd.h>
 
@@ -8,6 +9,7 @@ int main(void)
 
     logger_init("panel.log", false);
     logger_log(LOG_SUCCESS, "starting sea panel with pid %d", getpid());
+    setup_signal_handlers();
     panel_init();
     panel_init_plugins();
 
@@ -23,6 +25,7 @@ int main(void)
         pthread_mutex_unlock(&render_signal.mutex);
     }
 
+    panel_free();
     logger_log(LOG_SUCCESS, "panel stopped");
     return 0;
 }

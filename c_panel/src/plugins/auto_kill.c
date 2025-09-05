@@ -6,11 +6,18 @@
 void* plugin_auto_kill(void* _context)
 {
     PluginState* context = _context;
-    string_set_cstr(context->data, "Auto kill in 20 seconds...");
+    char buffer[32];
+    string_set_cstr(context->data, " 20s ");
 
-    msleep(20000);
-    logger_log(LOG_WARN, "auto killing panel after 20 seconds");
+    for (int i = 20; i > 0 && running; i--) {
+        snprintf(buffer, 32, " %ds ", i);
+        string_set_cstr(context->data, buffer);
+        panel_signal_render();
+        msleep(1000);
+    }
+
+    logger_log(LOG_WARN, "auto_kill: killing panel");
     panel_stop();
 
-    return _context;
+    return NULL;
 }

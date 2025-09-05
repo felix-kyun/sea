@@ -68,8 +68,12 @@ string* string_concat(string* str1, string* str2)
     new_string->char_length = str1->char_length + str2->char_length;
 
     new_string->data = (char*)malloc(new_string->byte_length * sizeof(char));
-    memcpy(new_string->data, str1->data, str1->byte_length);
-    memcpy(new_string->data + str1->byte_length, str2->data, str2->byte_length);
+
+    if (str1->data)
+        memcpy(new_string->data, str1->data, str1->byte_length);
+
+    if (str2->data)
+        memcpy(new_string->data + str1->byte_length, str2->data, str2->byte_length);
 
     return new_string;
 }

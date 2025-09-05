@@ -83,9 +83,12 @@ void logger_log(enum LogLevel level, const char* message, ...)
     get_timestamp();
     printf("%s", level_to_color(level));
     if (logger->stdout_enabled) {
+        va_list args_copy;
+        va_copy(args_copy, args);
         printf("%s | %s | ", timestamp_buffer, level_to_string(level));
-        vprintf(message, args);
+        vprintf(message, args_copy);
         printf(RESET "\n");
+        va_end(args_copy);
     }
 
     if (logger->file) {

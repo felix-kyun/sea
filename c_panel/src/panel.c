@@ -2,28 +2,31 @@
 #include "config.h"
 #include "log.h"
 #include "plugins/plugins.h"
+#include "render.h"
 #include <stdlib.h>
 
+// global
 bool running;
-
+PluginState* plugin_states;
 RenderSignal render_signal
     = {
           .mutex = PTHREAD_MUTEX_INITIALIZER,
           .cond = PTHREAD_COND_INITIALIZER,
       };
 
-PluginState* plugin_states;
-
 void panel_init(void)
 {
     // set panel state to running
     running = true;
 
+    // load renderer specific stuff
+    render_init();
+
     // create plugin states
     plugin_states = malloc(sizeof(PluginState) * PLUGIN_COUNT);
 
     for (int i = 0; i < PLUGIN_COUNT; i++) {
-        plugin_states[i].data = string_init();
+        plugin_states[i].data = string_new(u8" ");
     }
 }
 
@@ -49,6 +52,10 @@ void panel_signal_render(void)
 void panel_init_plugins(void)
 {
     logger_log(LOG_INFO, "initializing plugins");
+    logger_log(LOG_INFO, "Found %d plugins", PLUGIN_COUNT);
+    logger_log(LOG_INFO, "Left: %d", PLUGIN_LEFT_COUNT);
+    logger_log(LOG_INFO, "Center: %d", PLUGIN_CENTER_COUNT);
+    logger_log(LOG_INFO, "Right: %d", PLUGIN_RIGHT_COUNT);
 
     // spawn enabled plugins
     PLUGIN_LIST
@@ -61,15 +68,19 @@ void panel_free(void)
 {
     pthread_mutex_destroy(&render_signal.mutex);
     pthread_cond_destroy(&render_signal.cond);
+
+    // free plugin states
+    for (int i = 0; i < PLUGIN_COUNT; i++) {
+        string_free(plugin_states[i].data);
+    }
+
+    free(plugin_states);
+    // show cursor
+    printf("\033[?25h");
 }
 
 void panel_stop(void)
 {
     running = false;
     panel_signal_render();
-}
-
-void panel_render(void)
-{
-    logger_log(LOG_INFO, "rendering panel...");
 }

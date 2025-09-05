@@ -6,7 +6,7 @@
 int main(void)
 {
 
-    logger_init("panel.log", true);
+    logger_init("panel.log", false);
     logger_log(LOG_SUCCESS, "starting sea panel with pid %d", getpid());
     panel_init();
     panel_init_plugins();

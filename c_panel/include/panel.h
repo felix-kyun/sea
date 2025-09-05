@@ -13,6 +13,9 @@ extern RenderSignal render_signal;
 // array of plugin states
 typedef void* (*StartRoutine)(void*);
 
+// to store plugin states
+extern PluginState* plugin_states;
+
 // methods
 void panel_spawn_plugin_thread(void* (*start_routine)(void*), PluginState* context);
 void panel_init(void);

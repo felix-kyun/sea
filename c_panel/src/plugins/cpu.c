@@ -3,35 +3,35 @@
 #include "plugins/plugins.h"
 #include "state.h"
 #include "utils.h"
+#include <stdint.h>
 #include <stdio.h>
 
 #define STAT_FILE "/proc/stat"
 #define CPU_ICON " "
 #define CPU_COLOR CYAN
 
-static unsigned long long user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+static uint64_t user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
 static char buffer[256];
 
 static void load_cpu_info(void)
 {
     FILE* stat = fopen(STAT_FILE, "r");
 
-    if (fgets(buffer, sizeof(buffer), stat) == NULL) {
-        logger_log(LOG_ERROR, "failed to read /proc/stat");
+    if (fscanf(stat, "cpu  %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu",
+            &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice)
+        != 10) {
+        logger_log(LOG_ERROR, "failed to read cpu info from /proc/stat");
     }
-
-    sscanf(buffer, "cpu  %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu",
-        &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
 
     fclose(stat);
 }
 
-static inline unsigned long long get_cpu_total_time(void)
+static inline uint64_t get_cpu_total_time(void)
 {
     return user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice;
 }
 
-static inline unsigned long long get_cpu_idle_time(void)
+static inline uint64_t get_cpu_idle_time(void)
 {
     return idle + iowait;
 }
@@ -51,17 +51,17 @@ void* plugin_cpu(void* _state)
     while (running) {
         load_cpu_info();
 
-        unsigned long long total = get_cpu_total_time();
-        unsigned long long used = total - get_cpu_idle_time();
+        uint64_t total = get_cpu_total_time();
+        uint64_t used = total - get_cpu_idle_time();
 
         msleep(5000);
         load_cpu_info();
 
-        unsigned long long new_total = get_cpu_total_time();
-        unsigned long long new_used = new_total - get_cpu_idle_time();
+        uint64_t new_total = get_cpu_total_time();
+        uint64_t new_used = new_total - get_cpu_idle_time();
 
-        unsigned long long diff_total = new_total - total;
-        unsigned long long diff_used = new_used - used;
+        uint64_t diff_total = new_total - total;
+        uint64_t diff_used = new_used - used;
 
         if (diff_total == 0) {
             logger_log(LOG_WARN, "diff total is zero, skipping cpu usage calculation");

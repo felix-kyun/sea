@@ -31,6 +31,21 @@ size_t string_length(const char* str)
 {
     size_t length = 0;
     while (*str) {
+
+        // skip csi color sequences
+        if (*str == '\033' && *(str + 1) == '[') {
+            str += 2;
+
+            // go till the final byte of the escape sequence
+            while (*str && !(*str == 'm'))
+                str++;
+
+            // skip 'm'
+            str++;
+            continue;
+        }
+
+        // count utf-8 codepoints
         if ((*str & 0xc0) != 0x80) {
             length++;
         }

@@ -2,6 +2,15 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+
+#ifndef NDEBUG
+#define DEBUG(fmt, ...) logger_log(LOG_DEBUG, fmt, ##__VA_ARGS__)
+#else
+#define DEBUG(fmt, ...) \
+    do {                \
+    } while (0)
+#endif
+
 enum LogLevel {
     LOG_DEBUG = 0,
     LOG_SUCCESS,

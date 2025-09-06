@@ -27,7 +27,7 @@ void static read_net_stat(int* down_kib, int* up_kib)
     *up_kib = 0;
 
     if (!file) {
-        logger_log(LOG_DEBUG, "failed to open net dev file: " STAT_FILE);
+        logger_log(LOG_ERROR, "failed to open net dev file: " STAT_FILE);
         return;
     }
 

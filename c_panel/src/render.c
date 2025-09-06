@@ -25,8 +25,7 @@ void render_init(void)
 
 void panel_render(void)
 {
-    logger_log(LOG_INFO, "rendering panel...");
-    logger_log(LOG_DEBUG, "render start");
+    DEBUG("render start");
 
     // erase in line
     printf("\r\033[2K");
@@ -42,7 +41,7 @@ void panel_render(void)
         string_free(old);
     }
     char* left_cstr = string_cast(left_content);
-    logger_log(LOG_DEBUG, "left content: %s (%zu chars, %zu bytes)", left_cstr, left_content->char_length, left_content->byte_length);
+    DEBUG("left content: %s (%zu chars, %zu bytes)", left_cstr, left_content->char_length, left_content->byte_length);
 
     // center plugins
     string* center_content = string_new(u8"");
@@ -55,7 +54,7 @@ void panel_render(void)
         string_free(old);
     }
     char* center_cstr = string_cast(center_content);
-    logger_log(LOG_DEBUG, "center content: %s (%zu chars, %zu bytes)", center_cstr, center_content->char_length, center_content->byte_length);
+    DEBUG("center content: %s (%zu chars, %zu bytes)", center_cstr, center_content->char_length, center_content->byte_length);
 
     // right plugins
     string* right_content = string_new(u8"");
@@ -68,12 +67,12 @@ void panel_render(void)
         string_free(old);
     }
     char* right_cstr = string_cast(right_content);
-    logger_log(LOG_DEBUG, "right content: %s (%zu chars, %zu bytes)", right_cstr, right_content->char_length, right_content->byte_length);
+    DEBUG("right content: %s (%zu chars, %zu bytes)", right_cstr, right_content->char_length, right_content->byte_length);
 
     // calculate spacing
     uint16_t center_padding = ((terminal_size.ws_col - center_content->char_length) / 2) - left_content->char_length;
     uint16_t right_padding = terminal_size.ws_col - (left_content->char_length + center_content->char_length + right_content->char_length + center_padding);
-    logger_log(LOG_DEBUG, "padding: center=%d, right=%d", center_padding, right_padding);
+    DEBUG("padding: center=%d, right=%d", center_padding, right_padding);
 
     // display contents
     printf("%s", left_cstr);
@@ -92,5 +91,5 @@ void panel_render(void)
     free(center_cstr);
     free(right_cstr);
 
-    logger_log(LOG_DEBUG, "render end");
+    DEBUG("render end");
 }

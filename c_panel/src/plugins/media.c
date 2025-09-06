@@ -60,7 +60,7 @@ void* plugin_media(void* _state)
 
     char buffer[256];
     while (running && (fgets(buffer, sizeof(buffer), pipe) != NULL)) {
-        logger_log(LOG_DEBUG, "media output: %s", buffer);
+        DEBUG("media output: %s", buffer);
         // remove newline
         buffer[strcspn(buffer, "\n")] = 0;
 

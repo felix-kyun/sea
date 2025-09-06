@@ -1,4 +1,5 @@
 #include "signal_handler.h"
+#include "config.h"
 #include "plugins/plugins.h"
 #include "state.h"
 #include <signal.h>
@@ -8,7 +9,7 @@ void handle_signal(int signum)
 {
     if (signum == SIGHUP) {
         // restart panel when kitty gets closed
-        system("sea panel");
+        system(SPAWN_COMMAND);
     }
 
     running = false;

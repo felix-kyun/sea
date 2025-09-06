@@ -26,7 +26,7 @@ void panel_init(void)
     plugin_states = malloc(sizeof(PluginState) * PLUGIN_COUNT);
 
     for (int i = 0; i < PLUGIN_COUNT; i++) {
-        plugin_states[i].data = string_new(u8" ");
+        plugin_states[i].data = string_new(" ");
         plugin_states[i].cleanup = NULL;
     }
 }

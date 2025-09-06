@@ -4,11 +4,13 @@
 #include <stdio.h>
 
 #ifndef NDEBUG
-#define DEBUG(fmt, ...) logger_log(LOG_DEBUG, fmt, ##__VA_ARGS__)
+#define BAD_DEBUG(fmt, ...) logger_log(LOG_DEBUG, fmt "%s", __VA_ARGS__)
+#define DEBUG(...) BAD_DEBUG(__VA_ARGS__, "")
 #else
-#define DEBUG(fmt, ...) \
-    do {                \
+#define BAD_DEBUG(fmt, ...) \
+    do {                    \
     } while (0)
+#define DEBUG(...) BAD_DEBUG(__VA_ARGS__, "")
 #endif
 
 enum LogLevel {

@@ -1,6 +1,6 @@
 # Makefile
 CC := clang
-CFLAGS := -Wall -Wextra -Werror -pedantic -pthread
+CFLAGS := -Wall -Wextra -Werror -pedantic -pthread -std=c11
 INCLUDE_DIR := include 
 SOURCE_DIR := src
 BUILD_DIR := build
@@ -17,14 +17,17 @@ $(_TARGET): $(_OBJS)
 	$(CC) -o $@ $^ $(INCLUDES) $(CFLAGS) 
 
 $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
-	@[[ -d $(dir $@) ]] || mkdir -p $(dir $@)
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES)
 
 clean:
 	rm -rf build/*
 
-debug: CFLAGS += -g -fsanitize=address,undefined,leak -O0 
+debug: CFLAGS += -g -fsanitize=address,undefined,leak -O0
 debug: all
+
+release: CFLAGS += -O3 -DNDEBUG
+release: all
 
 dev:
 	bear -- make all
@@ -38,4 +41,4 @@ test-string:
 	@echo -e "\n\033[1;4;34mChecking For Memory Leaks...\033[0m"
 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./$(BUILD_DIR)/test_string_utf8 && echo -e "\033[1;4;32mNo Memory Leaks Detected!\033[0m" || echo -e "\033[1;4;31mMemory Leaks Detected!\033[0m"
 
-.PHONY: clean all test dev debug test-string
+.PHONY: clean all test dev debug test-string release watch-log

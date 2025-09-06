@@ -31,7 +31,7 @@ void panel_render(void)
     printf("\r\033[2K");
 
     // left plugins
-    string* left_content = string_new(u8"");
+    string* left_content = string_new("");
     for (int i = 0; i < PLUGIN_LEFT_COUNT; i++) {
         PluginState state = plugin_states[i];
         string* old = left_content;
@@ -44,7 +44,7 @@ void panel_render(void)
     DEBUG("left content: %s (%zu chars, %zu bytes)", left_cstr, left_content->char_length, left_content->byte_length);
 
     // center plugins
-    string* center_content = string_new(u8"");
+    string* center_content = string_new("");
     for (int i = 0; i < PLUGIN_CENTER_COUNT; i++) {
         PluginState state = plugin_states[PLUGIN_LEFT_COUNT + i];
         string* old = center_content;
@@ -57,7 +57,7 @@ void panel_render(void)
     DEBUG("center content: %s (%zu chars, %zu bytes)", center_cstr, center_content->char_length, center_content->byte_length);
 
     // right plugins
-    string* right_content = string_new(u8"");
+    string* right_content = string_new("");
     for (int i = 0; i < PLUGIN_RIGHT_COUNT; i++) {
         PluginState state = plugin_states[PLUGIN_LEFT_COUNT + PLUGIN_CENTER_COUNT + i];
         string* old = right_content;

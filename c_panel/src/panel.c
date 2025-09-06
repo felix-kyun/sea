@@ -27,6 +27,7 @@ void panel_init(void)
 
     for (int i = 0; i < PLUGIN_COUNT; i++) {
         plugin_states[i].data = string_new(u8" ");
+        plugin_states[i].cleanup = NULL;
     }
 }
 
@@ -72,6 +73,11 @@ void panel_free(void)
     // free plugin states
     for (int i = 0; i < PLUGIN_COUNT; i++) {
         string_free(plugin_states[i].data);
+
+        // call cleanup if registered
+        if (plugin_states[i].cleanup) {
+            plugin_states[i].cleanup();
+        }
     }
 
     free(plugin_states);

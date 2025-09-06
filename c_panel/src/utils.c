@@ -16,3 +16,16 @@ void padding(int count)
         printf(" ");
     }
 }
+
+void string_limit(char* str, size_t max_chars)
+{
+    char* ptr = str;
+    size_t idx = 0;
+
+    while (*ptr && idx < max_chars) {
+        idx++;
+        ptr++;
+    }
+
+    *ptr = '\0';
+}

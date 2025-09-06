@@ -22,5 +22,5 @@ typedef struct Logger Logger;
 extern Logger* logger;
 
 void logger_init(const char* filename, bool stdout_enabled);
-void logger_log(enum LogLevel level, const char* message, ...);
+void logger_log(enum LogLevel level, const char* message, ...) __attribute__((format(printf, 2, 3)));
 void logger_free(void);

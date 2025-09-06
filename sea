@@ -92,7 +92,7 @@ _run() {
         if declare -F "_launch" >/dev/null; then
             # try to kill if it exsists
             if declare -F "_kill" >/dev/null; then
-                "_kill"
+                "_kill" 2>/dev/null
             fi
 
             _launch

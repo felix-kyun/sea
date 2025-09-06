@@ -7,8 +7,10 @@
 
 void handle_signal(int signum)
 {
-    if (signum == SIGHUP) {
+    static int respawned = 0;
+    if (!respawned && signum == SIGHUP) {
         // restart panel when kitty gets closed
+        respawned = 1;
         system(SPAWN_COMMAND);
     }
 

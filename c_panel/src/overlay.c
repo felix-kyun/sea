@@ -134,6 +134,8 @@ void overlay_print(unsigned short terminal_width)
     if (memcmp(print_buffer, overlay.content->data, overlay.content->byte_length) == 0)
         return;
 
+    memcpy(print_buffer, overlay.content->data, overlay.content->byte_length);
+
     int req_padding = (terminal_width - overlay.content->char_length) / 2;
     if (req_padding < 0)
         req_padding = 0;

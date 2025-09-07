@@ -26,7 +26,7 @@ clean:
 debug: CFLAGS += -g -fsanitize=address,undefined,leak -O0
 debug: all
 
-release: CFLAGS += -O3 -DNDEBUG
+release: CFLAGS += -O2 -DNDEBUG
 release: all
 
 dev:

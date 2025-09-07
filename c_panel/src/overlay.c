@@ -7,6 +7,7 @@
 #include "utils.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,6 +16,8 @@
 
 #define FIFO_PATH "/tmp/sea-notify-pipe"
 #define NOTIFY_COLOR BOLD_BLUE
+#define NOTIFY_ICON "󰂚 "
+#define NOTIFY_LIMIT 100
 
 Overlay overlay;
 char buffer[256];
@@ -131,8 +134,12 @@ void* overlay_watcher(void* _overlay)
 void overlay_print(unsigned short terminal_width)
 {
     // only run if content has changed
-    if (memcmp(print_buffer, overlay.content->data, overlay.content->byte_length) == 0)
+    if (memcmp(print_buffer, overlay.content->data, overlay.content->byte_length) == 0) {
+        DEBUG("overlay content unchanged, skipping print");
         return;
+    }
+
+    DEBUG("printing overlay content");
 
     memcpy(print_buffer, overlay.content->data, overlay.content->byte_length);
 
@@ -140,9 +147,14 @@ void overlay_print(unsigned short terminal_width)
     if (req_padding < 0)
         req_padding = 0;
 
+    printf("\r\033[2K");
     padding(req_padding);
-    printf(NOTIFY_COLOR);
-    fwrite(overlay.content->data, sizeof(char), overlay.content->byte_length, stdout);
+    printf(NOTIFY_COLOR NOTIFY_ICON);
+    fwrite(overlay.content->data, sizeof(char),
+        (overlay.content->char_length > NOTIFY_LIMIT)
+            ? NOTIFY_LIMIT
+            : overlay.content->byte_length,
+        stdout);
     printf(RESET);
 
     fflush(stdout);

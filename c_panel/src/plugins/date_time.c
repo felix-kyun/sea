@@ -14,7 +14,8 @@ void* plugin_date_time(void* _context)
     while (running) {
         time_t now = time(NULL);
         struct tm* t = localtime(&now);
-        strftime(buffer, 64, GREEN "󰃰 %Y-%m-%d " YELLOW " %H:%M:%S" RESET, t);
+        // strftime(buffer, 64, GREEN "󰃰 %Y-%m-%d " YELLOW " %H:%M:%S" RESET, t);
+        strftime(buffer, 64, YELLOW " %H:%M:%S " GREEN " 󰃰 %a %b %d %Y " RESET, t);
 
         // only signal render if the time has changed
         if (!string_equals_cstr(context->data, buffer)) {

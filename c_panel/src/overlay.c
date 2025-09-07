@@ -1,4 +1,5 @@
 #include "overlay.h"
+#include "colors.h"
 #include "log.h"
 #include "plugins/plugins.h"
 #include "state.h"
@@ -8,12 +9,12 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #define FIFO_PATH "/tmp/sea-notify-pipe"
+#define NOTIFY_COLOR BOLD_BLUE
 
 Overlay overlay;
 char buffer[256];
@@ -127,14 +128,22 @@ void* overlay_watcher(void* _overlay)
     return NULL;
 }
 
-void overlay_print(unsigned short terminal_width __attribute__((unused)))
+void overlay_print(unsigned short terminal_width)
 {
-    if (memcmp(print_buffer, overlay.content->data, overlay.content->byte_length) != 0) {
-        memcpy(print_buffer, overlay.content->data, overlay.content->byte_length);
-        print_buffer[overlay.content->byte_length] = '\0';
-        printf("%s", print_buffer);
-        fflush(stdout);
-    }
+    // only run if content has changed
+    if (memcmp(print_buffer, overlay.content->data, overlay.content->byte_length) == 0)
+        return;
+
+    int req_padding = (terminal_width - overlay.content->char_length) / 2;
+    if (req_padding < 0)
+        req_padding = 0;
+
+    padding(req_padding);
+    printf(NOTIFY_COLOR);
+    fwrite(overlay.content->data, sizeof(char), overlay.content->byte_length, stdout);
+    printf(RESET);
+
+    fflush(stdout);
 }
 
 void overlay_spawn_watcher(void)

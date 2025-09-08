@@ -1,6 +1,6 @@
 #include "colors.h"
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "state.h"
 #include "string-utf8.h"
 #include "utils.h"
@@ -168,9 +168,9 @@ char* get_battery_color(float percentage)
     }
 }
 
-void* plugin_battery(void* _state)
+void* module_battery(void* _state)
 {
-    PluginState* state = _state;
+    ModuleState* state = _state;
     char buffer[32];
     uint16_t full = 0;
     uint16_t now = 0;

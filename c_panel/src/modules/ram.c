@@ -1,6 +1,6 @@
 #include "colors.h"
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "state.h"
 #include "string-utf8.h"
 #include "utils.h"
@@ -13,7 +13,7 @@
 
 static char buffer[32];
 
-inline static void set_ram_usage(PluginState* state, float used, float total)
+inline static void set_ram_usage(ModuleState* state, float used, float total)
 {
     (void)total;
     snprintf(buffer, sizeof(buffer), " " RAM_COLOR RAM_ICON "%.1fGib " RESET, used);
@@ -61,9 +61,9 @@ uint32_t get_available_ram(void)
     return available_kb;
 }
 
-void* plugin_ram(void* _state)
+void* module_ram(void* _state)
 {
-    PluginState* state = _state;
+    ModuleState* state = _state;
     uint32_t total_ram = get_total_ram();
 
     while (running) {

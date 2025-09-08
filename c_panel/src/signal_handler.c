@@ -1,12 +1,14 @@
 #include "signal_handler.h"
 #include "config.h"
-#include "plugins/plugins.h"
+#include "log.h"
+#include "modules/modules.h"
 #include "state.h"
 #include <signal.h>
 #include <stdlib.h>
 
 void handle_signal(int signum)
 {
+    DEBUG("received signal: %d", signum);
     static int respawned = 0;
     if (!respawned && signum == SIGHUP) {
         // restart panel when kitty gets closed

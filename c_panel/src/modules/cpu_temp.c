@@ -1,6 +1,6 @@
 #include "colors.h"
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "state.h"
 #include "utils.h"
 #include <stdio.h>
@@ -11,7 +11,7 @@
 
 static char buffer[32];
 
-inline static void set_cpu_temp(PluginState* state, int temp)
+inline static void set_cpu_temp(ModuleState* state, int temp)
 {
     snprintf(buffer, sizeof(buffer), " " TEMP_COLOR TEMP_ICON "%d°C " RESET, temp);
     string_set_cstr(state->data, buffer);
@@ -37,9 +37,9 @@ int get_cpu_temp(void)
     return temp / 1000;
 }
 
-void* plugin_cpu_temp(void* _state)
+void* module_cpu_temp(void* _state)
 {
-    PluginState* state = _state;
+    ModuleState* state = _state;
 
     while (running) {
         int temp = get_cpu_temp();

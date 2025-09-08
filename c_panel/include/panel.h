@@ -1,5 +1,5 @@
 #pragma once
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include <pthread.h>
 
 typedef struct RenderSignal {
@@ -10,15 +10,15 @@ typedef struct RenderSignal {
 // singleton render signal instance to be shared between plugin threads
 extern RenderSignal render_signal;
 
-// array of plugin states
+// array of module states
 typedef void* (*StartRoutine)(void*);
 
-// to store plugin states
-extern PluginState* plugin_states;
+// to store module states
+extern ModuleState* module_states;
 
 // methods
-void panel_spawn_plugin_thread(void* (*start_routine)(void*), PluginState* context);
+void panel_spawn_module_thread(void* (*start_routine)(void*), ModuleState* context);
 void panel_init(void);
 void panel_render(void);
-void panel_init_plugins(void);
+void panel_init_modules(void);
 void panel_free(void);

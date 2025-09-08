@@ -1,6 +1,6 @@
 #include "colors.h"
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "state.h"
 #include "utils.h"
 #include <signal.h>
@@ -17,7 +17,7 @@
 pid_t pid = 0;
 
 // cleanup function
-void plugin_media_stop(void)
+void module_media_stop(void)
 {
     if (pid != 0) {
         kill(pid, SIGTERM);
@@ -25,13 +25,13 @@ void plugin_media_stop(void)
     }
 }
 
-void* plugin_media(void* _state)
+void* module_media(void* _state)
 {
-    PluginState* state = _state;
+    ModuleState* state = _state;
     int pipe_fd[2];
 
     // register cleanup function
-    state->cleanup = plugin_media_stop;
+    state->cleanup = module_media_stop;
 
     // create pipe and fork
     pipe(pipe_fd);

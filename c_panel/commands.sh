@@ -11,5 +11,17 @@ _launch() {
         --lines 1 \
         --detach \
         --output-name "${PANEL_OUTPUT}" \
-        -- bash -c "./build/panel" 
+        -- "${CURRENT_DIR}/build/panel"
+}
+
+_build() {
+    CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
+    cd "$CURRENT_DIR" || exit
+
+    make clean
+    make -j release
+}
+
+_kill() {
+    ps aux | grep 'build/panel' | awk ' $11 ~ /^\/.*build\/panel$/ { print $2 }' | xargs kill -9
 }

@@ -1,6 +1,6 @@
 #include "colors.h"
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "state.h"
 #include "utils.h"
 #include <stdint.h>
@@ -36,16 +36,16 @@ static inline uint64_t get_cpu_idle_time(void)
     return idle + iowait;
 }
 
-static inline void set_cpu_usage(PluginState* state, int usage)
+static inline void set_cpu_usage(ModuleState* state, int usage)
 {
     snprintf(buffer, sizeof(buffer), " " CPU_COLOR CPU_ICON "%d%% " RESET, usage);
     string_set_cstr(state->data, buffer);
     panel_signal_render();
 }
 
-void* plugin_cpu(void* _state)
+void* module_cpu(void* _state)
 {
-    PluginState* state = _state;
+    ModuleState* state = _state;
     set_cpu_usage(state, 0);
 
     while (running) {

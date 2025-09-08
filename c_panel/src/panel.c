@@ -1,13 +1,13 @@
 #include "panel.h"
 #include "config.h"
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "render.h"
 #include <stdlib.h>
 
 // global
 bool running;
-PluginState* plugin_states;
+ModuleState* module_states;
 RenderSignal render_signal
     = {
           .mutex = PTHREAD_MUTEX_INITIALIZER,
@@ -23,15 +23,15 @@ void panel_init(void)
     render_init();
 
     // create plugin states
-    plugin_states = malloc(sizeof(PluginState) * PLUGIN_COUNT);
+    module_states = malloc(sizeof(ModuleState) * MODULE_COUNT);
 
-    for (int i = 0; i < PLUGIN_COUNT; i++) {
-        plugin_states[i].data = string_new(" ");
-        plugin_states[i].cleanup = NULL;
+    for (int i = 0; i < MODULE_COUNT; i++) {
+        module_states[i].data = string_new(" ");
+        module_states[i].cleanup = NULL;
     }
 }
 
-void panel_spawn_plugin_thread(void* (*start_routine)(void*), PluginState* context)
+void panel_spawn_module_thread(void* (*start_routine)(void*), ModuleState* context)
 {
     pthread_t thread;
     if (pthread_create(&thread, NULL, start_routine, context) != 0) {
@@ -48,18 +48,18 @@ void panel_signal_render(void)
 }
 
 #define X(name)                                                           \
-    panel_spawn_plugin_thread(plugin_##name, &plugin_states[name##_idx]); \
+    panel_spawn_module_thread(module_##name, &module_states[name##_idx]); \
     logger_log(LOG_SUCCESS, "started plugin: " #name);
-void panel_init_plugins(void)
+void panel_init_modules(void)
 {
     logger_log(LOG_INFO, "initializing plugins");
-    logger_log(LOG_INFO, "Found %d plugins", PLUGIN_COUNT);
-    logger_log(LOG_INFO, "Left: %d", PLUGIN_LEFT_COUNT);
-    logger_log(LOG_INFO, "Center: %d", PLUGIN_CENTER_COUNT);
-    logger_log(LOG_INFO, "Right: %d", PLUGIN_RIGHT_COUNT);
+    logger_log(LOG_INFO, "Found %d plugins", MODULE_COUNT);
+    logger_log(LOG_INFO, "Left: %d", LEFT_COUNT);
+    logger_log(LOG_INFO, "Center: %d", CENTER_COUNT);
+    logger_log(LOG_INFO, "Right: %d", RIGHT_COUNT);
 
     // spawn enabled plugins
-    PLUGIN_LIST
+    MODULE_LIST
 
     logger_log(LOG_SUCCESS, "all plugins started");
 }
@@ -71,16 +71,16 @@ void panel_free(void)
     pthread_cond_destroy(&render_signal.cond);
 
     // free plugin states
-    for (int i = 0; i < PLUGIN_COUNT; i++) {
-        string_free(plugin_states[i].data);
+    for (int i = 0; i < MODULE_COUNT; i++) {
+        string_free(module_states[i].data);
 
         // call cleanup if registered
-        if (plugin_states[i].cleanup) {
-            plugin_states[i].cleanup();
+        if (module_states[i].cleanup) {
+            module_states[i].cleanup();
         }
     }
 
-    free(plugin_states);
+    free(module_states);
     // show cursor
     printf("\033[?25h");
 }

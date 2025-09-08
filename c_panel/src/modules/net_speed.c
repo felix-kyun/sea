@@ -1,6 +1,6 @@
 #include "colors.h"
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "state.h"
 #include "utils.h"
 #include <stdint.h>
@@ -12,7 +12,7 @@
 #define NET_DOWN_ICON " "
 #define NET_COLOR BLUE
 
-void inline static set_net_speed(PluginState* state, int down_kib, int up_kib)
+void inline static set_net_speed(ModuleState* state, int down_kib, int up_kib)
 {
     char buffer[64];
     snprintf(buffer, sizeof(buffer), " " NET_COLOR NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB " RESET, up_kib, down_kib);
@@ -44,9 +44,9 @@ void static read_net_stat(int* down_kib, int* up_kib)
     fclose(file);
 }
 
-void* plugin_net_speed(void* _state)
+void* module_net_speed(void* _state)
 {
-    PluginState* state = _state;
+    ModuleState* state = _state;
     set_net_speed(state, 0, 0);
 
     while (running) {

@@ -4,10 +4,10 @@
 
 typedef void (*cleanup_func)(void);
 
-typedef struct PluginState {
+typedef struct ModuleState {
     string* data;
     cleanup_func cleanup;
-} PluginState;
+} ModuleState;
 
 // used to signal render to render the panel again
 // defined in panel.c

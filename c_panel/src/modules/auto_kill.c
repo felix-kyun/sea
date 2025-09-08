@@ -1,11 +1,11 @@
 #include "log.h"
-#include "plugins/plugins.h"
+#include "modules/modules.h"
 #include "state.h"
 #include "utils.h"
 
-void* plugin_auto_kill(void* _context)
+void* module_auto_kill(void* _context)
 {
-    PluginState* context = _context;
+    ModuleState* context = _context;
     char buffer[32];
     string_set_cstr(context->data, " 20s ");
 

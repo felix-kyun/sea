@@ -1,8 +1,8 @@
 #include "config.h"
 #include "log.h"
+#include "modules/modules.h"
 #include "overlay.h"
 #include "panel.h"
-#include "plugins/plugins.h"
 #include "string-utf8.h"
 #include "utils.h"
 #include <stdint.h>
@@ -26,20 +26,21 @@ void render_init(void)
 
 void panel_render(void)
 {
+    if (overlay.active) {
+        DEBUG("overlay active, rendering overlay");
+        overlay_print(terminal_size.ws_col);
+        return;
+    }
+
     DEBUG("render start");
 
     // erase in line
     printf("\r\033[2K");
 
-    if (overlay.active) {
-        overlay_print(terminal_size.ws_col);
-        return;
-    }
-
     // left plugins
     string* left_content = string_new("");
-    for (int i = 0; i < PLUGIN_LEFT_COUNT; i++) {
-        PluginState state = plugin_states[i];
+    for (int i = 0; i < LEFT_COUNT; i++) {
+        ModuleState state = module_states[i];
         string* old = left_content;
 
         left_content = string_concat(left_content, state.data);
@@ -49,10 +50,10 @@ void panel_render(void)
     char* left_cstr = string_cast(left_content);
     // DEBUG("left content: %s (%zu chars, %zu bytes)", left_cstr, left_content->char_length, left_content->byte_length);
 
-    // center plugins
+    // center modules
     string* center_content = string_new("");
-    for (int i = 0; i < PLUGIN_CENTER_COUNT; i++) {
-        PluginState state = plugin_states[PLUGIN_LEFT_COUNT + i];
+    for (int i = 0; i < CENTER_COUNT; i++) {
+        ModuleState state = module_states[LEFT_COUNT + i];
         string* old = center_content;
 
         center_content = string_concat(center_content, state.data);
@@ -62,10 +63,10 @@ void panel_render(void)
     char* center_cstr = string_cast(center_content);
     // DEBUG("center content: %s (%zu chars, %zu bytes)", center_cstr, center_content->char_length, center_content->byte_length);
 
-    // right plugins
+    // right modules
     string* right_content = string_new("");
-    for (int i = 0; i < PLUGIN_RIGHT_COUNT; i++) {
-        PluginState state = plugin_states[PLUGIN_LEFT_COUNT + PLUGIN_CENTER_COUNT + i];
+    for (int i = 0; i < RIGHT_COUNT; i++) {
+        ModuleState state = module_states[LEFT_COUNT + CENTER_COUNT + i];
         string* old = right_content;
 
         right_content = string_concat(right_content, state.data);

@@ -7,7 +7,6 @@
 #include "utils.h"
 #include <errno.h>
 #include <fcntl.h>
-#include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
@@ -143,7 +142,7 @@ void overlay_print(unsigned short terminal_width)
 
     memcpy(print_buffer, overlay.content->data, overlay.content->byte_length);
 
-    int req_padding = (terminal_width - overlay.content->char_length) / 2;
+    int req_padding = ((terminal_width - overlay.content->char_length + 2) / 2);
     if (req_padding < 0)
         req_padding = 0;
 

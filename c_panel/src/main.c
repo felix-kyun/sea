@@ -1,3 +1,4 @@
+#include "config.h"
 #include "log.h"
 #include "overlay.h"
 #include "panel.h"
@@ -5,11 +6,13 @@
 #include "state.h"
 #include <unistd.h>
 
-int main(void)
+int main(int argc, char** argv)
 {
+    config_init(argc, argv);
 
-    logger_init("panel.log", false);
+    logger_init(config.log_file, config.log_to_stdout);
     logger_log(LOG_SUCCESS, "starting sea panel with pid %d", getpid());
+
     setup_signal_handlers();
     panel_init();
     panel_init_modules();
@@ -30,6 +33,7 @@ int main(void)
 
     overlay_free();
     panel_free();
+    config_free();
     logger_log(LOG_SUCCESS, "panel stopped");
     return 0;
 }

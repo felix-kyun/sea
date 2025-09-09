@@ -1,42 +1,13 @@
 #pragma once
-#include "../config.h"
+#include "_config.macros.h"
+#include <stdbool.h>
 
-#define MODULE_LIST \
-    LEFT            \
-        CENTER      \
-            RIGHT
+typedef struct Config {
+    const char* log_file;
+    bool log_to_stdout;
+} Config;
 
-// fix unnecessary warnings
-#define X(name) void* module_##name(void* arg);
-MODULE_LIST
-#undef X
+extern Config config;
 
-// macros to define plugin counts
-
-#define X(name) name##_idx,
-typedef enum {
-    MODULE_LIST
-        MODULE_COUNT
-} module_indexes;
-#undef X
-
-#define X(name) name##_left_idx,
-typedef enum {
-    LEFT
-        LEFT_COUNT,
-} module_left_indexes;
-#undef X
-
-#define X(name) name##_center_idx,
-typedef enum {
-    CENTER
-        CENTER_COUNT,
-} module_center_indexes;
-#undef X
-
-#define X(name) name##_right_idx,
-typedef enum {
-    RIGHT
-        RIGHT_COUNT,
-} module_right_indexes;
-#undef X
+void config_init(int argc, char** argv);
+void config_free(void);

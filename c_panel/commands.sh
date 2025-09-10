@@ -25,3 +25,7 @@ _build() {
 _kill() {
     ps aux | grep 'build/panel' | awk ' $11 ~ /^\/.*build\/panel$/ { print $2 }' | xargs kill -9
 }
+
+_notify() {
+    echo -n "$1" > /tmp/sea-notify-pipe
+}

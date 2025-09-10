@@ -1,3 +1,4 @@
+#include "render.h"
 #include "config.h"
 #include "log.h"
 #include "modules/modules.h"
@@ -11,6 +12,7 @@
 #include <unistd.h>
 
 struct winsize terminal_size;
+RenderInfo render_info;
 
 void render_init(void)
 {
@@ -77,15 +79,15 @@ void panel_render(void)
     // DEBUG("right content: %s (%zu chars, %zu bytes)", right_cstr, right_content->char_length, right_content->byte_length);
 
     // calculate spacing
-    uint16_t center_padding = ((terminal_size.ws_col - center_content->char_length) / 2) - left_content->char_length;
-    uint16_t right_padding = terminal_size.ws_col - (left_content->char_length + center_content->char_length + right_content->char_length + center_padding);
+    render_info.left_padding = ((terminal_size.ws_col - center_content->char_length) / 2) - left_content->char_length;
+    render_info.right_padding = terminal_size.ws_col - (left_content->char_length + center_content->char_length + right_content->char_length + render_info.left_padding);
     // DEBUG("padding: center=%d, right=%d", center_padding, right_padding);
 
     // display contents
     printf("%s", left_cstr);
-    padding(center_padding);
+    padding(render_info.left_padding);
     printf("%s", center_cstr);
-    padding(right_padding);
+    padding(render_info.right_padding);
     printf("%s", right_cstr);
 
     fflush(stdout);

@@ -28,6 +28,13 @@ void panel_init(void)
     for (int i = 0; i < MODULE_COUNT; i++) {
         module_states[i].data = string_new(" ");
         module_states[i].cleanup = NULL;
+
+        // event handlers
+        module_states[i].on_left_click = NULL;
+        module_states[i].on_right_click = NULL;
+        module_states[i].on_middle_click = NULL;
+        module_states[i].on_scroll_up = NULL;
+        module_states[i].on_scroll_down = NULL;
     }
 }
 

@@ -1,9 +1,11 @@
 #include "config.h"
 #include "log.h"
+#include "mouse_events.h"
 #include "overlay.h"
 #include "panel.h"
 #include "signal_handler.h"
 #include "state.h"
+#include "utils.h"
 #include <unistd.h>
 
 int main(int argc, char** argv)
@@ -12,8 +14,10 @@ int main(int argc, char** argv)
 
     logger_init(config.log_file, config.log_to_stdout);
     logger_log(LOG_SUCCESS, "starting sea panel with pid %d", getpid());
+    debug_config();
 
     setup_signal_handlers();
+    mouse_init();
     panel_init();
     panel_init_modules();
     overlay_init();
@@ -34,6 +38,7 @@ int main(int argc, char** argv)
     overlay_free();
     panel_free();
     config_free();
+    mouse_free();
     logger_log(LOG_SUCCESS, "panel stopped");
     return 0;
 }

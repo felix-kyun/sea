@@ -25,6 +25,13 @@ void module_media_stop(void)
     }
 }
 
+void module_on_click(ModuleState* state)
+{
+    (void)state;
+    DEBUG("media clicked, toggling play/pause");
+    system("playerctl play-pause");
+}
+
 void* module_media(void* _state)
 {
     ModuleState* state = _state;
@@ -32,6 +39,7 @@ void* module_media(void* _state)
 
     // register cleanup function
     state->cleanup = module_media_stop;
+    state->on_left_click = module_on_click;
 
     // create pipe and fork
     pipe(pipe_fd);

@@ -4,3 +4,4 @@
 void msleep(long msec);
 void padding(int count);
 void string_limit(char* str, size_t max_chars);
+void debug_config(void);

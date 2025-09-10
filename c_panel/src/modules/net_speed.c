@@ -11,6 +11,7 @@
 #define NET_UP_ICON " "
 #define NET_DOWN_ICON " "
 #define NET_COLOR BLUE
+#define NET_REFRESH 2
 
 void inline static set_net_speed(ModuleState* state, int down_kib, int up_kib)
 {
@@ -52,11 +53,11 @@ void* module_net_speed(void* _state)
     while (running) {
         int down1, up1, down2, up2;
         read_net_stat(&down1, &up1);
-        msleep(5000);
+        msleep(NET_REFRESH * 1000);
         read_net_stat(&down2, &up2);
 
-        int down_speed = down2 - down1;
-        int up_speed = up2 - up1;
+        int down_speed = (down2 - down1) / NET_REFRESH;
+        int up_speed = (up2 - up1) / NET_REFRESH;
 
         set_net_speed(state, down_speed, up_speed);
     }

@@ -1,4 +1,6 @@
 #include "utils.h"
+#include "config.h"
+#include "log.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -28,4 +30,12 @@ void string_limit(char* str, size_t max_chars)
     }
 
     *ptr = '\0';
+}
+
+void debug_config(void)
+{
+    DEBUG("----- CONFIG -----");
+    DEBUG("log file: %s", config.log_file);
+    DEBUG("log to stdout: %d", config.log_to_stdout);
+    DEBUG("------------------");
 }

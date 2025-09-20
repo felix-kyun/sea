@@ -10,6 +10,7 @@
 #define BRIGHTNESS_ICON " "
 #define BRIGHTNESS_COLOR GREEN
 #define BRIGHTNESS_PATH "/sys/class/backlight/"
+#define DELTA 1000
 
 #define EVENT_SIZE (sizeof(struct inotify_event))
 #define BUF_LEN (1024 * (EVENT_SIZE + 16))
@@ -93,9 +94,47 @@ static int get_current_brightness(void)
     return current_brightness;
 }
 
+// you need to be in the video group to change brightness
+static void change_brightness(int change)
+{
+    FILE* f = fopen(current_brightness_path, "w");
+
+    if (f == NULL) {
+        logger_log(LOG_ERROR, "failed to open brightness file for writing: %s", current_brightness_path);
+        return;
+    }
+
+    int next = get_current_brightness() + change;
+
+    if (next <= max_brightness) {
+        fprintf(f, "%d", next);
+    } else {
+        logger_log(LOG_WARN, "brightness is already at maximum");
+    }
+
+    fclose(f);
+}
+
+static void on_scroll_up(ModuleState* state)
+{
+    (void)state;
+    DEBUG("brightness scroll up");
+    change_brightness(DELTA);
+}
+
+static void on_scroll_down(ModuleState* state)
+{
+    (void)state;
+    DEBUG("brightness scroll down");
+    change_brightness(-DELTA);
+}
+
 void* module_brightness(void* _state)
 {
     ModuleState* state = _state;
+    state->on_scroll_up = on_scroll_up;
+    state->on_scroll_down = on_scroll_down;
+
     int ret = init_brightness_paths();
     if (ret < 0) {
         logger_log(LOG_ERROR, "failed to initialize brightness paths");

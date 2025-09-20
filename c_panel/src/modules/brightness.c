@@ -10,7 +10,7 @@
 #define BRIGHTNESS_ICON " "
 #define BRIGHTNESS_COLOR GREEN
 #define BRIGHTNESS_PATH "/sys/class/backlight/"
-#define DELTA 1000
+#define DELTA 3000
 
 #define EVENT_SIZE (sizeof(struct inotify_event))
 #define BUF_LEN (1024 * (EVENT_SIZE + 16))
@@ -106,11 +106,12 @@ static void change_brightness(int change)
 
     int next = get_current_brightness() + change;
 
-    if (next <= max_brightness) {
-        fprintf(f, "%d", next);
-    } else {
-        logger_log(LOG_WARN, "brightness is already at maximum");
+    if (next < 0) {
+        next = 0;
+    } else if (next > max_brightness) {
+        next = max_brightness;
     }
+    fprintf(f, "%d\n", next);
 
     fclose(f);
 }

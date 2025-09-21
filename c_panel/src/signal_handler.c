@@ -2,6 +2,7 @@
 #include "config.h"
 #include "log.h"
 #include "modules/modules.h"
+#include "render.h"
 #include "state.h"
 #include <signal.h>
 #include <stdlib.h>
@@ -14,6 +15,11 @@ void handle_signal(int signum)
         // restart panel when kitty gets closed
         respawned = 1;
         system(SPAWN_COMMAND);
+    } else if (signum == SIGWINCH) {
+        // terminal resized
+        render_recalculate_size();
+        panel_signal_render();
+        return;
     }
 
     running = false;
@@ -31,4 +37,5 @@ void setup_signal_handlers(void)
     sigaction(SIGTERM, &sa, NULL);
     sigaction(SIGKILL, &sa, NULL);
     sigaction(SIGHUP, &sa, NULL);
+    sigaction(SIGWINCH, &sa, NULL);
 }

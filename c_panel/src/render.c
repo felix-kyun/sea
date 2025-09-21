@@ -14,13 +14,19 @@
 struct winsize terminal_size;
 RenderInfo render_info;
 
-void render_init(void)
+void render_recalculate_size(void)
 {
+    DEBUG("recalculating terminal size");
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &terminal_size) == -1) {
         logger_log(LOG_ERROR, "failed to get terminal size");
         terminal_size.ws_col = 80;
         terminal_size.ws_row = 24;
     }
+}
+
+void render_init(void)
+{
+    render_recalculate_size();
     // hide cursor
     printf("\033[?25l");
     logger_log(LOG_INFO, "terminal size: %dx%d", terminal_size.ws_col, terminal_size.ws_row);

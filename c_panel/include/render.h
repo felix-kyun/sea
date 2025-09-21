@@ -8,3 +8,4 @@ typedef struct RenderInfo {
 extern RenderInfo render_info;
 
 void render_init(void);
+void render_recalculate_size(void);

@@ -81,5 +81,14 @@ int main(void)
     assert(!string_equals_cstr(cmp_cstr, u8"Hello World"));
     string_free(cmp_cstr);
 
+    // can create ascii-only strings
+    string* ascii_str = string_new(u8"Hello 😀");
+    assert(ascii_str->byte_length == 10);
+    assert(ascii_str->char_length == 7);
+    string_set_cstr_ascii(ascii_str, u8"Hello 😀");
+    assert(ascii_str->byte_length == 6);
+    assert(ascii_str->char_length == 6);
+    string_free(ascii_str);
+
     return 0;
 }

@@ -64,3 +64,8 @@ bool string_equals(string* str1, string* str2);
 // @param str2: second c-style string (null-terminated) to compare
 // @return true if the strings are equal, false otherwise
 bool string_equals_cstr(string* str1, const char* str2);
+
+// @param str: a pointer to a utf-8 string struct
+// @param data: a c-style string (null-terminated).
+// only sets ASCII characters, non-ASCII characters are ignored
+void string_set_cstr_ascii(string* str, const char* data);

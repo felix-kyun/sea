@@ -123,6 +123,41 @@ void string_set_cstr(string* str, const char* data)
     str->char_length = string_length(data);
 }
 
+static size_t ascii_count(const char* data)
+{
+    size_t count = 0;
+    size_t len = strlen(data);
+    for (size_t i = 0; i < len; i++) {
+        if ((unsigned char)data[i] <= 0x7F) {
+            count++;
+        }
+    }
+    return count;
+}
+
+void string_set_cstr_ascii(string* str, const char* data)
+{
+    size_t new_byte_length = ascii_count(data);
+    if (new_byte_length > str->byte_length) {
+        if (str->data) {
+            free(str->data);
+        }
+        str->data = (char*)malloc(new_byte_length * sizeof(char));
+    }
+
+    // copy ascii values byte by byte
+    for (size_t read = 0, write = 0; write < new_byte_length; read++) {
+        if ((unsigned char)data[read] <= 0x7F) {
+            str->data[write++] = data[read];
+        }
+    }
+
+    // ascii only uses one byte per character
+    // so byte_length == char_length
+    str->byte_length = new_byte_length;
+    str->char_length = new_byte_length;
+}
+
 bool string_equals(string* str1, string* str2)
 {
     if (str1->byte_length != str2->byte_length) {

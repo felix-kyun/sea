@@ -32,6 +32,26 @@ void module_on_click(ModuleState* state)
     system("playerctl play-pause");
 }
 
+static void ascii(const char* data)
+{
+    if (!data)
+        return;
+
+    size_t len = strlen(data);
+    char* result = (char*)malloc((len + 1) * sizeof(char));
+    size_t j = 0;
+
+    for (size_t i = 0; i < len; i++) {
+        if ((unsigned char)data[i] <= 0x7F) { // ASCII character
+            result[j++] = data[i];
+        }
+    }
+    result[j] = '\0';
+
+    memcpy((char*)data, result, j + 1);
+    free(result);
+}
+
 void* module_media(void* _state)
 {
     ModuleState* state = _state;
@@ -77,6 +97,7 @@ void* module_media(void* _state)
             string_set_cstr(state->data, "");
         } else {
             char media_buffer[128];
+            ascii(buffer);
             snprintf(media_buffer, sizeof(media_buffer), MEDIA_COLOR " " MEDIA_ICON "%s " RESET, buffer);
             string_limit(buffer, LIMIT);
             string_set_cstr(state->data, media_buffer);

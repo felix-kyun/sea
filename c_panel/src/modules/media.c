@@ -77,8 +77,8 @@ void* module_media(void* _state)
             string_set_cstr(state->data, "");
         } else {
             char media_buffer[128];
-            string_limit(buffer, LIMIT);
             snprintf(media_buffer, sizeof(media_buffer), MEDIA_COLOR " " MEDIA_ICON "%s " RESET, buffer);
+            string_limit(buffer, LIMIT);
             string_set_cstr(state->data, media_buffer);
         }
     }

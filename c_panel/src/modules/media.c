@@ -12,7 +12,7 @@
 #define MEDIA_COLOR MAGENTA
 #define MEDIA_FORMAT "{{ title }}"
 #define MEDIA_ICON "󰎆 "
-#define LIMIT 40
+#define LIMIT 60
 
 pid_t pid = 0;
 
@@ -87,7 +87,7 @@ void* module_media(void* _state)
         logger_log(LOG_ERROR, "failed to open pipe for media plugin");
     }
 
-    char buffer[256];
+    char buffer[128];
     while (running && (fgets(buffer, sizeof(buffer), pipe) != NULL)) {
         DEBUG("media output: %s", buffer);
         // remove newline
@@ -98,8 +98,8 @@ void* module_media(void* _state)
         } else {
             char media_buffer[128];
             ascii(buffer);
-            snprintf(media_buffer, sizeof(media_buffer), MEDIA_COLOR " " MEDIA_ICON "%s " RESET, buffer);
             string_limit(buffer, LIMIT);
+            snprintf(media_buffer, sizeof(media_buffer), MEDIA_COLOR " " MEDIA_ICON "%s " RESET, buffer);
             string_set_cstr(state->data, media_buffer);
         }
     }

@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 
-# helper script to send notifications to the panel
-CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-
-source "${CURRENT_DIR}/utils.sh"
-source "${CURRENT_DIR}/config.sh"
-
 osd_send() {
-    echo "osd:set:${1}" | socat - UNIX-CONNECT:"${SOCKET}" 2>/dev/null
+    echo -n "${1}" > /tmp/sea-notify-pipe
 }
 
 send_volume() {
@@ -61,3 +55,4 @@ elif [[ "$1" == "brightness" ]]; then
         ;;
     esac
 fi
+

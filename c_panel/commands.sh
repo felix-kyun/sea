@@ -29,3 +29,9 @@ _kill() {
 _notify() {
     echo -n "$1" > /tmp/sea-notify-pipe
 }
+
+_osd() {
+    CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+
+    bash "${CURRENT_DIR}/osd.sh" "$@"
+}

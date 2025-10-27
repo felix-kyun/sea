@@ -10,12 +10,13 @@
 void handle_signal(int signum)
 {
     DEBUG("received signal: %d", signum);
-    static int respawned = 0;
-    if (!respawned && signum == SIGHUP) {
-        // restart panel when kitty gets closed
-        respawned = 1;
-        system(SPAWN_COMMAND);
-    } else if (signum == SIGWINCH) {
+    // static int respawned = 0;
+    // if (!respawned && signum == SIGHUP) {
+    //     // restart panel when kitty gets closed
+    //     respawned = 1;
+    //     system(SPAWN_COMMAND);
+    // }
+    if (signum == SIGWINCH) {
         // terminal resized
         render_recalculate_size();
         panel_signal_render();
@@ -33,9 +34,9 @@ void setup_signal_handlers(void)
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGTERM, &sa, NULL);
-    sigaction(SIGKILL, &sa, NULL);
-    sigaction(SIGHUP, &sa, NULL);
+    // sigaction(SIGINT, &sa, NULL);
+    // sigaction(SIGTERM, &sa, NULL);
+    // sigaction(SIGKILL, &sa, NULL);
+    // sigaction(SIGHUP, &sa, NULL);
     sigaction(SIGWINCH, &sa, NULL);
 }

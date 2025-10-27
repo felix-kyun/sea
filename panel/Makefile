@@ -6,12 +6,12 @@ SOURCE_DIR := src
 BUILD_DIR := build
 INCLUDES := -I$(INCLUDE_DIR)
 SOURCES := $(shell find $(SOURCE_DIR) -type f -name '*.c')
-TARGET := panel
+TARGET := sea_panel_main
 
 _TARGET = $(addprefix $(BUILD_DIR)/, $(TARGET))
 _OBJS = $(patsubst $(SOURCE_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
 
-all: $(_TARGET)
+all: $(_TARGET) launch
 
 $(_TARGET): $(_OBJS)
 	$(CC) -o $@ $^ $(INCLUDES) $(CFLAGS) 
@@ -19,6 +19,9 @@ $(_TARGET): $(_OBJS)
 $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES)
+
+launch:
+	$(CC) -o $(BUILD_DIR)/sea_panel_launcher launch.c $(CFLAGS)
 
 clean:
 	rm -rf build/*
@@ -47,4 +50,4 @@ test-args:
 	@echo -e "\n\033[1;4;34mChecking For Memory Leaks...\033[0m"
 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./$(BUILD_DIR)/test_args && echo -e "\033[1;4;32mNo Memory Leaks Detected!\033[0m" || echo -e "\033[1;4;31mMemory Leaks Detected!\033[0m"
 
-.PHONY: clean all test dev debug test-string release watch-log
+.PHONY: clean all test dev debug test-string release watch-log launch

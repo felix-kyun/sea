@@ -1,4 +1,4 @@
-_launch() {
+_create() {
     CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
     [[ -f "$HOME/.config/sea.conf" ]] && source "$HOME/.config/sea.conf"
 
@@ -9,9 +9,14 @@ _launch() {
         --name sea-panel \
         --class sea-panel \
         --lines 1 \
-        --detach \
         --output-name "${PANEL_OUTPUT}" \
-        -- "${CURRENT_DIR}/build/panel"
+        -- "${CURRENT_DIR}/build/sea_panel_main"
+}
+
+_launch() {
+    CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
+
+    "${CURRENT_DIR}/build/sea_panel_launcher"
 }
 
 _build() {
@@ -23,7 +28,8 @@ _build() {
 }
 
 _kill() {
-    ps aux | grep 'build/panel' | awk ' $11 ~ /^\/.*build\/panel$/ { print $2 }' | xargs kill -9
+    pkill -f sea_panel_launcher
+    pkill -f sea_panel_main
 }
 
 _notify() {

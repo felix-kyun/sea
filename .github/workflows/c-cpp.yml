@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: clean
-      run: make clean
     - name: debug build
       run: make debug
     - name: string check

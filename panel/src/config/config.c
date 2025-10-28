@@ -1,0 +1,56 @@
+#include "config/config.h"
+#include "config/utils.h"
+#include <stdio.h>
+#include <string.h>
+
+LinearMap* map = NULL;
+
+void config_init(void)
+{
+    map = create_map();
+}
+
+void config_parse(const char* filepath)
+{
+    FILE* file = fopen(filepath, "r");
+
+    if (!file) {
+        perror("Failed to open config file");
+        return;
+    }
+
+    char line[LINE_MAX_LENGTH];
+    char section[SECTION_MAX_LENGTH] = "";
+    char key[KEY_MAX_LENGTH];
+    char value[VALUE_MAX_LENGTH];
+
+    while (fgets(line, sizeof(line), file)) {
+        // ignore comments and empty lines
+        if (starts_with(line, ";") || line[0] == '\n')
+            continue;
+
+        //  parse section headers
+        if (starts_with(line, "[")) {
+            sscanf(line, "[%63[^]]", section);
+            continue;
+        }
+
+        // parse kv pairs
+        sscanf(line, " %63[^= ]%*[ ]=%*[ ]%959[^\n]", key, value);
+        char* full_key = create_key(section, key);
+
+        map_set(map, full_key, value);
+    }
+
+    fclose(file);
+}
+
+char* config_get(const char* key)
+{
+    return (char*)map_get(map, key);
+}
+
+void config_free(void)
+{
+    free_map(map);
+}

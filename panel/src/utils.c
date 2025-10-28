@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "config.h"
+#include "config/config.h"
 #include "log.h"
 #include <stdio.h>
 #include <time.h>

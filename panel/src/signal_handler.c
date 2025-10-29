@@ -1,5 +1,4 @@
 #include "signal_handler.h"
-#include "config.h"
 #include "log.h"
 #include "modules/modules.h"
 #include "render.h"

@@ -9,6 +9,9 @@ void create_base_config(void)
 {
     config.log_file = "/tmp/panel.log";
     config.log_to_stdout = false;
+    config.left_modules = create_string_array();
+    config.center_modules = create_string_array();
+    config.right_modules = create_string_array();
 }
 
 void create_app_config(int argc, char** argv)
@@ -37,6 +40,16 @@ void create_app_config(int argc, char** argv)
             config.log_to_stdout = true;
         else
             config.log_to_stdout = false;
+    }
+
+    if (config_get("panel.left_modules")) {
+        string_array_from_csv(config.left_modules, config_get("panel.left_modules"));
+    }
+    if (config_get("panel.center_modules")) {
+        string_array_from_csv(config.center_modules, config_get("panel.center_modules"));
+    }
+    if (config_get("panel.right_modules")) {
+        string_array_from_csv(config.right_modules, config_get("panel.right_modules"));
     }
 
     // override from args

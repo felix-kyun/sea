@@ -8,6 +8,9 @@ LinearMap* map = NULL;
 void config_init(void)
 {
     map = create_map();
+    config.left_modules = create_string_array();
+    config.center_modules = create_string_array();
+    config.right_modules = create_string_array();
 }
 
 void config_parse(const char* filepath)

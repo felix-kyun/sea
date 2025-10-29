@@ -37,5 +37,17 @@ void debug_config(void)
     DEBUG("----- CONFIG -----");
     DEBUG("log file: %s", config.log_file);
     DEBUG("log to stdout: %d", config.log_to_stdout);
+    DEBUG("left modules:");
+    for (int i = 0; i < config.left_modules->length; i++) {
+        DEBUG("  - %s", config.left_modules->items[i]);
+    }
+    DEBUG("center modules:");
+    for (int i = 0; i < config.center_modules->length; i++) {
+        DEBUG("  - %s", config.center_modules->items[i]);
+    }
+    DEBUG("right modules:");
+    for (int i = 0; i < config.right_modules->length; i++) {
+        DEBUG("  - %s", config.right_modules->items[i]);
+    }
     DEBUG("------------------");
 }

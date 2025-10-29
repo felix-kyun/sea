@@ -1,4 +1,5 @@
 #pragma once
+#include "config/utils.h"
 #include <stdbool.h>
 
 #define CONFIG_FILE "/home/felix/.config/sea/panel.ini"
@@ -10,6 +11,9 @@
 typedef struct Config {
     const char* log_file;
     bool log_to_stdout;
+    StringArray* left_modules;
+    StringArray* center_modules;
+    StringArray* right_modules;
 } Config;
 
 extern Config config;

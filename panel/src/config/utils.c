@@ -84,3 +84,23 @@ char* create_key(const char* section, const char* key)
 
     return full_key;
 }
+
+void string_array_from_csv(StringArray* array, const char* csv)
+{
+    char* csv_copy = strdup(csv);
+    char* token = strtok(csv_copy, ",");
+
+    while (token != NULL) {
+        // trim whitespace
+        while (*token == ' ')
+            token++;
+        char* end = token + strlen(token) - 1;
+        while (end > token && *end == ' ')
+            *end-- = '\0';
+
+        string_array_add(array, token);
+        token = strtok(NULL, ",");
+    }
+
+    free(csv_copy);
+}

@@ -24,3 +24,4 @@ void free_map(LinearMap* map);
 // utils
 bool starts_with(const char* str, const char* prefix);
 char* create_key(const char* section, const char* key);
+void string_array_from_csv(StringArray* array, const char* csv);

@@ -17,28 +17,23 @@ int main(int argc, char** argv)
     logger_log(LOG_SUCCESS, "starting sea panel with pid %d", getpid());
 
     setup_signal_handlers();
-    mouse_init();
     panel_init();
-    panel_init_modules();
+    mouse_init();
     overlay_init();
-    overlay_spawn_watcher();
 
-    // render loop
     while (running) {
-        // wait for render signal
         pthread_mutex_lock(&render_signal.mutex);
         pthread_cond_wait(&render_signal.cond, &render_signal.mutex);
 
-        // render panel
         panel_render();
 
         pthread_mutex_unlock(&render_signal.mutex);
     }
 
     overlay_free();
-    panel_free();
     mouse_free();
-    config_free();
+    panel_free();
+
     destroy_app_config();
     logger_log(LOG_SUCCESS, "panel stopped");
     return 0;

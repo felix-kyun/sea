@@ -62,4 +62,6 @@ void destroy_app_config(void)
     free_string_array(config.left_modules);
     free_string_array(config.center_modules);
     free_string_array(config.right_modules);
+
+    config_free();
 }

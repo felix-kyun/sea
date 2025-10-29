@@ -53,6 +53,8 @@ void overlay_init(void)
     } else {
         logger_log(LOG_SUCCESS, "opened fifo at %s", FIFO_PATH);
     }
+
+    overlay_spawn_watcher();
 }
 
 void overlay_set(const char* content)

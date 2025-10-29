@@ -50,6 +50,8 @@ void panel_init(void)
         module_states[i].on_scroll_up = NULL;
         module_states[i].on_scroll_down = NULL;
     }
+
+    panel_init_modules();
 }
 
 void panel_signal_render(void)

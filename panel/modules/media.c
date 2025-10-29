@@ -1,7 +1,6 @@
 #include "colors.h"
 #include "log.h"
 #include "modules/modules.h"
-#include "state.h"
 #include "utils.h"
 #include <signal.h>
 #include <stdlib.h>

@@ -1,7 +1,6 @@
 #include "colors.h"
 #include "log.h"
 #include "modules/modules.h"
-#include "state.h"
 #include "string-utf8.h"
 #include "utils.h"
 #include <stdint.h>

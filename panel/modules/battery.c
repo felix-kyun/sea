@@ -137,18 +137,42 @@ unsigned int get_battery_now(void)
     return now;
 }
 
-char* battery_icon(void)
+char* get_battery_icon_from_percentage(float percentage)
+{
+    if (percentage >= 100.0f) {
+        return "󰁹";
+    } else if (percentage >= 90.0f) {
+        return "󰂂";
+    } else if (percentage >= 80.0f) {
+        return "󰂁";
+    } else if (percentage >= 70.0f) {
+        return "󰂀";
+    } else if (percentage >= 60.0f) {
+        return "󰁿";
+    } else if (percentage >= 50.0f) {
+        return "󰁾";
+    } else if (percentage >= 40.0f) {
+        return "󰁽";
+    } else if (percentage >= 30.0f) {
+        return "󰁼";
+    } else if (percentage >= 20.0f) {
+        return "󰁻";
+    } else {
+        return "󰁺";
+    }
+}
+
+char* battery_icon(float percentage)
 {
     BatteryStatus status = get_battery_status();
     switch (status) {
     case BATTERY_STATUS_CHARGING:
         return "󰂄";
-    case BATTERY_STATUS_DISCHARGING:
-        return "󰁺";
-    case BATTERY_STATUS_NOT_CHARGING:
-        return "󰂂";
     case BATTERY_STATUS_FULL:
         return "󰁹";
+    case BATTERY_STATUS_DISCHARGING:
+    case BATTERY_STATUS_NOT_CHARGING:
+        return get_battery_icon_from_percentage(percentage);
     default:
         return "󰂃";
     }
@@ -182,7 +206,7 @@ void* module_init(void* _state)
         now = get_battery_now() / 1000;
         float percentage = ((float)now / full) * 100;
         snprintf(buffer, 32, "%s%s %.0f%% " RESET,
-            get_battery_color(percentage), battery_icon(), percentage);
+            get_battery_color(percentage), battery_icon(percentage), percentage);
 
         string_set_cstr(state->data, buffer);
         state->signal_render();

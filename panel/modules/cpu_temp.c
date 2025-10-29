@@ -37,7 +37,7 @@ int get_cpu_temp(void)
     return temp / 1000;
 }
 
-void* module_cpu_temp(void* _state)
+void* module_init(void* _state)
 {
     ModuleState* state = _state;
 

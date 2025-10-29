@@ -2,6 +2,8 @@
 #include "string-utf8.h"
 #include <stdbool.h>
 
+void* module_init(void* context);
+
 struct ModuleState;
 
 typedef void (*cleanup_func)(void);

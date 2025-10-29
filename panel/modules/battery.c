@@ -168,7 +168,7 @@ char* get_battery_color(float percentage)
     }
 }
 
-void* module_battery(void* _state)
+void* module_init(void* _state)
 {
     ModuleState* state = _state;
     char buffer[32];

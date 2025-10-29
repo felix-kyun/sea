@@ -1,20 +1,29 @@
 # Makefile
 CC := clang
 CFLAGS := -Wall -Wextra -Werror -pedantic -pthread -std=c11
+TARGET_FLAGS := -rdynamic -ldl
+MODULE_FLAGS := -shared -fPIC
 INCLUDE_DIR := include 
 SOURCE_DIR := src
+MODULES_DIR := modules
 BUILD_DIR := build
 INCLUDES := -I$(INCLUDE_DIR)
 SOURCES := $(shell find $(SOURCE_DIR) -type f -name '*.c')
+MODULES := $(shell find  $(MODULES_DIR) -type f -name '*.c')
 TARGET := sea_panel_main
 
 _TARGET = $(addprefix $(BUILD_DIR)/, $(TARGET))
 _OBJS = $(patsubst $(SOURCE_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
+_MODULES = $(patsubst $(MODULES_DIR)/%.c, $(BUILD_DIR)/modules/%.so, $(MODULES))
 
 all: $(_TARGET) launch
 
-$(_TARGET): $(_OBJS)
-	$(CC) -o $@ $^ $(INCLUDES) $(CFLAGS) 
+$(_TARGET): $(_OBJS) $(_MODULES)
+	$(CC) -o $@ $^ $(INCLUDES) $(CFLAGS) $(TARGET_FLAGS)
+
+$(_MODULES): $(BUILD_DIR)/modules/%.so: $(MODULES_DIR)/%.c
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
+	$(CC) $(MODULE_FLAGS) -o $@ $< $(CFLAGS) $(INCLUDES)
 
 $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-void* module_date_time(void* _context)
+void* module_init(void* _context)
 {
     ModuleState* context = _context;
     char* buffer = malloc(64);

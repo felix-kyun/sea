@@ -1,12 +1,27 @@
+#define _GNU_SOURCE
 #include "config/config.h"
 #include "config/utils.h"
+#include <libgen.h>
+#include <linux/limits.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 LinearMap* map = NULL;
 
 void config_init(void)
 {
+    // get exec path
+    char exec_path[PATH_MAX];
+    ssize_t len = readlink("/proc/self/exe", exec_path, PATH_MAX - 1);
+    if (len != -1) {
+        exec_path[len] = '\0';
+        strncpy(config.current_path, dirname(exec_path), PATH_MAX);
+    } else {
+        perror("Failed to get executable path");
+        strncpy(config.current_path, "", PATH_MAX);
+    }
+
     map = create_map();
     config.left_modules = create_string_array();
     config.center_modules = create_string_array();

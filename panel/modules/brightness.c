@@ -130,7 +130,7 @@ static void on_scroll_down(ModuleState* state)
     change_brightness(-DELTA);
 }
 
-void* module_brightness(void* _state)
+void* module_init(void* _state)
 {
     ModuleState* state = _state;
     state->on_scroll_up = on_scroll_up;

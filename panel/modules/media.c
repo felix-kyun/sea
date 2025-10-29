@@ -52,7 +52,7 @@ static void ascii(const char* data)
     free(result);
 }
 
-void* module_media(void* _state)
+void* module_init(void* _state)
 {
     ModuleState* state = _state;
     int pipe_fd[2];

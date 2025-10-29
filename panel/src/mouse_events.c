@@ -1,5 +1,5 @@
 #include "mouse_events.h"
-#include "config.h"
+#include "config/config.h"
 #include "input_reader.h"
 #include "log.h"
 #include "modules/modules.h"

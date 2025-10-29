@@ -1,8 +1,9 @@
 #include "panel.h"
-#include "config.h"
+#include "config/config.h"
 #include "log.h"
 #include "modules/modules.h"
 #include "render.h"
+#include <dlfcn.h>
 #include <stdlib.h>
 
 // global
@@ -23,7 +24,8 @@ void panel_init(void)
     render_init();
 
     // create plugin states
-    module_states = malloc(sizeof(ModuleState) * MODULE_COUNT);
+    module_states
+        = malloc(sizeof(ModuleState) * MODULE_COUNT);
 
     for (int i = 0; i < MODULE_COUNT; i++) {
         module_states[i].data = string_new(" ");
@@ -38,15 +40,6 @@ void panel_init(void)
     }
 }
 
-void panel_spawn_module_thread(void* (*start_routine)(void*), ModuleState* context)
-{
-    pthread_t thread;
-    if (pthread_create(&thread, NULL, start_routine, context) != 0) {
-        logger_log(LOG_ERROR, "failed to create plugin thread");
-    }
-    pthread_detach(thread);
-}
-
 void panel_signal_render(void)
 {
     pthread_mutex_lock(&render_signal.mutex);
@@ -54,23 +47,51 @@ void panel_signal_render(void)
     pthread_mutex_unlock(&render_signal.mutex);
 }
 
-#define X(name)                                                           \
-    panel_spawn_module_thread(module_##name, &module_states[name##_idx]); \
-    logger_log(LOG_SUCCESS, "started plugin: " #name);
+typedef void* (*start_routine_t)(void*);
+void panel_spawn_module_thread(start_routine_t init, ModuleState* context)
+{
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, init, context) != 0) {
+        logger_log(LOG_ERROR, "failed to create plugin thread");
+    }
+    pthread_detach(thread);
+}
+
+void spawn_module(const char* module_name, ModuleState* context)
+{
+    logger_log(LOG_INFO, "spawning module: %s", module_name);
+    char module_path[PATH_MAX];
+    snprintf(module_path, PATH_MAX, "%s/modules/%s.so", config.current_path, module_name);
+    void* handle = dlopen(module_path, RTLD_NOW);
+    if (!handle) {
+        logger_log(LOG_ERROR, "failed to load module %s: %s", module_name, dlerror());
+        return;
+    }
+    start_routine_t init_func = (start_routine_t)dlsym(handle, "module_init");
+    if (!init_func) {
+        logger_log(LOG_ERROR, "failed to find module_init in %s: %s", module_name, dlerror());
+        dlclose(handle);
+        return;
+    }
+    panel_spawn_module_thread(init_func, context);
+}
+
 void panel_init_modules(void)
 {
     logger_log(LOG_INFO, "initializing plugins");
     logger_log(LOG_INFO, "Found %d plugins", MODULE_COUNT);
-    logger_log(LOG_INFO, "Left: %d", LEFT_COUNT);
-    logger_log(LOG_INFO, "Center: %d", CENTER_COUNT);
-    logger_log(LOG_INFO, "Right: %d", RIGHT_COUNT);
 
-    // spawn enabled plugins
-    MODULE_LIST
+    for (int i = 0; i < LEFT_COUNT; i++)
+        spawn_module(config.left_modules->items[i], &module_states[i]);
+
+    for (int i = 0; i < CENTER_COUNT; i++)
+        spawn_module(config.center_modules->items[i], &module_states[LEFT_COUNT + i]);
+
+    for (int i = 0; i < RIGHT_COUNT; i++)
+        spawn_module(config.right_modules->items[i], &module_states[LEFT_COUNT + CENTER_COUNT + i]);
 
     logger_log(LOG_SUCCESS, "all plugins started");
 }
-#undef X
 
 void panel_free(void)
 {

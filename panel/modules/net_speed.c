@@ -45,7 +45,7 @@ void static read_net_stat(int* down_kib, int* up_kib)
     fclose(file);
 }
 
-void* module_net_speed(void* _state)
+void* module_init(void* _state)
 {
     ModuleState* state = _state;
     set_net_speed(state, 0, 0);

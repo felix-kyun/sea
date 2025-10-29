@@ -35,6 +35,7 @@ void string_limit(char* str, size_t max_chars)
 void debug_config(void)
 {
     DEBUG("----- CONFIG -----");
+    DEBUG("current path: %s", config.current_path);
     DEBUG("log file: %s", config.log_file);
     DEBUG("log to stdout: %d", config.log_to_stdout);
     DEBUG("left modules:");

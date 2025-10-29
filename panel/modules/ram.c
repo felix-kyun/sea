@@ -61,7 +61,7 @@ uint32_t get_available_ram(void)
     return available_kb;
 }
 
-void* module_ram(void* _state)
+void* module_init(void* _state)
 {
     ModuleState* state = _state;
     uint32_t total_ram = get_total_ram();

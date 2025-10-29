@@ -43,7 +43,7 @@ static inline void set_cpu_usage(ModuleState* state, int usage)
     panel_signal_render();
 }
 
-void* module_cpu(void* _state)
+void* module_init(void* _state)
 {
     ModuleState* state = _state;
     set_cpu_usage(state, 0);

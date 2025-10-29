@@ -1,5 +1,5 @@
 #include "render.h"
-#include "config.h"
+#include "config/config.h"
 #include "log.h"
 #include "modules/modules.h"
 #include "overlay.h"

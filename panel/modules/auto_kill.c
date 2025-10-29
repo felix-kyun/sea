@@ -3,7 +3,7 @@
 #include "state.h"
 #include "utils.h"
 
-void* module_auto_kill(void* _context)
+void* module_init(void* _context)
 {
     ModuleState* context = _context;
     char buffer[32];

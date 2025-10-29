@@ -10,6 +10,7 @@
 bool running;
 ModuleState* module_states;
 void** module_handles;
+pthread_t* module_threads;
 RenderSignal render_signal
     = {
           .mutex = PTHREAD_MUTEX_INITIALIZER,
@@ -30,7 +31,12 @@ void panel_init(void)
 
     module_handles = malloc(sizeof(void*) * MODULE_COUNT);
 
+    module_threads = malloc(sizeof(pthread_t) * MODULE_COUNT);
+
     for (int i = 0; i < MODULE_COUNT; i++) {
+        module_handles[i] = NULL;
+        module_threads[i] = 0;
+
         module_states[i].running = &running;
         module_states[i].signal_render = panel_signal_render;
 
@@ -61,25 +67,22 @@ void spawn_module(const char* module_name, int index)
     char module_path[PATH_MAX];
     snprintf(module_path, PATH_MAX, "%s/modules/%s.so", config.current_path, module_name);
 
-    void* handle = dlopen(module_path, RTLD_NOW);
-    if (!handle) {
+    module_handles[index] = dlopen(module_path, RTLD_NOW);
+    if (!module_handles[index]) {
         logger_log(LOG_ERROR, "failed to load module %s: %s", module_name, dlerror());
         return;
     }
-    module_handles[index] = handle;
 
-    start_routine_t init_func = (start_routine_t)dlsym(handle, "module_init");
+    start_routine_t init_func = (start_routine_t)dlsym(module_handles[index], "module_init");
     if (!init_func) {
         logger_log(LOG_ERROR, "failed to find module_init in %s: %s", module_name, dlerror());
-        dlclose(handle);
+        dlclose(module_handles[index]);
         return;
     }
 
-    pthread_t thread;
-    if (pthread_create(&thread, NULL, init_func, module_states + index) != 0) {
+    if (pthread_create(module_threads + index, NULL, init_func, module_states + index) != 0) {
         logger_log(LOG_ERROR, "failed to create plugin thread");
     }
-    pthread_detach(thread);
 }
 
 void panel_init_modules(void)
@@ -109,6 +112,9 @@ void panel_free(void)
 
     // free plugin states
     for (int i = 0; i < MODULE_COUNT; i++) {
+        pthread_cancel(module_threads[i]);
+        pthread_join(module_threads[i], NULL);
+
         string_free(module_states[i].data);
 
         // call cleanup if registered

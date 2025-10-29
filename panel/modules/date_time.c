@@ -2,13 +2,14 @@
 #include "modules/modules.h"
 #include "string-utf8.h"
 #include "utils.h"
+#include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
 
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    char* buffer = malloc(64);
+    char buffer[64];
 
     while (*state->running) {
         time_t now = time(NULL);
@@ -24,6 +25,5 @@ void* module_init(void* _state)
         msleep(1000);
     }
 
-    free(buffer);
     return NULL;
 }

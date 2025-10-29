@@ -17,9 +17,9 @@ typedef void* (*StartRoutine)(void*);
 extern ModuleState* module_states;
 
 // methods
-void panel_spawn_module_thread(void* (*start_routine)(void*), ModuleState* context);
 void panel_init(void);
 void panel_render(void);
 void panel_init_modules(void);
 void panel_free(void);
+void spawn_module(const char* module_name, int index);
 void panel_signal_render(void);

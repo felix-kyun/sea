@@ -54,33 +54,32 @@ void panel_signal_render(void)
 }
 
 typedef void* (*start_routine_t)(void*);
-void panel_spawn_module_thread(start_routine_t init, ModuleState* context)
-{
-    pthread_t thread;
-    if (pthread_create(&thread, NULL, init, context) != 0) {
-        logger_log(LOG_ERROR, "failed to create plugin thread");
-    }
-    pthread_detach(thread);
-}
-
-void* spawn_module(const char* module_name, ModuleState* context)
+void spawn_module(const char* module_name, int index)
 {
     logger_log(LOG_INFO, "spawning module: %s", module_name);
+
     char module_path[PATH_MAX];
     snprintf(module_path, PATH_MAX, "%s/modules/%s.so", config.current_path, module_name);
+
     void* handle = dlopen(module_path, RTLD_NOW);
     if (!handle) {
         logger_log(LOG_ERROR, "failed to load module %s: %s", module_name, dlerror());
-        return NULL;
+        return;
     }
+    module_handles[index] = handle;
+
     start_routine_t init_func = (start_routine_t)dlsym(handle, "module_init");
     if (!init_func) {
         logger_log(LOG_ERROR, "failed to find module_init in %s: %s", module_name, dlerror());
         dlclose(handle);
-        return NULL;
+        return;
     }
-    panel_spawn_module_thread(init_func, context);
-    return handle;
+
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, init_func, module_states + index) != 0) {
+        logger_log(LOG_ERROR, "failed to create plugin thread");
+    }
+    pthread_detach(thread);
 }
 
 void panel_init_modules(void)
@@ -89,17 +88,15 @@ void panel_init_modules(void)
     logger_log(LOG_INFO, "Found %d plugins", MODULE_COUNT);
 
     for (int i = 0; i < LEFT_COUNT; i++) {
-        module_handles[i] = spawn_module(config.left_modules->items[i], &module_states[i]);
+        spawn_module(config.left_modules->items[i], i);
     }
 
     for (int i = 0; i < CENTER_COUNT; i++) {
-        module_handles[LEFT_COUNT + i]
-            = spawn_module(config.center_modules->items[i], &module_states[LEFT_COUNT + i]);
+        spawn_module(config.center_modules->items[i], i + LEFT_COUNT);
     }
 
     for (int i = 0; i < RIGHT_COUNT; i++) {
-        module_handles[LEFT_COUNT + CENTER_COUNT + i]
-            = spawn_module(config.right_modules->items[i], &module_states[LEFT_COUNT + CENTER_COUNT + i]);
+        spawn_module(config.right_modules->items[i], LEFT_COUNT + CENTER_COUNT + i);
     }
 
     logger_log(LOG_SUCCESS, "all plugins started");

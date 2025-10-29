@@ -32,6 +32,20 @@ void module_on_click(ModuleState* state)
     system("playerctl play-pause");
 }
 
+void module_on_scroll_up(ModuleState* state)
+{
+    (void)state;
+    DEBUG("media scrolled up, next track");
+    system("playerctl next");
+}
+
+void module_on_scroll_down(ModuleState* state)
+{
+    (void)state;
+    DEBUG("media scrolled down, previous track");
+    system("playerctl previous");
+}
+
 static void ascii(const char* data)
 {
     if (!data)
@@ -60,6 +74,8 @@ void* module_init(void* _state)
     // register cleanup function
     state->cleanup = module_media_stop;
     state->on_left_click = module_on_click;
+    state->on_scroll_up = module_on_scroll_up;
+    state->on_scroll_down = module_on_scroll_down;
 
     // create pipe and fork
     pipe(pipe_fd);

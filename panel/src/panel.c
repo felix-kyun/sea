@@ -9,6 +9,7 @@
 // global
 bool running;
 ModuleState* module_states;
+void** module_handles;
 RenderSignal render_signal
     = {
           .mutex = PTHREAD_MUTEX_INITIALIZER,
@@ -26,6 +27,8 @@ void panel_init(void)
     // create plugin states
     module_states
         = malloc(sizeof(ModuleState) * MODULE_COUNT);
+
+    module_handles = malloc(sizeof(void*) * MODULE_COUNT);
 
     for (int i = 0; i < MODULE_COUNT; i++) {
         module_states[i].data = string_new(" ");
@@ -57,7 +60,7 @@ void panel_spawn_module_thread(start_routine_t init, ModuleState* context)
     pthread_detach(thread);
 }
 
-void spawn_module(const char* module_name, ModuleState* context)
+void* spawn_module(const char* module_name, ModuleState* context)
 {
     logger_log(LOG_INFO, "spawning module: %s", module_name);
     char module_path[PATH_MAX];
@@ -65,15 +68,16 @@ void spawn_module(const char* module_name, ModuleState* context)
     void* handle = dlopen(module_path, RTLD_NOW);
     if (!handle) {
         logger_log(LOG_ERROR, "failed to load module %s: %s", module_name, dlerror());
-        return;
+        return NULL;
     }
     start_routine_t init_func = (start_routine_t)dlsym(handle, "module_init");
     if (!init_func) {
         logger_log(LOG_ERROR, "failed to find module_init in %s: %s", module_name, dlerror());
         dlclose(handle);
-        return;
+        return NULL;
     }
     panel_spawn_module_thread(init_func, context);
+    return handle;
 }
 
 void panel_init_modules(void)
@@ -81,14 +85,19 @@ void panel_init_modules(void)
     logger_log(LOG_INFO, "initializing plugins");
     logger_log(LOG_INFO, "Found %d plugins", MODULE_COUNT);
 
-    for (int i = 0; i < LEFT_COUNT; i++)
-        spawn_module(config.left_modules->items[i], &module_states[i]);
+    for (int i = 0; i < LEFT_COUNT; i++) {
+        module_handles[i] = spawn_module(config.left_modules->items[i], &module_states[i]);
+    }
 
-    for (int i = 0; i < CENTER_COUNT; i++)
-        spawn_module(config.center_modules->items[i], &module_states[LEFT_COUNT + i]);
+    for (int i = 0; i < CENTER_COUNT; i++) {
+        module_handles[LEFT_COUNT + i]
+            = spawn_module(config.center_modules->items[i], &module_states[LEFT_COUNT + i]);
+    }
 
-    for (int i = 0; i < RIGHT_COUNT; i++)
-        spawn_module(config.right_modules->items[i], &module_states[LEFT_COUNT + CENTER_COUNT + i]);
+    for (int i = 0; i < RIGHT_COUNT; i++) {
+        module_handles[LEFT_COUNT + CENTER_COUNT + i]
+            = spawn_module(config.right_modules->items[i], &module_states[LEFT_COUNT + CENTER_COUNT + i]);
+    }
 
     logger_log(LOG_SUCCESS, "all plugins started");
 }
@@ -106,9 +115,14 @@ void panel_free(void)
         if (module_states[i].cleanup) {
             module_states[i].cleanup();
         }
+        // close module handle
+        if (module_handles[i]) {
+            dlclose(module_handles[i]);
+        }
     }
 
     free(module_states);
+    free(module_handles);
     // show cursor
     printf("\033[?25h");
 }

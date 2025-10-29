@@ -23,6 +23,9 @@ void string_array_add(StringArray* array, const char* item)
 
 void free_string_array(StringArray* array)
 {
+    for (int i = 0; i < array->length; i++) {
+        free(array->items[i]);
+    }
     free(array->items);
     free(array);
 }

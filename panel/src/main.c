@@ -38,6 +38,8 @@ int main(int argc, char** argv)
     overlay_free();
     panel_free();
     mouse_free();
+    config_free();
+    destroy_app_config();
     logger_log(LOG_SUCCESS, "panel stopped");
     return 0;
 }

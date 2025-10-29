@@ -26,6 +26,7 @@ typedef struct Config {
 extern Config config;
 
 void create_app_config(int argc, char** argv);
+void destroy_app_config(void);
 
 void config_init(void);
 void config_parse(const char* filepath);

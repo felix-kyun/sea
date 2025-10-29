@@ -56,3 +56,10 @@ void create_app_config(int argc, char** argv)
     config.log_to_stdout = get_long_option("stdout")->is_set || config.log_to_stdout;
     config.log_file = get_long_option("log")->value ? get_long_option("log")->value : config.log_file;
 }
+
+void destroy_app_config(void)
+{
+    free_string_array(config.left_modules);
+    free_string_array(config.center_modules);
+    free_string_array(config.right_modules);
+}

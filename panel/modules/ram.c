@@ -18,7 +18,7 @@ inline static void set_ram_usage(ModuleState* state, float used, float total)
     (void)total;
     snprintf(buffer, sizeof(buffer), " " RAM_COLOR RAM_ICON "%.1fGib " RESET, used);
     string_set_cstr(state->data, buffer);
-    panel_signal_render();
+    state->signal_render();
 }
 
 uint32_t get_total_ram(void)
@@ -66,7 +66,7 @@ void* module_init(void* _state)
     ModuleState* state = _state;
     uint32_t total_ram = get_total_ram();
 
-    while (running) {
+    while (*state->running) {
         float used_ram = ((float)total_ram - get_available_ram()) / 1024 / 1024;
         float total_gb = (float)total_ram / 1024 / 1024;
 

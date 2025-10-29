@@ -179,14 +179,14 @@ void* module_init(void* _state)
     init_battery_paths();
     full = get_battery_full() / 1000;
 
-    while (running) {
+    while (*state->running) {
         now = get_battery_now() / 1000;
         float percentage = ((float)now / full) * 100;
         snprintf(buffer, 32, "%s%s %.0f%% " RESET,
             get_battery_color(percentage), battery_icon(), percentage);
 
         string_set_cstr(state->data, buffer);
-        panel_signal_render();
+        state->signal_render();
         msleep(60000);
     }
 

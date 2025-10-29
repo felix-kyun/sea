@@ -15,7 +15,7 @@ inline static void set_cpu_temp(ModuleState* state, int temp)
 {
     snprintf(buffer, sizeof(buffer), " " TEMP_COLOR TEMP_ICON "%d°C " RESET, temp);
     string_set_cstr(state->data, buffer);
-    panel_signal_render();
+    state->signal_render();
 }
 
 int get_cpu_temp(void)
@@ -41,7 +41,7 @@ void* module_init(void* _state)
 {
     ModuleState* state = _state;
 
-    while (running) {
+    while (*state->running) {
         int temp = get_cpu_temp();
         if (temp != -1) {
             set_cpu_temp(state, temp);

@@ -31,6 +31,9 @@ void panel_init(void)
     module_handles = malloc(sizeof(void*) * MODULE_COUNT);
 
     for (int i = 0; i < MODULE_COUNT; i++) {
+        module_states[i].running = &running;
+        module_states[i].signal_render = panel_signal_render;
+
         module_states[i].data = string_new(" ");
         module_states[i].cleanup = NULL;
 

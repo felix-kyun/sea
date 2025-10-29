@@ -22,3 +22,4 @@ void panel_init(void);
 void panel_render(void);
 void panel_init_modules(void);
 void panel_free(void);
+void panel_signal_render(void);

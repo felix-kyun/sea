@@ -40,7 +40,7 @@ static inline void set_cpu_usage(ModuleState* state, int usage)
 {
     snprintf(buffer, sizeof(buffer), " " CPU_COLOR CPU_ICON "%d%% " RESET, usage);
     string_set_cstr(state->data, buffer);
-    panel_signal_render();
+    state->signal_render();
 }
 
 void* module_init(void* _state)
@@ -48,7 +48,7 @@ void* module_init(void* _state)
     ModuleState* state = _state;
     set_cpu_usage(state, 0);
 
-    while (running) {
+    while (*state->running) {
         load_cpu_info();
 
         uint64_t total = get_cpu_total_time();

@@ -51,7 +51,7 @@ static void set_brightness(ModuleState* state, int brightness)
     char buffer[32];
     snprintf(buffer, sizeof(buffer), BRIGHTNESS_COLOR BRIGHTNESS_ICON " %d%% " RESET, (brightness * 100) / max_brightness);
     string_set_cstr(state->data, buffer);
-    panel_signal_render();
+    state->signal_render();
 }
 
 static int get_max_brightness(void)

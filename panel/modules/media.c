@@ -104,7 +104,7 @@ void* module_init(void* _state)
     }
 
     char buffer[128];
-    while (running && (fgets(buffer, sizeof(buffer), pipe) != NULL)) {
+    while (*state->running && (fgets(buffer, sizeof(buffer), pipe) != NULL)) {
         DEBUG("media output: %s", buffer);
         // remove newline
         buffer[strcspn(buffer, "\n")] = 0;

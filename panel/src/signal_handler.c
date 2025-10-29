@@ -1,6 +1,6 @@
 #include "signal_handler.h"
 #include "log.h"
-#include "modules/modules.h"
+#include "panel.h"
 #include "render.h"
 #include "state.h"
 #include <signal.h>

@@ -8,6 +8,7 @@ typedef struct Overlay {
     string* content;
     pthread_t cleaner;
     pthread_t watcher;
+    void (*signal_render)(void);
     bool active;
     pthread_mutex_t lock;
     int fifo_fd;

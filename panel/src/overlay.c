@@ -1,7 +1,7 @@
 #include "overlay.h"
 #include "colors.h"
 #include "log.h"
-#include "modules/modules.h"
+#include "panel.h"
 #include "state.h"
 #include "string-utf8.h"
 #include "utils.h"
@@ -28,6 +28,7 @@ void overlay_init(void)
     overlay.active = false;
     overlay.cleaner = 0;
     overlay.watcher = 0;
+    overlay.signal_render = panel_signal_render;
     pthread_mutex_init(&overlay.lock, NULL);
     DEBUG("overlay initialized");
 
@@ -85,7 +86,7 @@ void* overlay_cleaner(void* _overlay)
     pthread_mutex_lock(&overlay->lock);
     string_set_cstr(overlay->content, "");
     overlay->active = false;
-    panel_signal_render();
+    overlay->signal_render();
     pthread_mutex_unlock(&overlay->lock);
 
     DEBUG("overlay cleared by cleaner");
@@ -118,7 +119,7 @@ void* overlay_watcher(void* _overlay)
         if (bytes_read > 0) {
             buffer[bytes_read] = '\0';
             overlay_set(buffer);
-            panel_signal_render();
+            overlay->signal_render();
         } else if (bytes_read == -1) {
             logger_log(LOG_ERROR, "error reading from fifo");
             logger_log(LOG_ERROR, "errno: %d", errno);

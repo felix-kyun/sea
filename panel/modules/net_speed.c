@@ -18,7 +18,7 @@ void inline static set_net_speed(ModuleState* state, int down_kib, int up_kib)
     char buffer[64];
     snprintf(buffer, sizeof(buffer), " " NET_COLOR NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB " RESET, up_kib, down_kib);
     string_set_cstr(state->data, buffer);
-    panel_signal_render();
+    state->signal_render();
 }
 
 void static read_net_stat(int* down_kib, int* up_kib)
@@ -50,7 +50,7 @@ void* module_init(void* _state)
     ModuleState* state = _state;
     set_net_speed(state, 0, 0);
 
-    while (running) {
+    while (*state->running) {
         int down1, up1, down2, up2;
         read_net_stat(&down1, &up1);
         msleep(NET_REFRESH * 1000);

@@ -44,9 +44,12 @@ void panel_init(void)
         module_states[i].running = &running;
         module_states[i].signal_render = panel_signal_render;
 
+        module_states[i].name = NULL;
         module_states[i].data = string_new(" ");
-        module_states[i].custom_data = NULL;
         module_states[i].cleanup = NULL;
+
+        module_states[i].custom_data = NULL;
+        module_states[i].config_get = config_get;
 
         // event handlers
         module_states[i].on_left_click = NULL;
@@ -118,7 +121,18 @@ void spawn_custom_module(const char* module_name, int index)
 
 void spawn_module(const char* module_name, int index)
 {
-    const char* inbuilt_modules[] = { "battery", "brightness", "cpu", "cpu_temp", "date_time", "media", "net_speed", "ram" };
+    module_states[index].name = module_name;
+    const char* inbuilt_modules[] = {
+        "battery",
+        "brightness",
+        "cpu",
+        "cpu_temp",
+        "date",
+        "time",
+        "media",
+        "net_speed",
+        "ram"
+    };
 
     if (!includes(inbuilt_modules, sizeof(inbuilt_modules) / sizeof(inbuilt_modules[0]), module_name)) {
         spawn_custom_module(module_name, index);

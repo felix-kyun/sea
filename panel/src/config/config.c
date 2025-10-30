@@ -52,7 +52,7 @@ void config_parse(const char* filepath)
         }
 
         // parse kv pairs
-        sscanf(line, " %63[^= ]%*[ ]=%*[ ]%959[^\n]", key, value);
+        sscanf(line, " %63s = %*['\"]%959[^'\"\n]", key, value);
         map_set(map, section, key, value);
     }
 

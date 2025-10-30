@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "colors.h"
 #include "config/config.h"
 #include "log.h"
 #include <stddef.h>

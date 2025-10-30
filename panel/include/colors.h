@@ -39,6 +39,11 @@
 #define BG_MAGENTA "\033[45m"
 #define BG_CYAN "\033[46m"
 #define BG_WHITE "\033[47m"
+#define BG_DEFAULT "\033[49m"
 
 // reset
 #define RESET "\033[0m"
+
+// helpers
+char* get_fg_color(const char* color_name);
+char* get_bg_color(const char* color_name);

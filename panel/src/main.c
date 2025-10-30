@@ -1,4 +1,5 @@
 #include "config/config.h"
+#include "config_watcher.h"
 #include "log.h"
 #include "mouse_events.h"
 #include "overlay.h"
@@ -16,6 +17,7 @@ int main(int argc, char** argv)
     debug_config();
     logger_log(LOG_SUCCESS, "starting sea panel with pid %d", getpid());
 
+    create_config_watcher(config.config_file);
     setup_signal_handlers();
     panel_init();
     mouse_init();

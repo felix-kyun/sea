@@ -16,6 +16,7 @@
 
 typedef struct Config {
     const char* log_file;
+    const char* config_file;
     bool log_to_stdout;
     char current_path[PATH_MAX];
     StringArray* left_modules;

@@ -1,5 +1,7 @@
 #include "args.h"
 #include "config/config.h"
+#include "log.h"
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -8,6 +10,7 @@ Config config;
 void create_base_config(void)
 {
     config.log_file = "/tmp/panel.log";
+    config.config_file = CONFIG_FILE;
     config.log_to_stdout = false;
     config.left_modules = create_string_array();
     config.center_modules = create_string_array();
@@ -25,11 +28,16 @@ void create_app_config(int argc, char** argv)
     create_base_config();
 
     if (get_long_option("config")->is_set) {
-        const char* config_path = get_long_option("config")->value;
-        config_parse(config_path);
-    } else if (access(CONFIG_FILE, F_OK) != -1) {
-        config_parse(CONFIG_FILE);
+        config.config_file = get_long_option("config")->value;
     }
+
+    if (access(config.config_file, F_OK) == -1) {
+        // config file does not exist
+        logger_log(LOG_WARN, "config file %s does not exist, using default config", config.config_file);
+        exit(1);
+    }
+
+    config_parse(config.config_file);
 
     // set from config
     if (config_get("panel", "log_file"))

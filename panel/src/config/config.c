@@ -53,18 +53,15 @@ void config_parse(const char* filepath)
 
         // parse kv pairs
         sscanf(line, " %63[^= ]%*[ ]=%*[ ]%959[^\n]", key, value);
-        char* full_key = create_key(section, key);
-
-        map_set(map, full_key, value);
-        free(full_key);
+        map_set(map, section, key, value);
     }
 
     fclose(file);
 }
 
-char* config_get(const char* key)
+char* config_get(const char* section, const char* key)
 {
-    return (char*)map_get(map, key);
+    return (char*)map_get(map, section, key);
 }
 
 void config_free(void)

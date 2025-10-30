@@ -13,6 +13,9 @@ typedef struct ModuleState {
     bool* running;
     void (*signal_render)(void);
 
+    // used for custom modules
+    void* custom_data;
+
     string* data;
     cleanup_func cleanup;
 

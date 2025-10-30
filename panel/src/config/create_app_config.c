@@ -32,24 +32,24 @@ void create_app_config(int argc, char** argv)
     }
 
     // set from config
-    if (config_get("panel.log_file"))
-        config.log_file = config_get("panel.log_file");
+    if (config_get("panel", "log_file"))
+        config.log_file = config_get("panel", "log_file");
 
-    if (config_get("panel.log_to_stdout")) {
-        if (strcmp(config_get("panel.log_to_stdout"), "true") == 0)
+    if (config_get("panel", "log_to_stdout")) {
+        if (strcmp(config_get("panel", "log_to_stdout"), "true") == 0)
             config.log_to_stdout = true;
         else
             config.log_to_stdout = false;
     }
 
-    if (config_get("panel.left_modules")) {
-        string_array_from_csv(config.left_modules, config_get("panel.left_modules"));
+    if (config_get("panel", "left_modules")) {
+        string_array_from_csv(config.left_modules, config_get("panel", "left_modules"));
     }
-    if (config_get("panel.center_modules")) {
-        string_array_from_csv(config.center_modules, config_get("panel.center_modules"));
+    if (config_get("panel", "center_modules")) {
+        string_array_from_csv(config.center_modules, config_get("panel", "center_modules"));
     }
-    if (config_get("panel.right_modules")) {
-        string_array_from_csv(config.right_modules, config_get("panel.right_modules"));
+    if (config_get("panel", "right_modules")) {
+        string_array_from_csv(config.right_modules, config_get("panel", "right_modules"));
     }
 
     // override from args

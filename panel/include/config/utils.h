@@ -17,8 +17,8 @@ typedef struct LinearMap {
 } LinearMap;
 
 LinearMap* create_map(void);
-void map_set(LinearMap* map, const char* key, const char* value);
-const char* map_get(LinearMap* map, const char* key);
+void map_set(LinearMap* map, const char* section, const char* key, const char* value);
+const char* map_get(LinearMap* map, const char* section, const char* key);
 void free_map(LinearMap* map);
 
 // utils

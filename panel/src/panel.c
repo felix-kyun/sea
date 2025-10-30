@@ -1,10 +1,14 @@
+#define _GNU_SOURCE
 #include "panel.h"
 #include "config/config.h"
 #include "log.h"
+#include "modules/custom_module.h"
 #include "modules/modules.h"
 #include "render.h"
+#include "utils.h"
 #include <dlfcn.h>
 #include <stdlib.h>
+#include <string.h>
 
 // global
 bool running;
@@ -41,6 +45,7 @@ void panel_init(void)
         module_states[i].signal_render = panel_signal_render;
 
         module_states[i].data = string_new(" ");
+        module_states[i].custom_data = NULL;
         module_states[i].cleanup = NULL;
 
         // event handlers
@@ -62,8 +67,64 @@ void panel_signal_render(void)
 }
 
 typedef void* (*start_routine_t)(void*);
+void spawn_custom_module(const char* module_name, int index)
+{
+    logger_log(LOG_INFO, "spawning custom module: %s", module_name);
+
+    const char* type = config_get(module_name, "type");
+
+    if (type == NULL) {
+        logger_log(LOG_ERROR, "module %s has no type defined in config", module_name);
+        exit(1);
+        return;
+    }
+
+    const char* custom_modules[] = { "text" };
+
+    if (!includes(custom_modules, sizeof(custom_modules) / sizeof(custom_modules[0]), type)) {
+        logger_log(LOG_ERROR, "module %s has unknown type %s", module_name, type);
+        exit(1);
+        return;
+    }
+
+    char module_path[PATH_MAX];
+    snprintf(module_path, PATH_MAX, "%s/modules/%s.so", config.current_path, type);
+
+    module_handles[index] = dlopen(module_path, RTLD_NOW);
+    if (!module_handles[index]) {
+        logger_log(LOG_ERROR, "failed to load module %s: %s", module_name, dlerror());
+        exit(1);
+        return;
+    }
+
+    start_routine_t init_func = (start_routine_t)dlsym(module_handles[index], "module_init");
+    if (!init_func) {
+        logger_log(LOG_ERROR, "failed to find module_init in %s: %s", module_name, dlerror());
+        dlclose(module_handles[index]);
+        exit(1);
+        return;
+    }
+
+    TextModule* custom_data = malloc(sizeof(TextModule));
+    custom_data->type = MODULE_TYPE_TEXT;
+    custom_data->content = strdup(config_get(module_name, "content"));
+    module_states[index].custom_data = custom_data;
+
+    if (pthread_create(module_threads + index, NULL, init_func, module_states + index) != 0) {
+        logger_log(LOG_ERROR, "failed to create plugin thread");
+        exit(1);
+    }
+}
+
 void spawn_module(const char* module_name, int index)
 {
+    const char* inbuilt_modules[] = { "battery", "brightness", "cpu", "cpu_temp", "date_time", "media", "net_speed", "ram" };
+
+    if (!includes(inbuilt_modules, sizeof(inbuilt_modules) / sizeof(inbuilt_modules[0]), module_name)) {
+        spawn_custom_module(module_name, index);
+        return;
+    }
+
     logger_log(LOG_INFO, "spawning module: %s", module_name);
 
     char module_path[PATH_MAX];
@@ -72,6 +133,7 @@ void spawn_module(const char* module_name, int index)
     module_handles[index] = dlopen(module_path, RTLD_NOW);
     if (!module_handles[index]) {
         logger_log(LOG_ERROR, "failed to load module %s: %s", module_name, dlerror());
+        exit(1);
         return;
     }
 
@@ -79,11 +141,13 @@ void spawn_module(const char* module_name, int index)
     if (!init_func) {
         logger_log(LOG_ERROR, "failed to find module_init in %s: %s", module_name, dlerror());
         dlclose(module_handles[index]);
+        exit(1);
         return;
     }
 
     if (pthread_create(module_threads + index, NULL, init_func, module_states + index) != 0) {
         logger_log(LOG_ERROR, "failed to create plugin thread");
+        exit(1);
     }
 }
 
@@ -123,6 +187,16 @@ void panel_free(void)
         if (module_states[i].cleanup) {
             module_states[i].cleanup();
         }
+
+        // call cleanup for custom modules
+        if (module_states[i].custom_data) {
+            ModuleType type = ((TextModule*)(module_states[i].custom_data))->type;
+
+            if (type == MODULE_TYPE_TEXT) {
+                text_module_cleanup(module_states[i].custom_data);
+            }
+        }
+
         // close module handle
         if (module_handles[i]) {
             dlclose(module_handles[i]);

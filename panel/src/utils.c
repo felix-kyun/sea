@@ -1,7 +1,9 @@
 #include "utils.h"
 #include "config/config.h"
 #include "log.h"
+#include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 void msleep(long msec)
@@ -51,4 +53,14 @@ void debug_config(void)
         DEBUG("  - %s", config.right_modules->items[i]);
     }
     DEBUG("------------------");
+}
+
+bool includes(const char** array, int len, const char* item)
+{
+    for (int i = 0; i < len; i++) {
+        if (strcmp(array[i], item) == 0) {
+            return true;
+        }
+    }
+    return false;
 }

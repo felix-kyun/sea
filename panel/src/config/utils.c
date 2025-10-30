@@ -41,28 +41,34 @@ LinearMap* create_map(void)
     return new_map;
 }
 
-void map_set(LinearMap* map, const char* key, const char* value)
+void map_set(LinearMap* map, const char* section, const char* key, const char* value)
 {
+    char* full_key = create_key(section, key);
     for (int i = 0; i < map->length; i++) {
-        if (strcmp(map->keys->items[i], key) == 0) {
-            map->values->items[i] = (char*)value;
+        if (strcmp(map->keys->items[i], full_key) == 0) {
+            free(map->values->items[i]);
+            map->values->items[i] = strdup(value);
             return;
         }
     }
 
-    string_array_add(map->keys, key);
+    string_array_add(map->keys, full_key);
     string_array_add(map->values, value);
     map->length++;
+    free(full_key);
 }
 
-const char* map_get(LinearMap* map, const char* key)
+const char* map_get(LinearMap* map, const char* section, const char* key)
 {
+    char* full_key = create_key(section, key);
     for (int i = 0; i < map->length; i++) {
-        if (strcmp(map->keys->items[i], key) == 0) {
+        if (strcmp(map->keys->items[i], full_key) == 0) {
+            free(full_key);
             return map->values->items[i];
         }
     }
 
+    free(full_key);
     return NULL;
 }
 

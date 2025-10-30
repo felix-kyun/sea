@@ -30,5 +30,5 @@ void destroy_app_config(void);
 
 void config_init(void);
 void config_parse(const char* filepath);
-char* config_get(const char* key);
+char* config_get(const char* section, const char* key);
 void config_free(void);

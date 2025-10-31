@@ -13,6 +13,7 @@ void create_base_config(void)
     config.config_file = CONFIG_FILE;
     config.log_to_stdout = false;
     config.module_spacing = 1;
+    config.panel_padding = 0;
     config.left_modules = create_string_array();
     config.center_modules = create_string_array();
     config.right_modules = create_string_array();
@@ -53,6 +54,10 @@ void create_app_config(int argc, char** argv)
 
     if (config_get("panel", "module_spacing")) {
         config.module_spacing = atoi(config_get("panel", "module_spacing"));
+    }
+
+    if (config_get("panel", "panel_padding")) {
+        config.panel_padding = atoi(config_get("panel", "panel_padding"));
     }
 
     if (config_get("panel", "left_modules")) {

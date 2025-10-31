@@ -45,12 +45,16 @@ void panel_render(void)
     // erase in line
     printf("\r\033[2K");
 
-    char* padding_str = create_padding_str(config.module_spacing);
-    string* padding_string = string_new(padding_str);
-    free(padding_str);
+    // module spacing
+    char* module_spacing_str = create_padding_str(config.module_spacing);
+    string* module_spacing_string = string_new(module_spacing_str);
+    free(module_spacing_str);
+
+    // panel padding
+    char* panel_padding_str = create_padding_str(config.panel_padding);
 
     // left plugins
-    string* left_content = string_new("");
+    string* left_content = string_new(panel_padding_str);
     for (int i = 0; i < LEFT_COUNT; i++) {
         ModuleState state = module_states[i];
         string* old = left_content;
@@ -61,12 +65,11 @@ void panel_render(void)
         // add padding if not last module
         if (i < LEFT_COUNT - 1) {
             old = left_content;
-            left_content = string_concat(left_content, padding_string);
+            left_content = string_concat(left_content, module_spacing_string);
             string_free(old);
         }
     }
     char* left_cstr = string_cast(left_content);
-    // DEBUG("left content: %s (%zu chars, %zu bytes)", left_cstr, left_content->char_length, left_content->byte_length);
 
     // center modules
     string* center_content = string_new("");
@@ -79,12 +82,11 @@ void panel_render(void)
 
         if (i < CENTER_COUNT - 1) {
             old = center_content;
-            center_content = string_concat(center_content, padding_string);
+            center_content = string_concat(center_content, module_spacing_string);
             string_free(old);
         }
     }
     char* center_cstr = string_cast(center_content);
-    // DEBUG("center content: %s (%zu chars, %zu bytes)", center_cstr, center_content->char_length, center_content->byte_length);
 
     // right modules
     string* right_content = string_new("");
@@ -97,17 +99,21 @@ void panel_render(void)
 
         if (i < RIGHT_COUNT - 1) {
             old = right_content;
-            right_content = string_concat(right_content, padding_string);
+            right_content = string_concat(right_content, module_spacing_string);
             string_free(old);
         }
     }
+    string* old = right_content;
+    string* padding_right = string_new(panel_padding_str);
+    right_content = string_concat(right_content, padding_right);
     char* right_cstr = string_cast(right_content);
-    // DEBUG("right content: %s (%zu chars, %zu bytes)", right_cstr, right_content->char_length, right_content->byte_length);
+    free(panel_padding_str);
+    string_free(padding_right);
+    string_free(old);
 
     // calculate spacing
     render_info.left_padding = ((terminal_size.ws_col - center_content->char_length) / 2) - left_content->char_length;
     render_info.right_padding = terminal_size.ws_col - (left_content->char_length + center_content->char_length + right_content->char_length + render_info.left_padding);
-    // DEBUG("padding: center=%d, right=%d", center_padding, right_padding);
 
     // display contents
     printf("%s", left_cstr);
@@ -122,7 +128,7 @@ void panel_render(void)
     string_free(left_content);
     string_free(center_content);
     string_free(right_content);
-    string_free(padding_string);
+    string_free(module_spacing_string);
     free(left_cstr);
     free(center_cstr);
     free(right_cstr);

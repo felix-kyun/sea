@@ -20,6 +20,7 @@ typedef struct Config {
     bool log_to_stdout;
     char current_path[PATH_MAX];
     int module_spacing;
+    int panel_padding;
     StringArray* left_modules;
     StringArray* center_modules;
     StringArray* right_modules;

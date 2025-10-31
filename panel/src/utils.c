@@ -69,9 +69,6 @@ bool includes(const char** array, int len, const char* item)
 
 char* create_padding_str(int count)
 {
-    if (count <= 0)
-        return "";
-
     char* padding_string = (char*)malloc((count + 1) * sizeof(char));
 
     for (int i = 0; i < count; i++) {

@@ -12,6 +12,7 @@ void create_base_config(void)
     config.log_file = "/tmp/panel.log";
     config.config_file = CONFIG_FILE;
     config.log_to_stdout = false;
+    config.auto_reset_style = true;
     config.module_spacing = 1;
     config.panel_padding = 0;
     config.left_modules = create_string_array();
@@ -50,6 +51,13 @@ void create_app_config(int argc, char** argv)
             config.log_to_stdout = true;
         else
             config.log_to_stdout = false;
+    }
+
+    if (config_get("panel", "auto_reset_style")) {
+        if (strcmp(config_get("panel", "auto_reset_style"), "true") == 0)
+            config.auto_reset_style = true;
+        else
+            config.auto_reset_style = false;
     }
 
     if (config_get("panel", "module_spacing")) {

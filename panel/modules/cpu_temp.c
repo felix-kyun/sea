@@ -14,7 +14,7 @@ static char* background = "";
 
 inline static void set_cpu_temp(ModuleState* state, int temp)
 {
-    snprintf(buffer, sizeof(buffer), "%s%s" TEMP_ICON "%d°C" RESET, background, color, temp);
+    snprintf(buffer, sizeof(buffer), "%s%s" TEMP_ICON "%d°C", background, color, temp);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }

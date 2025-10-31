@@ -207,7 +207,7 @@ void* module_init(void* _state)
     while (*state->running) {
         now = get_battery_now() / 1000;
         float percentage = ((float)now / full) * 100;
-        snprintf(buffer, 32, "%s%s%s %.0f%%" RESET,
+        snprintf(buffer, 32, "%s%s%s %.0f%%",
             background, get_battery_color(percentage), battery_icon(percentage), percentage);
 
         string_set_cstr(state->data, buffer);

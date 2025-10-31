@@ -1,4 +1,5 @@
 #include "render.h"
+#include "colors.h"
 #include "config/config.h"
 #include "log.h"
 #include "modules/modules.h"
@@ -45,6 +46,9 @@ void panel_render(void)
     // erase in line
     printf("\r\033[2K");
 
+    // reset string
+    string* reset_str = string_new(RESET);
+
     // module spacing
     char* module_spacing_str = create_padding_str(config.module_spacing);
     string* module_spacing_string = string_new(module_spacing_str);
@@ -61,6 +65,13 @@ void panel_render(void)
 
         left_content = string_concat(left_content, state.data);
         string_free(old);
+
+        // auto reset style
+        if (config.auto_reset_style) {
+            old = left_content;
+            left_content = string_concat(left_content, reset_str);
+            string_free(old);
+        }
 
         // add padding if not last module
         if (i < LEFT_COUNT - 1) {
@@ -80,6 +91,12 @@ void panel_render(void)
         center_content = string_concat(center_content, state.data);
         string_free(old);
 
+        if (config.auto_reset_style) {
+            old = center_content;
+            center_content = string_concat(center_content, reset_str);
+            string_free(old);
+        }
+
         if (i < CENTER_COUNT - 1) {
             old = center_content;
             center_content = string_concat(center_content, module_spacing_string);
@@ -96,6 +113,12 @@ void panel_render(void)
 
         right_content = string_concat(right_content, state.data);
         string_free(old);
+
+        if (config.auto_reset_style) {
+            old = right_content;
+            right_content = string_concat(right_content, reset_str);
+            string_free(old);
+        }
 
         if (i < RIGHT_COUNT - 1) {
             old = right_content;
@@ -129,6 +152,7 @@ void panel_render(void)
     string_free(center_content);
     string_free(right_content);
     string_free(module_spacing_string);
+    string_free(reset_str);
     free(left_cstr);
     free(center_cstr);
     free(right_cstr);

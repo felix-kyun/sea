@@ -21,6 +21,7 @@ typedef struct Config {
     char current_path[PATH_MAX];
     int module_spacing;
     int panel_padding;
+    bool auto_reset_style;
     StringArray* left_modules;
     StringArray* center_modules;
     StringArray* right_modules;

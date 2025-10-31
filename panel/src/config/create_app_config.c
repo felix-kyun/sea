@@ -12,6 +12,7 @@ void create_base_config(void)
     config.log_file = "/tmp/panel.log";
     config.config_file = CONFIG_FILE;
     config.log_to_stdout = false;
+    config.module_spacing = 1;
     config.left_modules = create_string_array();
     config.center_modules = create_string_array();
     config.right_modules = create_string_array();
@@ -48,6 +49,10 @@ void create_app_config(int argc, char** argv)
             config.log_to_stdout = true;
         else
             config.log_to_stdout = false;
+    }
+
+    if (config_get("panel", "module_spacing")) {
+        config.module_spacing = atoi(config_get("panel", "module_spacing"));
     }
 
     if (config_get("panel", "left_modules")) {

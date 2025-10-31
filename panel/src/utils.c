@@ -4,6 +4,7 @@
 #include "log.h"
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -41,6 +42,7 @@ void debug_config(void)
     DEBUG("current path: %s", config.current_path);
     DEBUG("log file: %s", config.log_file);
     DEBUG("log to stdout: %d", config.log_to_stdout);
+    DEBUG("module spacing: %d", config.module_spacing);
     DEBUG("left modules:");
     for (int i = 0; i < config.left_modules->length; i++) {
         DEBUG("  - %s", config.left_modules->items[i]);
@@ -64,4 +66,19 @@ bool includes(const char** array, int len, const char* item)
         }
     }
     return false;
+}
+
+char* create_padding_str(int count)
+{
+    if (count <= 0)
+        return "";
+
+    char* padding_string = (char*)malloc((count + 1) * sizeof(char));
+
+    for (int i = 0; i < count; i++) {
+        padding_string[i] = ' ';
+    }
+    padding_string[count] = '\0';
+
+    return padding_string;
 }

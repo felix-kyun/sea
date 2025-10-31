@@ -19,6 +19,7 @@ typedef struct Config {
     const char* config_file;
     bool log_to_stdout;
     char current_path[PATH_MAX];
+    int module_spacing;
     StringArray* left_modules;
     StringArray* center_modules;
     StringArray* right_modules;

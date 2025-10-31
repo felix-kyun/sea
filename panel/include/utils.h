@@ -5,6 +5,7 @@
 
 void msleep(long msec);
 void padding(int count);
+char* create_padding_str(int count);
 void string_limit(char* str, size_t max_chars);
 void debug_config(void);
 bool includes(const char** array, int len, const char* item);

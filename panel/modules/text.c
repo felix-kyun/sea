@@ -11,7 +11,7 @@ void* module_init(void* _state)
     const char* background = get_bg_color(state->config_get(state->name, "background"), "default");
     char buffer[256];
 
-    snprintf(buffer, 256, "%s%s %s" RESET, color, background, module->content);
+    snprintf(buffer, 256, "%s%s%s" RESET, color, background, module->content);
 
     string_set_cstr(state->data, buffer);
     state->signal_render();

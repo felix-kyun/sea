@@ -18,7 +18,7 @@ void* module_init(void* _state)
         struct tm* t = localtime(&now);
         strftime(time_buffer, 64, " %H:%M:%S", t);
 
-        snprintf(buffer, 128, "%s%s %s", color, background, time_buffer);
+        snprintf(buffer, 128, "%s%s%s", color, background, time_buffer);
 
         // only signal render if the time has changed
         if (!string_equals_cstr(state->data, buffer)) {

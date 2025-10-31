@@ -15,6 +15,7 @@ static char battery_path[PATH_MAX] = { 0 };
 static char battery_full_path[PATH_MAX] = { 0 };
 static char battery_now_path[PATH_MAX] = { 0 };
 static char battery_status_path[PATH_MAX] = { 0 };
+static char* background = "";
 
 typedef enum BatteryStatus {
     BATTERY_STATUS_UNKNOWN = 0,
@@ -194,6 +195,7 @@ char* get_battery_color(float percentage)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    background = get_bg_color(state->config_get(state->name, "background"), "default");
     char buffer[32];
     uint16_t full = 0;
     uint16_t now = 0;
@@ -205,8 +207,8 @@ void* module_init(void* _state)
     while (*state->running) {
         now = get_battery_now() / 1000;
         float percentage = ((float)now / full) * 100;
-        snprintf(buffer, 32, "%s%s %.0f%% " RESET,
-            get_battery_color(percentage), battery_icon(percentage), percentage);
+        snprintf(buffer, 32, "%s%s%s %.0f%%" RESET,
+            background, get_battery_color(percentage), battery_icon(percentage), percentage);
 
         string_set_cstr(state->data, buffer);
         state->signal_render();

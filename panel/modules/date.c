@@ -8,11 +8,8 @@
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    char* _color = state->config_get(state->name, "color");
-    char* _background = state->config_get(state->name, "background");
-
-    char* color = get_fg_color(_color ? _color : "yellow");
-    char* background = get_bg_color(_background ? _background : "default");
+    const char* color = get_fg_color(state->config_get(state->name, "color"), "green");
+    const char* background = get_bg_color(state->config_get(state->name, "background"), "default");
     char date_buffer[64];
     char buffer[128];
 
@@ -21,7 +18,7 @@ void* module_init(void* _state)
         struct tm* t = localtime(&now);
         strftime(date_buffer, 64, "󰃰 %a %b %d %Y", t);
 
-        snprintf(buffer, 128, "%s%s %s  %s", color, background, date_buffer, RESET);
+        snprintf(buffer, 128, "%s%s %s" RESET, color, background, date_buffer);
 
         // only signal render if the time has changed
         if (!string_equals_cstr(state->data, buffer)) {

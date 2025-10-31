@@ -12,10 +12,13 @@
 #define NET_COLOR BLUE
 #define NET_REFRESH 2
 
+static char* background = "";
+static char* color = "";
+
 void inline static set_net_speed(ModuleState* state, int down_kib, int up_kib)
 {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), " " NET_COLOR NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB " RESET, up_kib, down_kib);
+    snprintf(buffer, sizeof(buffer), "%s%s" NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB" RESET, background, color, up_kib, down_kib);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
@@ -47,6 +50,8 @@ void static read_net_stat(int* down_kib, int* up_kib)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    color = get_fg_color(state->config_get(state->name, "color"), "blue");
+    background = get_bg_color(state->config_get(state->name, "background"), "default");
     set_net_speed(state, 0, 0);
 
     while (*state->running) {

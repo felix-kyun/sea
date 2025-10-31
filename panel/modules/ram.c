@@ -9,13 +9,15 @@
 #define RAM_ICON "  "
 #define RAM_COLOR MAGENTA
 #define MEM_FILE "/proc/meminfo"
+static char* color = "";
+static char* background = "";
 
 static char buffer[32];
 
 inline static void set_ram_usage(ModuleState* state, float used, float total)
 {
     (void)total;
-    snprintf(buffer, sizeof(buffer), " " RAM_COLOR RAM_ICON "%.1fGib " RESET, used);
+    snprintf(buffer, sizeof(buffer), "%s%s" RAM_ICON "%.1fGib" RESET, background, color, used);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
@@ -63,6 +65,8 @@ uint32_t get_available_ram(void)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    color = get_fg_color(state->config_get(state->name, "color"), "magenta");
+    background = get_bg_color(state->config_get(state->name, "background"), "default");
     uint32_t total_ram = get_total_ram();
 
     while (*state->running) {

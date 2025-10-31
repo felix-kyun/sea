@@ -45,5 +45,5 @@
 #define RESET "\033[0m"
 
 // helpers
-char* get_fg_color(const char* color_name);
-char* get_bg_color(const char* color_name);
+char* get_fg_color(const char* color_name, const char* default_color);
+char* get_bg_color(const char* color_name, const char* default_color);

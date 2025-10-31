@@ -8,10 +8,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define MEDIA_COLOR MAGENTA
 #define MEDIA_FORMAT "{{ title }}"
 #define MEDIA_ICON "󰎆 "
 #define LIMIT 60
+
+static char* background = "";
+static char* color = "";
 
 pid_t pid = 0;
 
@@ -68,6 +70,8 @@ static void ascii(const char* data)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    color = get_fg_color(state->config_get(state->name, "color"), "magenta");
+    background = get_bg_color(state->config_get(state->name, "background"), "default");
     int pipe_fd[2];
 
     // register cleanup function
@@ -114,7 +118,7 @@ void* module_init(void* _state)
             char media_buffer[128];
             ascii(buffer);
             string_limit(buffer, LIMIT);
-            snprintf(media_buffer, sizeof(media_buffer), MEDIA_COLOR " " MEDIA_ICON "%s " RESET, buffer);
+            snprintf(media_buffer, sizeof(media_buffer), "%s%s" MEDIA_ICON "%s" RESET, background, color, buffer);
             string_set_cstr(state->data, media_buffer);
         }
     }

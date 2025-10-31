@@ -9,10 +9,12 @@
 #define TEMP_FILE "/sys/class/thermal/thermal_zone0/temp"
 
 static char buffer[32];
+static char* color = "";
+static char* background = "";
 
 inline static void set_cpu_temp(ModuleState* state, int temp)
 {
-    snprintf(buffer, sizeof(buffer), " " TEMP_COLOR TEMP_ICON "%d°C " RESET, temp);
+    snprintf(buffer, sizeof(buffer), "%s%s" TEMP_ICON "%d°C" RESET, background, color, temp);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
@@ -39,6 +41,8 @@ int get_cpu_temp(void)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    color = get_fg_color(state->config_get(state->name, "color"), "red");
+    background = get_bg_color(state->config_get(state->name, "background"), "default");
 
     while (*state->running) {
         int temp = get_cpu_temp();

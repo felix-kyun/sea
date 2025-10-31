@@ -18,6 +18,8 @@
 static char max_brightness_path[PATH_MAX] = { 0 };
 static char current_brightness_path[PATH_MAX] = { 0 };
 static int max_brightness = 0;
+static char* color = "";
+static char* background = "";
 
 static int init_brightness_paths(void)
 {
@@ -49,7 +51,7 @@ static int init_brightness_paths(void)
 static void set_brightness(ModuleState* state, int brightness)
 {
     char buffer[32];
-    snprintf(buffer, sizeof(buffer), BRIGHTNESS_COLOR BRIGHTNESS_ICON " %d%% " RESET, (brightness * 100) / max_brightness);
+    snprintf(buffer, sizeof(buffer), "%s%s" BRIGHTNESS_ICON " %d%%" RESET, background, color, (brightness * 100) / max_brightness);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
@@ -133,6 +135,8 @@ static void on_scroll_down(ModuleState* state)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    color = get_fg_color(state->config_get(state->name, "color"), "green");
+    background = get_bg_color(state->config_get(state->name, "background"), "default");
     state->on_scroll_up = on_scroll_up;
     state->on_scroll_down = on_scroll_down;
 

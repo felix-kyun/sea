@@ -45,20 +45,24 @@ static Color bg_colors[] = {
     { "default", BG_DEFAULT },
 };
 
-char* get_fg_color(const char* color_name)
+char* get_fg_color(const char* color_name, const char* default_color)
 {
+    const char* name = color_name ? color_name : default_color;
+
     for (size_t i = 0; i < sizeof(fg_colors) / sizeof(Color); i++) {
-        if (strcmp(fg_colors[i].name, color_name) == 0) {
+        if (strcmp(fg_colors[i].name, name) == 0) {
             return (char*)fg_colors[i].code;
         }
     }
     return RESET;
 }
 
-char* get_bg_color(const char* color_name)
+char* get_bg_color(const char* color_name, const char* default_color)
 {
+    const char* name = color_name ? color_name : default_color;
+
     for (size_t i = 0; i < sizeof(bg_colors) / sizeof(Color); i++) {
-        if (strcmp(bg_colors[i].name, color_name) == 0) {
+        if (strcmp(bg_colors[i].name, name) == 0) {
             return (char*)bg_colors[i].code;
         }
     }

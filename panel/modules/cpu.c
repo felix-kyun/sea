@@ -11,6 +11,8 @@
 
 static uint64_t user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
 static char buffer[256];
+static char* color = "";
+static char* background = "";
 
 static void load_cpu_info(void)
 {
@@ -37,7 +39,7 @@ static inline uint64_t get_cpu_idle_time(void)
 
 static inline void set_cpu_usage(ModuleState* state, int usage)
 {
-    snprintf(buffer, sizeof(buffer), " " CPU_COLOR CPU_ICON "%d%% " RESET, usage);
+    snprintf(buffer, sizeof(buffer), "%s%s" CPU_ICON "%d%%" RESET, background, color, usage);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
@@ -45,6 +47,8 @@ static inline void set_cpu_usage(ModuleState* state, int usage)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    color = get_fg_color(state->config_get(state->name, "color"), "cyan");
+    background = get_bg_color(state->config_get(state->name, "background"), "default");
     set_cpu_usage(state, 0);
 
     while (*state->running) {

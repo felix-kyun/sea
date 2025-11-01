@@ -65,10 +65,20 @@ static MouseEvent parse_mouse_event(const char* event)
 static ModuleState* get_module_from_position(int x)
 {
     int current_x = 0;
+
+    // skip panel padding
+    current_x += config.panel_padding;
+
     for (int i = 0; i < LEFT_COUNT; i++) {
-        current_x += module_states[i].data->char_length;
-        if (x <= current_x)
+        // check if x is within module bounds
+        if (x > current_x && x <= current_x + (int)module_states[i].data->char_length) {
             return &module_states[i];
+        }
+        current_x += module_states[i].data->char_length;
+
+        // add module spacing except after last module
+        if (i < LEFT_COUNT - 1)
+            current_x += config.module_spacing;
     }
 
     current_x += render_info.left_padding;
@@ -76,9 +86,13 @@ static ModuleState* get_module_from_position(int x)
         return NULL;
 
     for (int i = 0; i < CENTER_COUNT; i++) {
-        current_x += module_states[LEFT_COUNT + i].data->char_length;
-        if (x <= current_x)
+        if (x > current_x && x <= current_x + (int)module_states[LEFT_COUNT + i].data->char_length) {
             return &module_states[LEFT_COUNT + i];
+        }
+        current_x += module_states[LEFT_COUNT + i].data->char_length;
+
+        if (i < CENTER_COUNT - 1)
+            current_x += config.module_spacing;
     }
 
     current_x += render_info.right_padding;
@@ -86,9 +100,13 @@ static ModuleState* get_module_from_position(int x)
         return NULL;
 
     for (int i = 0; i < RIGHT_COUNT; i++) {
-        current_x += module_states[LEFT_COUNT + CENTER_COUNT + i].data->char_length;
-        if (x <= current_x)
+        if (x > current_x && x <= current_x + (int)module_states[LEFT_COUNT + CENTER_COUNT + i].data->char_length) {
             return &module_states[LEFT_COUNT + CENTER_COUNT + i];
+        }
+        current_x += module_states[LEFT_COUNT + CENTER_COUNT + i].data->char_length;
+
+        if (i < RIGHT_COUNT - 1)
+            current_x += config.module_spacing;
     }
 
     return NULL;

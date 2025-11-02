@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
 int main(void)
@@ -34,6 +35,11 @@ int main(void)
     close(dev_null);
 
     char* const args[] = { "sea", "panel", "create", NULL };
+    struct timespec sleep_time = {
+        .tv_nsec = 500000000,
+        .tv_sec = 0
+    };
+
     while (true) {
         pid_t pid = fork();
         if (pid == 0) {
@@ -43,6 +49,7 @@ int main(void)
         } else if (pid > 0) {
             int status;
             waitpid(pid, &status, 0);
+            nanosleep(&sleep_time, NULL);
         } else {
             perror("fork failed");
             return 1;

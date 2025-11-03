@@ -19,7 +19,7 @@ _MODULES = $(patsubst $(MODULES_DIR)/%.c, $(BUILD_DIR)/modules/%.so, $(MODULES))
 all: $(_TARGET) launcher
 
 $(_TARGET): $(_OBJS) $(_MODULES)
-	$(CC) -o $@ $^ $(INCLUDES) $(CFLAGS) $(TARGET_FLAGS)
+	$(CC) -o $@ $(_OBJS) $(INCLUDES) $(CFLAGS) $(TARGET_FLAGS)
 
 $(_MODULES): $(BUILD_DIR)/modules/%.so: $(MODULES_DIR)/%.c
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi

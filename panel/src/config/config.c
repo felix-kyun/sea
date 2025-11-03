@@ -4,6 +4,7 @@
 #include <libgen.h>
 #include <linux/limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -19,6 +20,7 @@ void config_init(void)
         strncpy(config.current_path, dirname(exec_path), PATH_MAX);
     } else {
         perror("Failed to get executable path");
+        exit(1);
         strncpy(config.current_path, "", PATH_MAX);
     }
 

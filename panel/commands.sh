@@ -13,6 +13,24 @@ _create() {
         -- "${CURRENT_DIR}/build/sea_panel_main"
 }
 
+_debug_mode() {
+    CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
+    [[ -f "$HOME/.config/sea.conf" ]] && source "$HOME/.config/sea.conf"
+
+    kitten panel \
+        --config "${CURRENT_DIR}/panel.conf" \
+        --edge top \
+        --layer top \
+        --name sea-panel \
+        --class sea-panel \
+        --lines 7 \
+        --output-name "${PANEL_OUTPUT}" \
+        -- bash -c "
+             strace ${CURRENT_DIR}/build/sea_panel_main --stdout;
+             read -r -p 'Press any key to exit'
+    "
+}
+
 _launch() {
     CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
 

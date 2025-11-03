@@ -1,13 +1,31 @@
 #include <fcntl.h>
-#include <sched.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/wait.h>
-#include <time.h>
 #include <unistd.h>
+
+static int log_fd = -1;
+
+void open_log(void)
+{
+    if (log_fd != -1)
+        return;
+
+    log_fd = open("/tmp/launcher.log", O_WRONLY | O_CREAT | O_APPEND, 0644);
+    if (log_fd == -1) {
+        perror("Failed to open log file");
+        exit(1);
+    }
+
+    dup2(log_fd, STDOUT_FILENO);
+    dup2(log_fd, STDERR_FILENO);
+}
 
 int main(void)
 {
+    open_log();
+
     // double fork
     pid_t pid = fork();
     if (pid < 0) {
@@ -27,18 +45,11 @@ int main(void)
     if (pid > 0)
         return 0;
 
-    // redirect io to /dev/null
     int dev_null = open("/dev/null", O_RDWR);
     dup2(dev_null, STDIN_FILENO);
-    dup2(dev_null, STDOUT_FILENO);
-    dup2(dev_null, STDERR_FILENO);
     close(dev_null);
 
     char* const args[] = { "sea", "panel", "create", NULL };
-    struct timespec sleep_time = {
-        .tv_nsec = 500000000,
-        .tv_sec = 0
-    };
 
     while (true) {
         pid_t pid = fork();
@@ -49,11 +60,13 @@ int main(void)
         } else if (pid > 0) {
             int status;
             waitpid(pid, &status, 0);
-            nanosleep(&sleep_time, NULL);
+            sleep(1);
         } else {
             perror("fork failed");
             return 1;
         }
     }
+
+    close(log_fd);
     return 0;
 }

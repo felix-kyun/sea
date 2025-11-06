@@ -2,6 +2,7 @@
 #include "log.h"
 #include "modules/modules.h"
 #include "utils.h"
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/statvfs.h>
@@ -52,7 +53,7 @@ static char* get_disk_color(float percentage)
 static void set_disk_usage(ModuleState* state, uint64_t used_gb, uint64_t total_gb, float percentage)
 {
     char* usage_color = get_disk_color(percentage);
-    snprintf(buffer, sizeof(buffer), "%s%s" DISK_ICON " %s%luG/%luG (%.0f%%)",
+    snprintf(buffer, sizeof(buffer), "%s%s" DISK_ICON " %s%" PRIu64 "G/%" PRIu64 "G (%.0f%%)",
         background, color, usage_color, used_gb, total_gb, percentage);
     string_set_cstr(state->data, buffer);
     state->signal_render();

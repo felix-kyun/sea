@@ -83,7 +83,7 @@ static void change_volume(int delta)
     if (delta > 0) {
         snprintf(cmd, sizeof(cmd), "pactl set-sink-volume @DEFAULT_SINK@ +%d%% 2>/dev/null", delta);
     } else {
-        snprintf(cmd, sizeof(cmd), "pactl set-sink-volume @DEFAULT_SINK@ %d%% 2>/dev/null", delta);
+        snprintf(cmd, sizeof(cmd), "pactl set-sink-volume @DEFAULT_SINK@ -- %d%% 2>/dev/null", delta);
     }
     system(cmd);
 }

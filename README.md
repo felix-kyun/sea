@@ -7,7 +7,7 @@ Simple, fast and heavily opinionated.
 
 - launcher
 - notification daemon
-- panel
+- panel (with 13+ modules including disk, volume, uptime, CPU, RAM, battery, and more - see [panel/MODULES.md](panel/MODULES.md) for details)
 - clipboard manager
 - cli
 - emoji picker

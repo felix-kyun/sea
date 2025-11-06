@@ -1,0 +1,65 @@
+# Sea Panel Configuration Example
+# Place this file at ~/.config/sea/panel.ini
+
+[panel]
+# Module layout - customize to your preference
+left_modules = 'cpu,ram,disk,net_speed'
+center_modules = 'time,date'
+right_modules = 'volume,brightness,battery,uptime'
+
+# Panel styling
+module_spacing = 1
+panel_padding = 0
+auto_reset_style = true
+
+# Logging
+log_file = '/tmp/panel.log'
+log_to_stdout = false
+
+# Module configurations
+# Each module can have custom colors and backgrounds
+
+[cpu]
+color = 'cyan'
+background = 'default'
+
+[ram]
+color = 'magenta'
+background = 'default'
+
+[disk]
+color = 'yellow'
+background = 'default'
+
+[net_speed]
+color = 'blue'
+background = 'default'
+
+[volume]
+color = 'blue'
+background = 'default'
+
+[brightness]
+color = 'green'
+background = 'default'
+
+[battery]
+# Battery uses auto colors based on charge level
+background = 'default'
+
+[uptime]
+color = 'cyan'
+background = 'default'
+
+[time]
+color = 'white'
+background = 'default'
+
+[date]
+color = 'white'
+background = 'default'
+
+# Additional modules available:
+# - cpu_temp: CPU temperature monitoring
+# - media: Currently playing media
+# - text: Custom static text (requires type='text' and content='...')

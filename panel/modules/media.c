@@ -118,7 +118,7 @@ void* module_init(void* _state)
             char media_buffer[128];
             ascii(buffer);
             string_limit(buffer, LIMIT);
-            snprintf(media_buffer, sizeof(media_buffer), "%s%s" MEDIA_ICON "%s", background, color, buffer);
+            snprintf(media_buffer, sizeof(media_buffer), "%s%s" MEDIA_ICON "%s", color, background, buffer);
             string_set_cstr(state->data, media_buffer);
         }
     }

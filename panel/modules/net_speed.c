@@ -18,7 +18,7 @@ static char* color = "";
 void inline static set_net_speed(ModuleState* state, int down_kib, int up_kib)
 {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "%s%s" NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB", background, color, up_kib, down_kib);
+    snprintf(buffer, sizeof(buffer), "%s%s" NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB", color, background, up_kib, down_kib);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }

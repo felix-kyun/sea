@@ -51,7 +51,7 @@ static int init_brightness_paths(void)
 static void set_brightness(ModuleState* state, int brightness)
 {
     char buffer[32];
-    snprintf(buffer, sizeof(buffer), "%s%s" BRIGHTNESS_ICON " %d%%", background, color, (brightness * 100) / max_brightness);
+    snprintf(buffer, sizeof(buffer), "%s%s" BRIGHTNESS_ICON " %d%%", color, background, (brightness * 100) / max_brightness);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }

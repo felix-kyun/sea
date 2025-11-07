@@ -39,7 +39,7 @@ static inline uint64_t get_cpu_idle_time(void)
 
 static inline void set_cpu_usage(ModuleState* state, int usage)
 {
-    snprintf(buffer, sizeof(buffer), "%s%s" CPU_ICON "%d%%", background, color, usage);
+    snprintf(buffer, sizeof(buffer), "%s%s" CPU_ICON "%d%%", color, background, usage);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }

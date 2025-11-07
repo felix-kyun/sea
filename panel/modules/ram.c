@@ -17,7 +17,7 @@ static char buffer[32];
 inline static void set_ram_usage(ModuleState* state, float used, float total)
 {
     (void)total;
-    snprintf(buffer, sizeof(buffer), "%s%s" RAM_ICON "%.1fGib", background, color, used);
+    snprintf(buffer, sizeof(buffer), "%s%s" RAM_ICON "%.1fGib", color, background, used);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }

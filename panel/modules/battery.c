@@ -204,24 +204,21 @@ void* module_init(void* _state)
 {
     ModuleState* state = _state;
     background = get_bg_color(state->config_get(state->name, "background"), "default");
-    char buffer[32];
-    uint16_t full = 0;
-    uint16_t now = 0;
-    char* config_battery_name = state->config_get(state->name, "source");
 
     // initialize
-    init_battery_paths(config_battery_name);
-    full = get_battery_full() / 1000;
+    init_battery_paths(state->config_get(state->name, "source"));
+    uint16_t full = get_battery_full() / 1000;
 
+    char buffer[32];
     while (*state->running) {
-        now = get_battery_now() / 1000;
+        uint16_t now = get_battery_now() / 1000;
         float percentage = ((float)now / full) * 100;
         snprintf(buffer, 32, "%s%s%s %.0f%%",
             get_battery_color(percentage), background, battery_icon(percentage), percentage);
 
         string_set_cstr(state->data, buffer);
         state->signal_render();
-        msleep(60000);
+        msleep(5 * 1000);
     }
 
     return NULL;

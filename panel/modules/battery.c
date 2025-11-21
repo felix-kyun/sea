@@ -8,8 +8,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
-#define BATTERY_FILES_PATH "/sys/class/power_supply/"
+#define BATTERY_FILES_PATH "/sys/class/power_supply"
 
 static char battery_path[PATH_MAX] = { 0 };
 static char battery_full_path[PATH_MAX] = { 0 };
@@ -25,8 +26,19 @@ typedef enum BatteryStatus {
     BATTERY_STATUS_FULL,
 } BatteryStatus;
 
-static char* get_battery_file(void)
+static char* get_battery_file(const char* default_name)
 {
+    if (default_name != NULL) {
+        snprintf(battery_path, PATH_MAX, "%s/%s", BATTERY_FILES_PATH, default_name);
+        if (access(battery_path, F_OK | R_OK) == 0) {
+            return battery_path;
+        } else {
+            logger_log(LOG_ERROR, "configured battery source '%s' not found", default_name);
+            logger_log(LOG_INFO, "falling back to automatic battery detection");
+        }
+    }
+
+    // fallback
     struct dirent* entry;
     DIR* dp = opendir(BATTERY_FILES_PATH);
 
@@ -47,9 +59,9 @@ static char* get_battery_file(void)
     return NULL;
 }
 
-static void init_battery_paths(void)
+static void init_battery_paths(const char* default_name)
 {
-    char* battery = get_battery_file();
+    char* battery = get_battery_file(default_name);
     if (battery == NULL) {
         logger_log(LOG_ERROR, "no battery found");
         return;
@@ -199,9 +211,10 @@ void* module_init(void* _state)
     char buffer[32];
     uint16_t full = 0;
     uint16_t now = 0;
+    char* config_battery_name = state->config_get(state->name, "source");
 
     // initialize
-    init_battery_paths();
+    init_battery_paths(config_battery_name);
     full = get_battery_full() / 1000;
 
     while (*state->running) {

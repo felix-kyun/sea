@@ -5,12 +5,14 @@
 #include "utils.h"
 #include <dirent.h>
 #include <linux/limits.h>
+#include <pthread.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
-#define BATTERY_FILES_PATH "/sys/class/power_supply"
+#define SOURCE_DIR "/sys/class/power_supply"
 
 static char battery_path[PATH_MAX] = { 0 };
 static char battery_full_path[PATH_MAX] = { 0 };
@@ -26,57 +28,51 @@ typedef enum BatteryStatus {
     BATTERY_STATUS_FULL,
 } BatteryStatus;
 
-static char* get_battery_file(const char* default_name)
-{
-    if (default_name != NULL) {
-        snprintf(battery_path, PATH_MAX, "%s/%s", BATTERY_FILES_PATH, default_name);
-        if (access(battery_path, F_OK | R_OK) == 0) {
-            return battery_path;
-        } else {
-            logger_log(LOG_ERROR, "configured battery source '%s' not found", default_name);
-            logger_log(LOG_INFO, "falling back to automatic battery detection");
-        }
-    }
-
-    // fallback
-    struct dirent* entry;
-    DIR* dp = opendir(BATTERY_FILES_PATH);
-
-    if (dp == NULL) {
-        logger_log(LOG_ERROR, "failed to open directory: " BATTERY_FILES_PATH);
-        return NULL;
-    }
-
-    while ((entry = readdir(dp))) {
-        if (strncmp(entry->d_name, "BAT", 3) == 0) {
-            snprintf(battery_path, PATH_MAX, "%s%s", BATTERY_FILES_PATH, entry->d_name);
-            closedir(dp);
-            return battery_path;
-        }
-    }
-
-    closedir(dp);
-    return NULL;
-}
-
 static void init_battery_paths(const char* default_name)
 {
-    char* battery = get_battery_file(default_name);
-    if (battery == NULL) {
-        logger_log(LOG_ERROR, "no battery found");
-        return;
+    if (default_name != NULL) {
+        snprintf(battery_path, PATH_MAX, "%s/%s", SOURCE_DIR, default_name);
+        if (access(battery_path, F_OK) != 0) {
+            logger_log(LOG_ERROR, "configured battery source '%s' not found", default_name);
+            logger_log(LOG_ERROR, "falling back to automatic battery detection");
+            pthread_exit(NULL);
+        }
+    } else {
+        // check for files starting with "BAT" in SOURCE_DIR
+        struct dirent* entry;
+        DIR* dp = opendir(SOURCE_DIR);
+
+        if (dp == NULL) {
+            logger_log(LOG_ERROR, "failed to open directory: " SOURCE_DIR);
+            return;
+        }
+
+        while ((entry = readdir(dp))) {
+            if (strncmp(entry->d_name, "BAT", 3) == 0) {
+                snprintf(battery_path, PATH_MAX, "%s%s", SOURCE_DIR, entry->d_name);
+                closedir(dp);
+                break;
+            }
+        }
+
+        closedir(dp);
     }
 
-    logger_log(LOG_INFO, "found battery: %s", battery);
+    if (strlen(battery_path) == 0) {
+        logger_log(LOG_ERROR, "No battery source found");
+        pthread_exit(NULL);
+    }
 
-    snprintf(battery_full_path, PATH_MAX, "%s/energy_full", battery);
-    snprintf(battery_now_path, PATH_MAX, "%s/energy_now", battery);
-    snprintf(battery_status_path, PATH_MAX, "%s/status", battery);
+    logger_log(LOG_DEBUG, "using battery source: %s", battery_path);
 
-    logger_log(LOG_INFO, "battery paths initialized:");
-    logger_log(LOG_INFO, "full: %s", battery_full_path);
-    logger_log(LOG_INFO, "now: %s", battery_now_path);
-    logger_log(LOG_INFO, "status: %s", battery_status_path);
+    snprintf(battery_full_path, PATH_MAX, "%s/energy_full", battery_path);
+    snprintf(battery_now_path, PATH_MAX, "%s/energy_now", battery_path);
+    snprintf(battery_status_path, PATH_MAX, "%s/status", battery_path);
+
+    logger_log(LOG_DEBUG, "battery paths initialized");
+    logger_log(LOG_DEBUG, "full: %s", battery_full_path);
+    logger_log(LOG_DEBUG, "now: %s", battery_now_path);
+    logger_log(LOG_DEBUG, "status: %s", battery_status_path);
 }
 
 unsigned int get_battery_full(void)

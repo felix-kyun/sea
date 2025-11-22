@@ -38,5 +38,6 @@ int main(int argc, char** argv)
 
     destroy_app_config();
     logger_log(LOG_SUCCESS, "panel stopped");
+    logger_free();
     return 0;
 }

@@ -219,6 +219,7 @@ void panel_free(void)
 
     free(module_states);
     free(module_handles);
+    free(module_threads);
     // show cursor
     printf("\033[?25h");
 }

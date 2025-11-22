@@ -48,6 +48,7 @@ void map_set(LinearMap* map, const char* section, const char* key, const char* v
         if (strcmp(map->keys->items[i], full_key) == 0) {
             free(map->values->items[i]);
             map->values->items[i] = strdup(value);
+            free(full_key);
             return;
         }
     }

@@ -90,4 +90,5 @@ void destroy_app_config(void)
     free_string_array(config.right_modules);
 
     config_free();
+    free_args();
 }

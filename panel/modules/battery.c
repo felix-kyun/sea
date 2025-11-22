@@ -12,7 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define SOURCE_DIR "/sys/class/power_supply"
+#define SOURCE_DIR "/sys/class/power_supply/"
 
 static char battery_path[PATH_MAX] = { 0 };
 static char battery_full_path[PATH_MAX] = { 0 };
@@ -31,7 +31,7 @@ typedef enum BatteryStatus {
 static void init_battery_paths(const char* default_name)
 {
     if (default_name != NULL) {
-        snprintf(battery_path, PATH_MAX, "%s/%s", SOURCE_DIR, default_name);
+        snprintf(battery_path, PATH_MAX, "%s%s", SOURCE_DIR, default_name);
         if (access(battery_path, F_OK) != 0) {
             logger_log(LOG_ERROR, "configured battery source '%s' not found", default_name);
             logger_log(LOG_ERROR, "falling back to automatic battery detection");

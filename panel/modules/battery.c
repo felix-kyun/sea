@@ -50,7 +50,6 @@ static void init_battery_paths(const char* default_name)
         while ((entry = readdir(dp))) {
             if (strncmp(entry->d_name, "BAT", 3) == 0) {
                 snprintf(battery_path, PATH_MAX, "%s%s", SOURCE_DIR, entry->d_name);
-                closedir(dp);
                 break;
             }
         }

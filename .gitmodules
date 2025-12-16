@@ -1,0 +1,3 @@
+[submodule "panel/vector"]
+	path = panel/vector
+	url = https://github.com/felix-kyun/vector.git

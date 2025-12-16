@@ -7,7 +7,8 @@ INCLUDE_DIR := include
 SOURCE_DIR := src
 MODULES_DIR := modules
 BUILD_DIR := build
-INCLUDES := -I$(INCLUDE_DIR)
+LIBS := vector
+INCLUDES := -I$(INCLUDE_DIR) $(patsubst %, -I%/$(INCLUDE_DIR), $(LIBS))
 SOURCES := $(shell find $(SOURCE_DIR) -type f -name '*.c')
 MODULES := $(shell find  $(MODULES_DIR) -type f -name '*.c')
 TARGET := sea_panel_main
@@ -15,11 +16,12 @@ TARGET := sea_panel_main
 _TARGET = $(addprefix $(BUILD_DIR)/, $(TARGET))
 _OBJS = $(patsubst $(SOURCE_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
 _MODULES = $(patsubst $(MODULES_DIR)/%.c, $(BUILD_DIR)/modules/%.so, $(MODULES))
+_LIBS = $(patsubst %, -L%, $(LIBS)) $(patsubst %, -l%, $(LIBS))
 
 all: $(_TARGET) launcher
 
-$(_TARGET): $(_OBJS) $(_MODULES)
-	$(CC) -o $@ $(_OBJS) $(INCLUDES) $(CFLAGS) $(TARGET_FLAGS)
+$(_TARGET): $(_OBJS) $(_MODULES) $(LIBS)
+	$(CC) -o $@ $(_OBJS) $(_LIBS) $(INCLUDES) $(CFLAGS) $(TARGET_FLAGS)
 
 $(_MODULES): $(BUILD_DIR)/modules/%.so: $(MODULES_DIR)/%.c
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
@@ -28,6 +30,9 @@ $(_MODULES): $(BUILD_DIR)/modules/%.so: $(MODULES_DIR)/%.c
 $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES)
+
+$(LIBS):
+	$(MAKE) -C $@ all
 
 launcher:
 	$(CC) -o $(BUILD_DIR)/sea_panel_launcher launcher.c $(CFLAGS)
@@ -59,4 +64,4 @@ test-args:
 	@echo -e "\n\033[1;4;34mChecking For Memory Leaks...\033[0m"
 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./$(BUILD_DIR)/test_args && echo -e "\033[1;4;32mNo Memory Leaks Detected!\033[0m" || echo -e "\033[1;4;31mMemory Leaks Detected!\033[0m"
 
-.PHONY: clean all test dev debug test-string release watch-log launcher test-args
+.PHONY: clean all test dev debug test-string release watch-log launcher test-args $(LIBS)

@@ -128,10 +128,13 @@ void spawn_module(const char* module_name, int index)
         "cpu",
         "cpu_temp",
         "date",
+        "disk",
         "time",
         "media",
         "net_speed",
-        "ram"
+        "ram",
+        "uptime",
+        "volume"
     };
 
     if (!includes(inbuilt_modules, sizeof(inbuilt_modules) / sizeof(inbuilt_modules[0]), module_name)) {

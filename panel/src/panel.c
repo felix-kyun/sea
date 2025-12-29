@@ -3,6 +3,7 @@
 #include "config/config.h"
 #include "log.h"
 #include "modules/custom_module.h"
+#include "modules/inbuilt_modules.h"
 #include "modules/modules.h"
 #include "render.h"
 #include "utils.h"
@@ -122,18 +123,6 @@ void spawn_custom_module(const char* module_name, int index)
 void spawn_module(const char* module_name, int index)
 {
     module_states[index].name = module_name;
-    const char* inbuilt_modules[] = {
-        "battery",
-        "brightness",
-        "cpu",
-        "cpu_temp",
-        "date",
-        "time",
-        "media",
-        "net_speed",
-        "ram",
-        "arch_updates"
-    };
 
     if (!includes(inbuilt_modules, sizeof(inbuilt_modules) / sizeof(inbuilt_modules[0]), module_name)) {
         spawn_custom_module(module_name, index);

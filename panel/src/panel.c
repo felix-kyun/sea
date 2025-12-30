@@ -131,7 +131,8 @@ void spawn_module(const char* module_name, int index)
         "time",
         "media",
         "net_speed",
-        "ram"
+        "ram",
+        "arch_updates"
     };
 
     if (!includes(inbuilt_modules, sizeof(inbuilt_modules) / sizeof(inbuilt_modules[0]), module_name)) {

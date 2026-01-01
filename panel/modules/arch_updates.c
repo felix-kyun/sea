@@ -33,6 +33,19 @@ static inline char* find_binary(const char* binary_name)
     return NULL;
 }
 
+bool check_binaries(const char** binaries, size_t count)
+{
+    for (size_t i = 0; i < count; i++) {
+        char* binary_path = find_binary(binaries[i]);
+        if (binary_path) {
+            free(binary_path);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 static inline void set_updates(ModuleState* state, const char* count_string)
 {
     static char buffer[32];
@@ -44,9 +57,19 @@ static inline void set_updates(ModuleState* state, const char* count_string)
     }
 }
 
+static void module_on_click(ModuleState* state)
+{
+    (void)state;
+    system("kitty -e sh -c '"
+           "sudo pacman -Syu;"
+           "read -n1 -srp \"Press any key to exit...\""
+           "'");
+}
+
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
+    state->on_left_click = module_on_click;
 
     char* binary_path = find_binary("checkupdates");
     if (!binary_path) {

@@ -1,8 +1,10 @@
 #define _GNU_SOURCE
 #include "config/utils.h"
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 StringArray* create_string_array(void)
 {
@@ -113,4 +115,42 @@ void string_array_from_csv(StringArray* array, const char* csv)
     }
 
     free(csv_copy);
+}
+
+char* find_binary(const char* binary_name)
+{
+    char* paths_system = getenv("PATH");
+    if (paths_system == NULL) {
+        return NULL;
+    }
+
+    char* paths = strdup(paths_system);
+
+    char* saveptr;
+    char* path = strtok_r(paths, ":", &saveptr);
+    while (path != NULL) {
+        char full_path[PATH_MAX];
+        snprintf(full_path, PATH_MAX, "%s/%s", path, binary_name);
+        if (access(full_path, X_OK) == 0) {
+            free(paths);
+            return strdup(full_path);
+        }
+        path = strtok_r(NULL, ":", &saveptr);
+    }
+
+    free(paths);
+    return NULL;
+}
+
+bool check_binaries(const char** binaries, size_t count)
+{
+    for (size_t i = 0; i < count; i++) {
+        char* binary_path = find_binary(binaries[i]);
+        if (binary_path) {
+            free(binary_path);
+            return true;
+        }
+    }
+
+    return false;
 }

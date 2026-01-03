@@ -1,4 +1,5 @@
 #pragma once
+#include "modules/modules.h"
 
 // colors
 #define BLACK "\033[0;30m"
@@ -44,6 +45,5 @@
 // reset
 #define RESET "\033[0m"
 
-// helpers
-char* get_fg_color(const char* color_name, const char* default_color);
-char* get_bg_color(const char* color_name, const char* default_color);
+char* get_module_fg_color(const ModuleState* module_state, const char* default_color);
+char* get_module_bg_color(const ModuleState* module_state);

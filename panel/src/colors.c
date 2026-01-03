@@ -1,4 +1,5 @@
 #include "colors.h"
+#include "modules/modules.h"
 #include <string.h>
 
 typedef struct Color {
@@ -45,7 +46,7 @@ static Color bg_colors[] = {
     { "default", BG_DEFAULT },
 };
 
-char* get_fg_color(const char* color_name, const char* default_color)
+static char* get_fg_color(const char* color_name, const char* default_color)
 {
     const char* name = color_name ? color_name : default_color;
 
@@ -57,7 +58,7 @@ char* get_fg_color(const char* color_name, const char* default_color)
     return RESET;
 }
 
-char* get_bg_color(const char* color_name, const char* default_color)
+static char* get_bg_color(const char* color_name, const char* default_color)
 {
     const char* name = color_name ? color_name : default_color;
 
@@ -67,4 +68,14 @@ char* get_bg_color(const char* color_name, const char* default_color)
         }
     }
     return RESET;
+}
+
+char* get_module_fg_color(const ModuleState* state, const char* default_color)
+{
+    return get_fg_color(state->config_get(state->name, "color"), default_color);
+}
+
+char* get_module_bg_color(const ModuleState* state)
+{
+    return get_bg_color(state->config_get(state->name, "background"), "default");
 }

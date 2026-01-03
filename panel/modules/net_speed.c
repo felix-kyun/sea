@@ -50,8 +50,8 @@ void static read_net_stat(int* down_kib, int* up_kib)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_fg_color(state->config_get(state->name, "color"), "blue");
-    background = get_bg_color(state->config_get(state->name, "background"), "default");
+    color = get_module_fg_color(state, "blue");
+    background = get_module_bg_color(state);
     set_net_speed(state, 0, 0);
 
     while (*state->running) {

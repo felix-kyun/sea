@@ -47,8 +47,8 @@ static inline void set_cpu_usage(ModuleState* state, int usage)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_fg_color(state->config_get(state->name, "color"), "cyan");
-    background = get_bg_color(state->config_get(state->name, "background"), "default");
+    color = get_module_fg_color(state, "cyan");
+    background = get_module_bg_color(state);
     set_cpu_usage(state, 0);
 
     while (*state->running) {

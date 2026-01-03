@@ -41,8 +41,8 @@ int get_cpu_temp(void)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_fg_color(state->config_get(state->name, "color"), "red");
-    background = get_bg_color(state->config_get(state->name, "background"), "default");
+    color = get_module_fg_color(state, "red");
+    background = get_module_bg_color(state);
 
     while (*state->running) {
         int temp = get_cpu_temp();

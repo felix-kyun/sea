@@ -65,8 +65,8 @@ uint32_t get_available_ram(void)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_fg_color(state->config_get(state->name, "color"), "magenta");
-    background = get_bg_color(state->config_get(state->name, "background"), "default");
+    color = get_module_fg_color(state, "magenta");
+    background = get_module_bg_color(state);
     uint32_t total_ram = get_total_ram();
 
     while (*state->running) {

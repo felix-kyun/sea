@@ -8,8 +8,8 @@ void* module_init(void* _state)
 {
     ModuleState* state = _state;
     TextModule* module = (TextModule*)state->custom_data;
-    const char* color = get_fg_color(state->config_get(state->name, "color"), "white");
-    const char* background = get_bg_color(state->config_get(state->name, "background"), "default");
+    const char* color = get_module_fg_color(state, "white");
+    const char* background = get_module_bg_color(state);
     const bool reset_style = state->config_get(state->name, "reset_style")
         ? (strcmp(state->config_get(state->name, "reset_style"), "true") == 0)
         : true;

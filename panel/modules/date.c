@@ -8,8 +8,8 @@
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    const char* color = get_fg_color(state->config_get(state->name, "color"), "green");
-    const char* background = get_bg_color(state->config_get(state->name, "background"), "default");
+    const char* color = get_module_fg_color(state, "green");
+    const char* background = get_module_bg_color(state);
     char date_buffer[64];
     char buffer[128];
 

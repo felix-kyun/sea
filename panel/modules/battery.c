@@ -202,7 +202,7 @@ char* get_battery_color(float percentage)
 void* module_init(void* _state)
 {
     ModuleState* state = _state;
-    background = get_bg_color(state->config_get(state->name, "background"), "default");
+    background = get_module_bg_color(state);
 
     // initialize
     init_battery_paths(state->config_get(state->name, "source"));

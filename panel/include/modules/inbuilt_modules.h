@@ -1,3 +1,5 @@
+// This file is auto-generated. Do not edit manually.
+// created by create_modules_list.sh
 #pragma once
 const char* inbuilt_modules[] = {
     "battery",
@@ -5,10 +7,11 @@ const char* inbuilt_modules[] = {
     "cpu",
     "cpu_temp",
     "date",
-    "time",
     "media",
     "net_speed",
     "ram",
-    "arch_updates",
-    "uptime"
+    "text",
+    "time",
+    "uptime",
+    "arch_updates"
 };

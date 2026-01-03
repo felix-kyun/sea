@@ -17,9 +17,29 @@ static inline void set_updates(ModuleState* state, const char* count_string)
     }
 }
 
+char* get_updates(void)
+{
+    char buffer[32];
+    FILE* fp = popen("checkupdates | wc -l", "r");
+
+    fgets(buffer, 32, fp);
+    buffer[strcspn(buffer, "\n")] = 0;
+
+    pclose(fp);
+    return strdup(buffer);
+}
+
 static void module_on_click(ModuleState* state)
 {
     (void)state;
+
+    char* updates = get_updates();
+    if (strcmp(updates, "0") == 0) {
+        free(updates);
+        return;
+    }
+    free(updates);
+
     system("kitty -e sh -c '"
            "sudo pacman -Syu;"
            "read -n1 -srp \"Press any key to exit...\""
@@ -39,15 +59,11 @@ void* module_init(void* _state)
     }
     free(binary_path);
 
-    char buffer[32];
+    set_updates(state, "0");
     while (*state->running) {
-        FILE* fp = popen("checkupdates | wc -l", "r");
-
-        fgets(buffer, 32, fp);
-        buffer[strcspn(buffer, "\n")] = 0;
-        set_updates(state, buffer);
-
-        pclose(fp);
+        char* updates = get_updates();
+        set_updates(state, updates);
+        free(updates);
         msleep(60 * 60 * 1000);
     }
 

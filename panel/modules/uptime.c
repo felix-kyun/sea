@@ -25,14 +25,30 @@ void* module_init(void* _state)
         uptime %= day_secs;
         int hours = uptime / hour_secs;
         uptime %= hour_secs;
+        int minutes = uptime / 60;
 
-        snprintf(buffer, 64, "%s%s" UPTIME_ICON "%dd %dh", color, background, days, hours);
+        int update_interval = from_hours(1);
+        if (days == 0 && hours == 0) {
+            // if less than one hour
+            // show minute
+            snprintf(buffer, 64, "%s%s" UPTIME_ICON "%dm", color, background, minutes);
+            update_interval = from_minutes(1);
+        } else if (days == 0) {
+            // if less than one day
+            // show hour & minute
+            snprintf(buffer, 64, "%s%s" UPTIME_ICON "%dh %dm", color, background, hours, minutes);
+            update_interval = from_minutes(1);
+        } else {
+            // show day & hour
+            snprintf(buffer, 64, "%s%s" UPTIME_ICON "%dd %dh", color, background, days, hours);
+        }
+
         if (!string_equals_cstr(state->data, buffer)) {
             string_set_cstr(state->data, buffer);
             state->signal_render();
         }
 
-        msleep(1000);
+        msleep(update_interval);
     }
 
     return NULL;

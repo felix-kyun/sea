@@ -1,3 +1,3 @@
-[submodule "panel/vector"]
-	path = panel/vector
-	url = https://github.com/felix-kyun/vector.git
+[submodule "panel/hashmap"]
+	path = panel/hashmap
+	url = https://github.com/felix-kyun/hashmap.git

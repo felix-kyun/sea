@@ -1,6 +1,9 @@
 #define _GNU_SOURCE
+
 #include "config/config.h"
-#include "config/utils.h"
+#include "hashmap.h"
+#include "hashmap_string.h"
+#include "log.h"
 #include <libgen.h>
 #include <linux/limits.h>
 #include <stdio.h>
@@ -8,24 +11,32 @@
 #include <string.h>
 #include <unistd.h>
 
-LinearMap* map = NULL;
+hashmap_t* map;
+
+static void
+hashmap_as_value_free(void* value)
+{
+    hashmap_destroy(*(hashmap_t**)value);
+    free(value);
+}
 
 void
 config_init(void)
 {
-    // get exec path
+    // string -> hashmap_t* (void*)
+    map = hashmap_create(sizeof(char*), sizeof(void*), 0, 0.75, fnv1a_hash_string, hashmap_cmp_string,
+        hashmap_key_copy_string, NULL, hashmap_key_free_string, hashmap_as_value_free);
+
     char    exec_path[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", exec_path, PATH_MAX - 1);
+
     if (len != -1) {
         exec_path[len] = '\0';
         strncpy(config.current_path, dirname(exec_path), PATH_MAX);
     } else {
-        perror("Failed to get executable path");
+        logger_log(LOG_ERROR, "Failed to get executable path");
         exit(1);
-        strncpy(config.current_path, "", PATH_MAX);
     }
-
-    map = create_map();
 }
 
 void
@@ -56,20 +67,32 @@ config_parse(const char* filepath)
 
         // parse kv pairs
         sscanf(line, " %63s = %*['\"]%959[^'\"\n]", key, value);
-        map_set(map, section, key, value);
+
+        hashmap_t* section_map = hashmap_get(map, section);
+        if (!section_map) {
+            section_map = hashmap_create(sizeof(char*), sizeof(void*), 0, 0.75, fnv1a_hash_string, hashmap_cmp_string,
+                hashmap_key_copy_string, hashmap_value_copy_string, hashmap_key_free_string, hashmap_value_free_string);
+            hashmap_set(map, section, &section_map);
+        } else {
+            section_map = *(hashmap_t**)section_map;
+        }
+        hashmap_set(section_map, key, value);
     }
 
     fclose(file);
 }
-
 char*
-config_get(const char* section, const char* key)
+config_get(char* section, char* key)
 {
-    return (char*)map_get(map, section, key);
+    hashmap_t* section_map = hashmap_get(map, section);
+    if (!section_map) {
+        return NULL;
+    }
+    return (char*)hashmap_get(*(hashmap_t**)section_map, key);
 }
 
 void
 config_free(void)
 {
-    free_map(map);
+    hashmap_destroy(map);
 }

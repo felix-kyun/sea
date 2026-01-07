@@ -72,7 +72,7 @@ panel_signal_render(void)
 
 typedef void* (*start_routine_t)(void*);
 void
-spawn_custom_module(const char* module_name, int index)
+spawn_custom_module(char* module_name, int index)
 {
     logger_log(LOG_INFO, "spawning custom module: %s", module_name);
 
@@ -122,7 +122,7 @@ spawn_custom_module(const char* module_name, int index)
 }
 
 void
-spawn_module(const char* module_name, int index)
+spawn_module(char* module_name, int index)
 {
     module_states[index].name = module_name;
 

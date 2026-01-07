@@ -1,3 +1,9 @@
 [submodule "panel/hashmap"]
 	path = panel/hashmap
 	url = https://github.com/felix-kyun/hashmap.git
+[submodule "panel/libs/hashmap"]
+	path = panel/libs/hashmap
+	url = https://github.com/felix-kyun/hashmap.git
+[submodule "panel/libs/vector"]
+	path = panel/libs/vector
+	url = https://github.com/felix-kyun/vector.git

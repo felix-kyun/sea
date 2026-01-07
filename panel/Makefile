@@ -1,4 +1,3 @@
-# Makefile
 CC := clang
 CFLAGS := -Wall -Wextra -Werror -pedantic -pthread -std=c11
 TARGET_FLAGS := -rdynamic -ldl
@@ -7,7 +6,8 @@ INCLUDE_DIR := include
 SOURCE_DIR := src
 MODULES_DIR := modules
 BUILD_DIR := build
-LIBS := vector
+LIBS_DIR := libs
+LIBS := $(shell find $(LIBS_DIR) -maxdepth 1 -type d ! -path $(LIBS_DIR) )
 INCLUDES := -I$(INCLUDE_DIR) $(patsubst %, -I%/$(INCLUDE_DIR), $(LIBS))
 SOURCES := $(shell find $(SOURCE_DIR) -type f -name '*.c')
 MODULES := $(shell find  $(MODULES_DIR) -type f -name '*.c')
@@ -16,7 +16,8 @@ TARGET := sea_panel_main
 _TARGET = $(addprefix $(BUILD_DIR)/, $(TARGET))
 _OBJS = $(patsubst $(SOURCE_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
 _MODULES = $(patsubst $(MODULES_DIR)/%.c, $(BUILD_DIR)/modules/%.so, $(MODULES))
-_LIBS = $(patsubst %, -L%, $(LIBS)) $(patsubst %, -l%, $(LIBS))
+_LIBS = $(patsubst %, -L%, $(LIBS)) $(patsubst %, -l%, $(notdir $(LIBS)))
+_LIB_OUTS = $(pathsubst %, $(BUILD_DIR)/lib%.a, $(notdir $(LIBS)))
 
 all: $(_TARGET) launcher
 
@@ -31,8 +32,12 @@ $(_OBJS): $(BUILD_DIR)/%.o: src/%.c
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES)
 
-$(LIBS):
-	$(MAKE) -C $@ all
+$(LIBS): $(LIBS_DIR)/%: $(BUILD_DIR)/lib%.a
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
+
+$(BUILD_DIR)/lib%.a:
+	$(MAKE) -C $(LIBS_DIR)/$* all
+	@cp $(LIBS_DIR)/$*/lib$*.a $(BUILD_DIR)/lib$*.a
 
 launcher:
 	$(CC) -o $(BUILD_DIR)/sea_panel_launcher launcher.c $(CFLAGS)

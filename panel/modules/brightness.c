@@ -7,24 +7,25 @@
 #include <sys/inotify.h>
 #include <unistd.h>
 
-#define BRIGHTNESS_ICON " "
+#define BRIGHTNESS_ICON  " "
 #define BRIGHTNESS_COLOR GREEN
-#define BRIGHTNESS_PATH "/sys/class/backlight/"
-#define DELTA 3000
+#define BRIGHTNESS_PATH  "/sys/class/backlight/"
+#define DELTA            3000
 
 #define EVENT_SIZE (sizeof(struct inotify_event))
-#define BUF_LEN (1024 * (EVENT_SIZE + 16))
+#define BUF_LEN    (1024 * (EVENT_SIZE + 16))
 
-static char max_brightness_path[PATH_MAX] = { 0 };
-static char current_brightness_path[PATH_MAX] = { 0 };
-static int max_brightness = 0;
-static char* color = "";
-static char* background = "";
+static char  max_brightness_path[PATH_MAX]     = { 0 };
+static char  current_brightness_path[PATH_MAX] = { 0 };
+static int   max_brightness                    = 0;
+static char* color                             = "";
+static char* background                        = "";
 
-static int init_brightness_paths(void)
+static int
+init_brightness_paths(void)
 {
     struct dirent* entry;
-    DIR* dp = opendir(BRIGHTNESS_PATH);
+    DIR*           dp = opendir(BRIGHTNESS_PATH);
     if (dp == NULL) {
         logger_log(LOG_ERROR, "failed to open directory: " BRIGHTNESS_PATH);
         return -1;
@@ -48,18 +49,21 @@ static int init_brightness_paths(void)
     return -1;
 }
 
-static void set_brightness(ModuleState* state, int brightness)
+static void
+set_brightness(ModuleState* state, int brightness)
 {
     char buffer[32];
-    snprintf(buffer, sizeof(buffer), "%s%s" BRIGHTNESS_ICON " %d%%", color, background, (brightness * 100) / max_brightness);
+    snprintf(
+        buffer, sizeof(buffer), "%s%s" BRIGHTNESS_ICON " %d%%", color, background, (brightness * 100) / max_brightness);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
 
-static int get_max_brightness(void)
+static int
+get_max_brightness(void)
 {
     FILE* file;
-    int max_brightness = 0;
+    int   max_brightness = 0;
 
     file = fopen(max_brightness_path, "r");
     if (file == NULL) {
@@ -76,10 +80,11 @@ static int get_max_brightness(void)
     return max_brightness;
 }
 
-static int get_current_brightness(void)
+static int
+get_current_brightness(void)
 {
     FILE* file;
-    int current_brightness = 0;
+    int   current_brightness = 0;
 
     file = fopen(current_brightness_path, "r");
     if (file == NULL) {
@@ -97,7 +102,8 @@ static int get_current_brightness(void)
 }
 
 // you need to be in the video group to change brightness
-static void change_brightness(int change)
+static void
+change_brightness(int change)
 {
     FILE* f = fopen(current_brightness_path, "w");
 
@@ -118,26 +124,29 @@ static void change_brightness(int change)
     fclose(f);
 }
 
-static void on_scroll_up(ModuleState* state)
+static void
+on_scroll_up(ModuleState* state)
 {
     (void)state;
     DEBUG("brightness scroll up");
     change_brightness(DELTA);
 }
 
-static void on_scroll_down(ModuleState* state)
+static void
+on_scroll_down(ModuleState* state)
 {
     (void)state;
     DEBUG("brightness scroll down");
     change_brightness(-DELTA);
 }
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
-    ModuleState* state = _state;
-    color = get_module_fg_color(state, "green");
-    background = get_module_bg_color(state);
-    state->on_scroll_up = on_scroll_up;
+    ModuleState* state    = _state;
+    color                 = get_module_fg_color(state, "green");
+    background            = get_module_bg_color(state);
+    state->on_scroll_up   = on_scroll_up;
     state->on_scroll_down = on_scroll_down;
 
     int ret = init_brightness_paths();

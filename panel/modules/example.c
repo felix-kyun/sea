@@ -2,7 +2,8 @@
 #include "modules/modules.h"
 #include "utils.h"
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
     ModuleState* state = _state;
 

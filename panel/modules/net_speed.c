@@ -6,19 +6,20 @@
 #include <stdio.h>
 #include <string.h>
 
-#define STAT_FILE "/proc/net/dev"
-#define NET_UP_ICON " "
+#define STAT_FILE     "/proc/net/dev"
+#define NET_UP_ICON   " "
 #define NET_DOWN_ICON " "
-#define NET_COLOR BLUE
-#define NET_REFRESH 2
+#define NET_COLOR     BLUE
+#define NET_REFRESH   2
 
 static char* background = "";
-static char* color = "";
+static char* color      = "";
 
 void inline static set_net_speed(ModuleState* state, int down_kib, int up_kib)
 {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "%s%s" NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB", color, background, up_kib, down_kib);
+    snprintf(
+        buffer, sizeof(buffer), "%s%s" NET_UP_ICON "%dKiB " NET_DOWN_ICON "%dKiB", color, background, up_kib, down_kib);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
@@ -26,8 +27,8 @@ void inline static set_net_speed(ModuleState* state, int down_kib, int up_kib)
 void static read_net_stat(int* down_kib, int* up_kib)
 {
     FILE* file = fopen(STAT_FILE, "r");
-    *down_kib = 0;
-    *up_kib = 0;
+    *down_kib  = 0;
+    *up_kib    = 0;
 
     if (!file) {
         logger_log(LOG_ERROR, "failed to open net dev file: " STAT_FILE);
@@ -35,7 +36,7 @@ void static read_net_stat(int* down_kib, int* up_kib)
     }
 
     while (!feof(file)) {
-        char iface[32];
+        char     iface[32];
         uint64_t rx_bytes, tx_bytes;
         if (fscanf(file, "%31s %lu %*u %*u %*u %*u %*u %*u %*u %lu", iface, &rx_bytes, &tx_bytes) == 3) {
             if (strcmp(iface, "lo:") != 0) {
@@ -47,11 +48,12 @@ void static read_net_stat(int* down_kib, int* up_kib)
     fclose(file);
 }
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_module_fg_color(state, "blue");
-    background = get_module_bg_color(state);
+    color              = get_module_fg_color(state, "blue");
+    background         = get_module_bg_color(state);
     set_net_speed(state, 0, 0);
 
     while (*state->running) {
@@ -61,7 +63,7 @@ void* module_init(void* _state)
         read_net_stat(&down2, &up2);
 
         int down_speed = (down2 - down1) / NET_REFRESH;
-        int up_speed = (up2 - up1) / NET_REFRESH;
+        int up_speed   = (up2 - up1) / NET_REFRESH;
 
         set_net_speed(state, down_speed, up_speed);
     }

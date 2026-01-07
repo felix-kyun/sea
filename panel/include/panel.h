@@ -4,7 +4,7 @@
 
 typedef struct RenderSignal {
     pthread_mutex_t mutex;
-    pthread_cond_t cond;
+    pthread_cond_t  cond;
 } RenderSignal;
 
 // singleton render signal instance to be shared between plugin threads

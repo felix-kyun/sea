@@ -7,7 +7,8 @@
 
 static int log_fd = -1;
 
-void open_log(void)
+void
+open_log(void)
 {
     if (log_fd != -1)
         return;
@@ -22,7 +23,8 @@ void open_log(void)
     dup2(log_fd, STDERR_FILENO);
 }
 
-int main(void)
+int
+main(void)
 {
     open_log();
 

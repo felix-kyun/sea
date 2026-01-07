@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(void)
+int
+main(void)
 {
     // can create empty strings
     string* empty_str = string_init();
@@ -22,8 +23,8 @@ int main(void)
     assert(len == 7);
 
     // can cast string to c-style string
-    string* str_cast = string_new(u8"Hello 😀");
-    char* cstr_cast = string_cast(str_cast);
+    string* str_cast  = string_new(u8"Hello 😀");
+    char*   cstr_cast = string_cast(str_cast);
     assert(strcmp(cstr_cast, u8"Hello 😀") == 0);
     assert(memcmp(cstr_cast, str_cast->data, str_cast->byte_length) == 0);
     free(cstr_cast);

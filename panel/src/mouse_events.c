@@ -8,18 +8,16 @@
 #include <stdio.h>
 #include <string.h>
 
-static MouseEvent parse_mouse_event(const char* event)
+static MouseEvent
+parse_mouse_event(const char* event)
 {
-    MouseEvent mevent = {
-        .type = MOUSE_NONE,
-        .x = -1
-    };
-    const char* start = strstr(event, "\033[<");
+    MouseEvent  mevent = { .type = MOUSE_NONE, .x = -1 };
+    const char* start  = strstr(event, "\033[<");
 
     if (!start)
         return mevent;
 
-    int button, x;
+    int  button, x;
     char action;
 
     if (sscanf(start, "\033[<%d;%d;%*d%c", &button, &x, &action) != 3)
@@ -62,7 +60,8 @@ static MouseEvent parse_mouse_event(const char* event)
     return mevent;
 }
 
-static ModuleState* get_module_from_position(int x)
+static ModuleState*
+get_module_from_position(int x)
 {
     int current_x = 0;
 
@@ -112,7 +111,8 @@ static ModuleState* get_module_from_position(int x)
     return NULL;
 }
 
-static inline void mouse_handle_event(const char* event)
+static inline void
+mouse_handle_event(const char* event)
 {
     MouseEvent mevent = parse_mouse_event(event);
     if (mevent.type == MOUSE_NONE)
@@ -158,12 +158,14 @@ static inline void mouse_handle_event(const char* event)
     }
 }
 
-void mouse_init(void)
+void
+mouse_init(void)
 {
     input_reader_init(mouse_handle_event);
 }
 
-void mouse_free(void)
+void
+mouse_free(void)
 {
     input_reader_free();
 }

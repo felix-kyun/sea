@@ -7,10 +7,11 @@
 #include <unistd.h>
 
 #define EVENT_SIZE (sizeof(struct inotify_event))
-#define BUF_LEN (1024 * (EVENT_SIZE + NAME_MAX + 1))
+#define BUF_LEN    (1024 * (EVENT_SIZE + NAME_MAX + 1))
 #define WATCH_MASK IN_MODIFY | IN_CLOSE_WRITE | IN_MOVE_SELF | IN_DELETE_SELF
 
-void* config_watcher(void* arg)
+void*
+config_watcher(void* arg)
 {
     const char* config_path = (const char*)arg;
 
@@ -54,7 +55,8 @@ void* config_watcher(void* arg)
     return NULL;
 }
 
-void create_config_watcher(const char* config_path)
+void
+create_config_watcher(const char* config_path)
 {
     pthread_t thread;
     pthread_create(&thread, NULL, config_watcher, (void*)config_path);

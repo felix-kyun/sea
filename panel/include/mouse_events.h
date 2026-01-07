@@ -11,7 +11,7 @@ typedef enum MouseEventType {
 
 typedef struct MouseEvent {
     MouseEventType type;
-    int x;
+    int            x;
 } MouseEvent;
 
 void mouse_init(void);

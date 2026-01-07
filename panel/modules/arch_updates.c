@@ -9,7 +9,8 @@
 static char* color = "";
 #define UPDATE_ICON "󰏔 "
 
-static inline void set_updates(ModuleState* state, const char* count_string)
+static inline void
+set_updates(ModuleState* state, const char* count_string)
 {
     static char buffer[32];
     snprintf(buffer, 32, "%s" UPDATE_ICON "%s", color, count_string);
@@ -20,9 +21,10 @@ static inline void set_updates(ModuleState* state, const char* count_string)
     }
 }
 
-char* get_updates(void)
+char*
+get_updates(void)
 {
-    char buffer[32];
+    char  buffer[32];
     FILE* fp = popen("checkupdates | wc -l", "r");
 
     fgets(buffer, 32, fp);
@@ -32,7 +34,8 @@ char* get_updates(void)
     return strdup(buffer);
 }
 
-static void module_on_click(ModuleState* state)
+static void
+module_on_click(ModuleState* state)
 {
     (void)state;
 
@@ -49,10 +52,11 @@ static void module_on_click(ModuleState* state)
            "'");
 }
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
-    ModuleState* state = _state;
-    color = get_module_fg_color(state, "magenta");
+    ModuleState* state   = _state;
+    color                = get_module_fg_color(state, "magenta");
     state->on_left_click = module_on_click;
 
     char* binary_path = find_binary("checkupdates");

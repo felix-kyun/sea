@@ -19,7 +19,7 @@ typedef struct ModuleState {
     // used for custom modules
     void* custom_data;
 
-    string* data;
+    string*      data;
     cleanup_func cleanup;
 
     event_handler on_left_click;

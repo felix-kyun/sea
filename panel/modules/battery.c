@@ -14,11 +14,11 @@
 
 #define SOURCE_DIR "/sys/class/power_supply/"
 
-static char battery_path[PATH_MAX] = { 0 };
-static char battery_full_path[PATH_MAX] = { 0 };
-static char battery_now_path[PATH_MAX] = { 0 };
-static char battery_status_path[PATH_MAX] = { 0 };
-static char* background = "";
+static char  battery_path[PATH_MAX]        = { 0 };
+static char  battery_full_path[PATH_MAX]   = { 0 };
+static char  battery_now_path[PATH_MAX]    = { 0 };
+static char  battery_status_path[PATH_MAX] = { 0 };
+static char* background                    = "";
 
 typedef enum BatteryStatus {
     BATTERY_STATUS_UNKNOWN = 0,
@@ -28,7 +28,8 @@ typedef enum BatteryStatus {
     BATTERY_STATUS_FULL,
 } BatteryStatus;
 
-static void init_battery_paths(const char* default_name)
+static void
+init_battery_paths(const char* default_name)
 {
     if (default_name != NULL) {
         snprintf(battery_path, PATH_MAX, "%s%s", SOURCE_DIR, default_name);
@@ -40,7 +41,7 @@ static void init_battery_paths(const char* default_name)
     } else {
         // check for files starting with "BAT" in SOURCE_DIR
         struct dirent* entry;
-        DIR* dp = opendir(SOURCE_DIR);
+        DIR*           dp = opendir(SOURCE_DIR);
 
         if (dp == NULL) {
             logger_log(LOG_ERROR, "failed to open directory: " SOURCE_DIR);
@@ -74,7 +75,8 @@ static void init_battery_paths(const char* default_name)
     logger_log(LOG_DEBUG, "status: %s", battery_status_path);
 }
 
-unsigned int get_battery_full(void)
+unsigned int
+get_battery_full(void)
 {
     FILE* file = fopen(battery_full_path, "r");
     if (!file) {
@@ -93,9 +95,10 @@ unsigned int get_battery_full(void)
     return full;
 }
 
-static uint8_t get_battery_status(void)
+static uint8_t
+get_battery_status(void)
 {
-    char status[32];
+    char  status[32];
     FILE* file = fopen(battery_status_path, "r");
     if (!file) {
         logger_log(LOG_ERROR, "failed to open battery status file: %s", battery_status_path);
@@ -125,9 +128,10 @@ static uint8_t get_battery_status(void)
     return BATTERY_STATUS_UNKNOWN;
 }
 
-unsigned int get_battery_now(void)
+unsigned int
+get_battery_now(void)
 {
-    int now = 0;
+    int   now  = 0;
     FILE* file = fopen(battery_now_path, "r");
 
     if (!file) {
@@ -145,7 +149,8 @@ unsigned int get_battery_now(void)
     return now;
 }
 
-char* get_battery_icon_from_percentage(float percentage)
+char*
+get_battery_icon_from_percentage(float percentage)
 {
     if (percentage >= 100.0f) {
         return "󰁹";
@@ -170,7 +175,8 @@ char* get_battery_icon_from_percentage(float percentage)
     }
 }
 
-char* battery_icon(float percentage)
+char*
+battery_icon(float percentage)
 {
     BatteryStatus status = get_battery_status();
     switch (status) {
@@ -186,7 +192,8 @@ char* battery_icon(float percentage)
     }
 }
 
-char* get_battery_color(float percentage)
+char*
+get_battery_color(float percentage)
 {
     if (percentage >= 75.0f) {
         return GREEN;
@@ -199,10 +206,11 @@ char* get_battery_color(float percentage)
     }
 }
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
     ModuleState* state = _state;
-    background = get_module_bg_color(state);
+    background         = get_module_bg_color(state);
 
     // initialize
     init_battery_paths(state->config_get(state->name, "source"));
@@ -210,10 +218,10 @@ void* module_init(void* _state)
 
     char buffer[32];
     while (*state->running) {
-        uint16_t now = get_battery_now() / 1000;
-        float percentage = ((float)now / full) * 100;
-        snprintf(buffer, 32, "%s%s%s %.0f%%",
-            get_battery_color(percentage), background, battery_icon(percentage), percentage);
+        uint16_t now        = get_battery_now() / 1000;
+        float    percentage = ((float)now / full) * 100;
+        snprintf(buffer, 32, "%s%s%s %.0f%%", get_battery_color(percentage), background, battery_icon(percentage),
+            percentage);
 
         string_set_cstr(state->data, buffer);
         state->signal_render();

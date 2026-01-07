@@ -5,8 +5,8 @@
 
 #define from_seconds(x) ((x) * 1000)
 #define from_minutes(x) (from_seconds((x) * 60))
-#define from_hours(x) (from_minutes((x) * 60))
-#define from_days(x) (from_hours((x) * 24))
+#define from_hours(x)   (from_minutes((x) * 60))
+#define from_days(x)    (from_hours((x) * 24))
 
 void msleep(long msec);
 

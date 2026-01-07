@@ -4,15 +4,16 @@
 #include <stdio.h>
 #include <sys/sysinfo.h>
 
-#define hour_secs (60 * 60)
-#define day_secs (24 * hour_secs)
+#define hour_secs   (60 * 60)
+#define day_secs    (24 * hour_secs)
 #define UPTIME_ICON " "
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
-    ModuleState* state = _state;
-    const char* color = get_module_fg_color(state, "green");
-    const char* background = get_module_bg_color(state);
+    ModuleState* state      = _state;
+    const char*  color      = get_module_fg_color(state, "green");
+    const char*  background = get_module_bg_color(state);
 
     struct sysinfo info;
 

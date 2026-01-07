@@ -12,17 +12,17 @@
 #include <string.h>
 
 // global
-bool running;
+bool         running;
 ModuleState* module_states;
-void** module_handles;
-pthread_t* module_threads;
-RenderSignal render_signal
-    = {
-          .mutex = PTHREAD_MUTEX_INITIALIZER,
-          .cond = PTHREAD_COND_INITIALIZER,
-      };
+void**       module_handles;
+pthread_t*   module_threads;
+RenderSignal render_signal = {
+    .mutex = PTHREAD_MUTEX_INITIALIZER,
+    .cond  = PTHREAD_COND_INITIALIZER,
+};
 
-void panel_init(void)
+void
+panel_init(void)
 {
     // set panel state to running
     running = true;
@@ -31,8 +31,7 @@ void panel_init(void)
     render_init();
 
     // create plugin states
-    module_states
-        = malloc(sizeof(ModuleState) * MODULE_COUNT);
+    module_states = malloc(sizeof(ModuleState) * MODULE_COUNT);
 
     module_handles = malloc(sizeof(void*) * MODULE_COUNT);
 
@@ -42,28 +41,29 @@ void panel_init(void)
         module_handles[i] = NULL;
         module_threads[i] = 0;
 
-        module_states[i].running = &running;
+        module_states[i].running       = &running;
         module_states[i].signal_render = panel_signal_render;
 
-        module_states[i].name = NULL;
-        module_states[i].data = string_new(" ");
+        module_states[i].name    = NULL;
+        module_states[i].data    = string_new(" ");
         module_states[i].cleanup = NULL;
 
         module_states[i].custom_data = NULL;
-        module_states[i].config_get = config_get;
+        module_states[i].config_get  = config_get;
 
         // event handlers
-        module_states[i].on_left_click = NULL;
-        module_states[i].on_right_click = NULL;
+        module_states[i].on_left_click   = NULL;
+        module_states[i].on_right_click  = NULL;
         module_states[i].on_middle_click = NULL;
-        module_states[i].on_scroll_up = NULL;
-        module_states[i].on_scroll_down = NULL;
+        module_states[i].on_scroll_up    = NULL;
+        module_states[i].on_scroll_down  = NULL;
     }
 
     panel_init_modules();
 }
 
-void panel_signal_render(void)
+void
+panel_signal_render(void)
 {
     pthread_mutex_lock(&render_signal.mutex);
     pthread_cond_broadcast(&render_signal.cond);
@@ -71,7 +71,8 @@ void panel_signal_render(void)
 }
 
 typedef void* (*start_routine_t)(void*);
-void spawn_custom_module(const char* module_name, int index)
+void
+spawn_custom_module(const char* module_name, int index)
 {
     logger_log(LOG_INFO, "spawning custom module: %s", module_name);
 
@@ -109,9 +110,9 @@ void spawn_custom_module(const char* module_name, int index)
         return;
     }
 
-    TextModule* custom_data = malloc(sizeof(TextModule));
-    custom_data->type = MODULE_TYPE_TEXT;
-    custom_data->content = strdup(config_get(module_name, "content"));
+    TextModule* custom_data          = malloc(sizeof(TextModule));
+    custom_data->type                = MODULE_TYPE_TEXT;
+    custom_data->content             = strdup(config_get(module_name, "content"));
     module_states[index].custom_data = custom_data;
 
     if (pthread_create(module_threads + index, NULL, init_func, module_states + index) != 0) {
@@ -120,7 +121,8 @@ void spawn_custom_module(const char* module_name, int index)
     }
 }
 
-void spawn_module(const char* module_name, int index)
+void
+spawn_module(const char* module_name, int index)
 {
     module_states[index].name = module_name;
 
@@ -155,7 +157,8 @@ void spawn_module(const char* module_name, int index)
     }
 }
 
-void panel_init_modules(void)
+void
+panel_init_modules(void)
 {
     logger_log(LOG_INFO, "initializing plugins");
     logger_log(LOG_INFO, "Found %d plugins", MODULE_COUNT);
@@ -175,7 +178,8 @@ void panel_init_modules(void)
     logger_log(LOG_SUCCESS, "all plugins started");
 }
 
-void panel_free(void)
+void
+panel_free(void)
 {
     pthread_mutex_destroy(&render_signal.mutex);
     pthread_cond_destroy(&render_signal.cond);
@@ -214,7 +218,8 @@ void panel_free(void)
     printf("\033[?25h");
 }
 
-void panel_stop(void)
+void
+panel_stop(void)
 {
     running = false;
     panel_signal_render();

@@ -2,7 +2,8 @@
 #include <assert.h>
 #include <string.h>
 
-int main(void)
+int
+main(void)
 {
     // creation
     set_option('h', "help", "display this help message", false);
@@ -10,8 +11,8 @@ int main(void)
     set_option('o', "output", "set output file", true);
     set_argument("input", "input file", true);
 
-    const int argc = 4;
-    char* argv[] = {
+    const int argc   = 4;
+    char*     argv[] = {
         "program",
         "-hVo",
         "output.txt",

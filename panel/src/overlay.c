@@ -13,21 +13,22 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define FIFO_PATH "/tmp/sea-notify-pipe"
+#define FIFO_PATH    "/tmp/sea-notify-pipe"
 #define NOTIFY_COLOR BOLD_BLUE
-#define NOTIFY_ICON "󰂚 "
+#define NOTIFY_ICON  "󰂚 "
 #define NOTIFY_LIMIT 100
 
 Overlay overlay;
-char buffer[256];
-char print_buffer[256] = { 0 };
+char    buffer[256];
+char    print_buffer[256] = { 0 };
 
-void overlay_init(void)
+void
+overlay_init(void)
 {
-    overlay.content = string_new("");
-    overlay.active = false;
-    overlay.cleaner = 0;
-    overlay.watcher = 0;
+    overlay.content       = string_new("");
+    overlay.active        = false;
+    overlay.cleaner       = 0;
+    overlay.watcher       = 0;
     overlay.signal_render = panel_signal_render;
     pthread_mutex_init(&overlay.lock, NULL);
     DEBUG("overlay initialized");
@@ -57,7 +58,8 @@ void overlay_init(void)
     overlay_spawn_watcher();
 }
 
-void overlay_set(const char* content)
+void
+overlay_set(const char* content)
 {
     DEBUG("overlay set called");
     pthread_mutex_lock(&overlay.lock);
@@ -78,7 +80,8 @@ void overlay_set(const char* content)
     DEBUG("overlay set complete");
 }
 
-void* overlay_cleaner(void* _overlay)
+void*
+overlay_cleaner(void* _overlay)
 {
     Overlay* overlay = _overlay;
     DEBUG("overlay cleaner started");
@@ -95,7 +98,8 @@ void* overlay_cleaner(void* _overlay)
     return NULL;
 }
 
-void overlay_free(void)
+void
+overlay_free(void)
 {
     DEBUG("freeing overlay");
     pthread_mutex_lock(&overlay.lock);
@@ -112,7 +116,8 @@ void overlay_free(void)
     pthread_mutex_destroy(&overlay.lock);
 }
 
-void* overlay_watcher(void* _overlay)
+void*
+overlay_watcher(void* _overlay)
 {
     Overlay* overlay = _overlay;
 
@@ -133,7 +138,8 @@ void* overlay_watcher(void* _overlay)
     return NULL;
 }
 
-void overlay_print(unsigned short terminal_width)
+void
+overlay_print(unsigned short terminal_width)
 {
     // only run if content has changed
     if (memcmp(print_buffer, overlay.content->data, overlay.content->byte_length) == 0) {
@@ -153,16 +159,14 @@ void overlay_print(unsigned short terminal_width)
     padding(req_padding);
     printf(NOTIFY_COLOR NOTIFY_ICON);
     fwrite(overlay.content->data, sizeof(char),
-        (overlay.content->char_length > NOTIFY_LIMIT)
-            ? NOTIFY_LIMIT
-            : overlay.content->byte_length,
-        stdout);
+        (overlay.content->char_length > NOTIFY_LIMIT) ? NOTIFY_LIMIT : overlay.content->byte_length, stdout);
     printf(RESET);
 
     fflush(stdout);
 }
 
-void overlay_spawn_watcher(void)
+void
+overlay_spawn_watcher(void)
 {
     pthread_create(&overlay.watcher, NULL, overlay_watcher, (void*)&overlay);
 }

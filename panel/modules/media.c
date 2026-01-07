@@ -9,16 +9,17 @@
 #include <unistd.h>
 
 #define MEDIA_FORMAT "{{ title }}"
-#define MEDIA_ICON "󰎆 "
-#define LIMIT 60
+#define MEDIA_ICON   "󰎆 "
+#define LIMIT        60
 
 static char* background = "";
-static char* color = "";
+static char* color      = "";
 
 pid_t pid = 0;
 
 // cleanup function
-void module_media_stop(void)
+void
+module_media_stop(void)
 {
     if (pid != 0) {
         kill(pid, SIGTERM);
@@ -26,35 +27,39 @@ void module_media_stop(void)
     }
 }
 
-void module_on_click(ModuleState* state)
+void
+module_on_click(ModuleState* state)
 {
     (void)state;
     DEBUG("media clicked, toggling play/pause");
     system("playerctl play-pause");
 }
 
-void module_on_scroll_up(ModuleState* state)
+void
+module_on_scroll_up(ModuleState* state)
 {
     (void)state;
     DEBUG("media scrolled up, next track");
     system("playerctl next");
 }
 
-void module_on_scroll_down(ModuleState* state)
+void
+module_on_scroll_down(ModuleState* state)
 {
     (void)state;
     DEBUG("media scrolled down, previous track");
     system("playerctl previous");
 }
 
-static void ascii(const char* data)
+static void
+ascii(const char* data)
 {
     if (!data)
         return;
 
-    size_t len = strlen(data);
-    char* result = (char*)malloc((len + 1) * sizeof(char));
-    size_t j = 0;
+    size_t len    = strlen(data);
+    char*  result = (char*)malloc((len + 1) * sizeof(char));
+    size_t j      = 0;
 
     for (size_t i = 0; i < len; i++) {
         if ((unsigned char)data[i] <= 0x7F) { // ASCII character
@@ -67,17 +72,18 @@ static void ascii(const char* data)
     free(result);
 }
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_module_fg_color(state, "magenta");
-    background = get_module_bg_color(state);
+    color              = get_module_fg_color(state, "magenta");
+    background         = get_module_bg_color(state);
     int pipe_fd[2];
 
     // register cleanup function
-    state->cleanup = module_media_stop;
-    state->on_left_click = module_on_click;
-    state->on_scroll_up = module_on_scroll_up;
+    state->cleanup        = module_media_stop;
+    state->on_left_click  = module_on_click;
+    state->on_scroll_up   = module_on_scroll_up;
     state->on_scroll_down = module_on_scroll_down;
 
     // create pipe and fork

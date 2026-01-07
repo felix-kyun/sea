@@ -7,20 +7,22 @@
 
 Config config;
 
-void create_base_config(void)
+void
+create_base_config(void)
 {
-    config.log_file = "/tmp/panel.log";
-    config.config_file = CONFIG_FILE;
-    config.log_to_stdout = false;
+    config.log_file         = "/tmp/panel.log";
+    config.config_file      = CONFIG_FILE;
+    config.log_to_stdout    = false;
     config.auto_reset_style = true;
-    config.module_spacing = 1;
-    config.panel_padding = 0;
-    config.left_modules = create_string_array();
-    config.center_modules = create_string_array();
-    config.right_modules = create_string_array();
+    config.module_spacing   = 1;
+    config.panel_padding    = 0;
+    config.left_modules     = create_string_array();
+    config.center_modules   = create_string_array();
+    config.right_modules    = create_string_array();
 }
 
-void create_app_config(int argc, char** argv)
+void
+create_app_config(int argc, char** argv)
 {
     set_option('c', "config", "set config file path", true);
     set_option('l', "log", "set log file path", true);
@@ -80,10 +82,11 @@ void create_app_config(int argc, char** argv)
 
     // override from args
     config.log_to_stdout = get_long_option("stdout")->is_set || config.log_to_stdout;
-    config.log_file = get_long_option("log")->value ? get_long_option("log")->value : config.log_file;
+    config.log_file      = get_long_option("log")->value ? get_long_option("log")->value : config.log_file;
 }
 
-void destroy_app_config(void)
+void
+destroy_app_config(void)
 {
     free_string_array(config.left_modules);
     free_string_array(config.center_modules);

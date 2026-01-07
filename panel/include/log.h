@@ -5,10 +5,10 @@
 
 #ifndef NDEBUG
 #define BAD_DEBUG(fmt, ...) logger_log(LOG_DEBUG, fmt "%s", __VA_ARGS__)
-#define DEBUG(...) BAD_DEBUG(__VA_ARGS__, "")
+#define DEBUG(...)          BAD_DEBUG(__VA_ARGS__, "")
 #else
-#define BAD_DEBUG(fmt, ...) \
-    do {                    \
+#define BAD_DEBUG(fmt, ...)                                                                                            \
+    do {                                                                                                               \
     } while (0)
 #define DEBUG(...) BAD_DEBUG(__VA_ARGS__, "")
 #endif
@@ -22,7 +22,7 @@ enum LogLevel {
 };
 
 struct Logger {
-    bool stdout_enabled;
+    bool  stdout_enabled;
     FILE* file;
 };
 

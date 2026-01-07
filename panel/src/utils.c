@@ -7,24 +7,27 @@
 #include <string.h>
 #include <time.h>
 
-void msleep(long msec)
+void
+msleep(long msec)
 {
     struct timespec ts;
-    ts.tv_sec = msec / 1000;
+    ts.tv_sec  = msec / 1000;
     ts.tv_nsec = (msec % 1000) * 1000000;
     nanosleep(&ts, NULL);
 }
 
-void padding(int count)
+void
+padding(int count)
 {
     for (int i = 0; i < count; i++) {
         printf(" ");
     }
 }
 
-void string_limit(char* str, size_t max_chars)
+void
+string_limit(char* str, size_t max_chars)
 {
-    char* ptr = str;
+    char*  ptr = str;
     size_t idx = 0;
 
     while (*ptr && idx < max_chars) {
@@ -35,7 +38,8 @@ void string_limit(char* str, size_t max_chars)
     *ptr = '\0';
 }
 
-void debug_config(void)
+void
+debug_config(void)
 {
     DEBUG("----- CONFIG -----");
     DEBUG("current path: %s", config.current_path);
@@ -57,7 +61,8 @@ void debug_config(void)
     DEBUG("------------------");
 }
 
-bool includes(const char** array, int len, const char* item)
+bool
+includes(const char** array, int len, const char* item)
 {
     for (int i = 0; i < len; i++) {
         if (strcmp(array[i], item) == 0) {
@@ -67,7 +72,8 @@ bool includes(const char** array, int len, const char* item)
     return false;
 }
 
-char* create_padding_str(int count)
+char*
+create_padding_str(int count)
 {
     char* padding_string = (char*)malloc((count + 1) * sizeof(char));
 

@@ -6,7 +6,7 @@ typedef enum ModuleType {
 
 typedef struct TextModule {
     ModuleType type;
-    char* content;
+    char*      content;
 } TextModule;
 
 void text_module_cleanup(TextModule* module);

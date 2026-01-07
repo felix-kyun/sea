@@ -5,13 +5,14 @@
 #include <time.h>
 
 #define TIMESTAMP_BUFFER_SIZE 32
-#define TIMESTAMP_FORMAT "%Y-%m-%d %H:%M:%S"
+#define TIMESTAMP_FORMAT      "%Y-%m-%d %H:%M:%S"
 
 // singleton logger instance
 Logger* logger = NULL;
-char timestamp_buffer[TIMESTAMP_BUFFER_SIZE];
+char    timestamp_buffer[TIMESTAMP_BUFFER_SIZE];
 
-static const char* level_to_string(enum LogLevel level)
+static const char*
+level_to_string(enum LogLevel level)
 {
     switch (level) {
     case LOG_DEBUG:
@@ -29,7 +30,8 @@ static const char* level_to_string(enum LogLevel level)
     }
 }
 
-static const char* level_to_color(enum LogLevel level)
+static const char*
+level_to_color(enum LogLevel level)
 {
     switch (level) {
     case LOG_DEBUG:
@@ -47,21 +49,24 @@ static const char* level_to_color(enum LogLevel level)
     }
 }
 
-static void get_timestamp(void)
+static void
+get_timestamp(void)
 {
-    time_t now = time(NULL);
-    struct tm* t = localtime(&now);
+    time_t     now = time(NULL);
+    struct tm* t   = localtime(&now);
     strftime(timestamp_buffer, TIMESTAMP_BUFFER_SIZE, TIMESTAMP_FORMAT, t);
 }
 
-void logger_init(const char* filename, bool stdout_enabled)
+void
+logger_init(const char* filename, bool stdout_enabled)
 {
-    logger = (Logger*)malloc(sizeof(Logger));
+    logger                 = (Logger*)malloc(sizeof(Logger));
     logger->stdout_enabled = stdout_enabled;
-    logger->file = fopen(filename, "w");
+    logger->file           = fopen(filename, "w");
 }
 
-void logger_free(void)
+void
+logger_free(void)
 {
     // reset terminal colors
     printf(RESET);
@@ -71,7 +76,8 @@ void logger_free(void)
     free(logger);
 }
 
-void logger_log(enum LogLevel level, const char* message, ...)
+void
+logger_log(enum LogLevel level, const char* message, ...)
 {
     if (!logger) {
         return;

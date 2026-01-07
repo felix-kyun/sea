@@ -6,15 +6,16 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define RAM_ICON "  "
+#define RAM_ICON  "  "
 #define RAM_COLOR MAGENTA
-#define MEM_FILE "/proc/meminfo"
-static char* color = "";
+#define MEM_FILE  "/proc/meminfo"
+static char* color      = "";
 static char* background = "";
 
 static char buffer[32];
 
-inline static void set_ram_usage(ModuleState* state, float used, float total)
+inline static void
+set_ram_usage(ModuleState* state, float used, float total)
 {
     (void)total;
     snprintf(buffer, sizeof(buffer), "%s%s" RAM_ICON "%.1fGib", color, background, used);
@@ -22,7 +23,8 @@ inline static void set_ram_usage(ModuleState* state, float used, float total)
     state->signal_render();
 }
 
-uint32_t get_total_ram(void)
+uint32_t
+get_total_ram(void)
 {
     FILE* file = fopen(MEM_FILE, "r");
     if (!file) {
@@ -31,7 +33,7 @@ uint32_t get_total_ram(void)
     }
 
     uint32_t total_kb = 0;
-    char tmp_buffer[64];
+    char     tmp_buffer[64];
     while (fgets(tmp_buffer, sizeof(tmp_buffer), file)) {
         if (sscanf(tmp_buffer, "MemTotal: %d kB", &total_kb) == 1) {
             break;
@@ -42,7 +44,8 @@ uint32_t get_total_ram(void)
     return total_kb;
 }
 
-uint32_t get_available_ram(void)
+uint32_t
+get_available_ram(void)
 {
     FILE* file = fopen(MEM_FILE, "r");
     if (!file) {
@@ -51,7 +54,7 @@ uint32_t get_available_ram(void)
     }
 
     uint32_t available_kb = 0;
-    char tmp_buffer[64];
+    char     tmp_buffer[64];
     while (fgets(tmp_buffer, sizeof(tmp_buffer), file)) {
         if (sscanf(tmp_buffer, "MemAvailable: %d kB", &available_kb) == 1) {
             break;
@@ -62,11 +65,12 @@ uint32_t get_available_ram(void)
     return available_kb;
 }
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_module_fg_color(state, "magenta");
-    background = get_module_bg_color(state);
+    color              = get_module_fg_color(state, "magenta");
+    background         = get_module_bg_color(state);
     uint32_t total_ram = get_total_ram();
 
     while (*state->running) {

@@ -10,10 +10,11 @@
 
 LinearMap* map = NULL;
 
-void config_init(void)
+void
+config_init(void)
 {
     // get exec path
-    char exec_path[PATH_MAX];
+    char    exec_path[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", exec_path, PATH_MAX - 1);
     if (len != -1) {
         exec_path[len] = '\0';
@@ -27,7 +28,8 @@ void config_init(void)
     map = create_map();
 }
 
-void config_parse(const char* filepath)
+void
+config_parse(const char* filepath)
 {
     FILE* file = fopen(filepath, "r");
 
@@ -60,12 +62,14 @@ void config_parse(const char* filepath)
     fclose(file);
 }
 
-char* config_get(const char* section, const char* key)
+char*
+config_get(const char* section, const char* key)
 {
     return (char*)map_get(map, section, key);
 }
 
-void config_free(void)
+void
+config_free(void)
 {
     free_map(map);
 }

@@ -4,22 +4,24 @@
 #include "utils.h"
 #include <stdio.h>
 
-#define TEMP_ICON " "
+#define TEMP_ICON  " "
 #define TEMP_COLOR RED
-#define TEMP_FILE "/sys/class/thermal/thermal_zone0/temp"
+#define TEMP_FILE  "/sys/class/thermal/thermal_zone0/temp"
 
-static char buffer[32];
-static char* color = "";
+static char  buffer[32];
+static char* color      = "";
 static char* background = "";
 
-inline static void set_cpu_temp(ModuleState* state, int temp)
+inline static void
+set_cpu_temp(ModuleState* state, int temp)
 {
     snprintf(buffer, sizeof(buffer), "%s%s" TEMP_ICON "%d°C", color, background, temp);
     string_set_cstr(state->data, buffer);
     state->signal_render();
 }
 
-int get_cpu_temp(void)
+int
+get_cpu_temp(void)
 {
     FILE* file = fopen(TEMP_FILE, "r");
     if (!file) {
@@ -38,11 +40,12 @@ int get_cpu_temp(void)
     return temp / 1000;
 }
 
-void* module_init(void* _state)
+void*
+module_init(void* _state)
 {
     ModuleState* state = _state;
-    color = get_module_fg_color(state, "red");
-    background = get_module_bg_color(state);
+    color              = get_module_fg_color(state, "red");
+    background         = get_module_bg_color(state);
 
     while (*state->running) {
         int temp = get_cpu_temp();

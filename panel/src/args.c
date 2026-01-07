@@ -4,25 +4,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-Option* options = NULL;
-Argument* args = NULL;
+Option*   options = NULL;
+Argument* args    = NULL;
 
-static inline void throw_error(const char* message, const char* arg)
+static inline void
+throw_error(const char* message, const char* arg)
 {
     fprintf(stderr, "%s: %s\n", message, arg);
     raise(SIGINT);
 }
 
-static inline bool startsWith(const char* str, const char* prefix)
+static inline bool
+startsWith(const char* str, const char* prefix)
 {
     return strncmp(str, prefix, strlen(prefix)) == 0;
 }
 
-static Option* search_option(const char* name)
+static Option*
+search_option(const char* name)
 {
     Option* current = options;
     while (current) {
-        if ((current->short_name && current->short_name == name[0]) || (current->long_name && strcmp(current->long_name, name) == 0)) {
+        if ((current->short_name && current->short_name == name[0])
+            || (current->long_name && strcmp(current->long_name, name) == 0)) {
             return current;
         }
         current = current->next;
@@ -30,9 +34,10 @@ static Option* search_option(const char* name)
     return NULL;
 }
 
-void free_args(void)
+void
+free_args(void)
 {
-    Option* opt = options;
+    Option*   opt = options;
     Argument* arg = args;
 
     while (opt) {
@@ -48,45 +53,40 @@ void free_args(void)
     }
 }
 
-void set_option(
-    const char short_name,
-    const char* long_name,
-    const char* description,
-    bool has_value)
+void
+set_option(const char short_name, const char* long_name, const char* description, bool has_value)
 {
     Option* opt = malloc(sizeof(Option));
 
     // initialize
-    opt->short_name = short_name;
-    opt->long_name = long_name;
+    opt->short_name  = short_name;
+    opt->long_name   = long_name;
     opt->description = description;
-    opt->is_set = false;
-    opt->value = NULL;
-    opt->has_value = has_value;
-    opt->next = NULL;
+    opt->is_set      = false;
+    opt->value       = NULL;
+    opt->has_value   = has_value;
+    opt->next        = NULL;
 
     // append to list
     if (!options)
         options = opt;
     else {
         opt->next = options;
-        options = opt; // prependinga as order doesn't matter
+        options   = opt; // prependinga as order doesn't matter
     }
 }
 
-void set_argument(
-    const char* name,
-    const char* description,
-    bool is_required)
+void
+set_argument(const char* name, const char* description, bool is_required)
 {
     Argument* arg = malloc(sizeof(Argument));
 
     // initialize
-    arg->name = name;
+    arg->name        = name;
     arg->description = description;
-    arg->value = NULL;
+    arg->value       = NULL;
     arg->is_required = is_required;
-    arg->next = NULL;
+    arg->next        = NULL;
 
     // append to list
     if (!args)
@@ -99,7 +99,8 @@ void set_argument(
     }
 }
 
-void parse_args(int argc, char** argv)
+void
+parse_args(int argc, char** argv)
 {
     int idx = 1;
     while (idx < argc) {
@@ -124,7 +125,7 @@ void parse_args(int argc, char** argv)
             if (!opt)
                 throw_error("unknown option", current);
 
-            opt->is_set = true;
+            opt->is_set   = true;
             bool combined = strlen(current) > 2;
             idx++;
 
@@ -143,7 +144,7 @@ void parse_args(int argc, char** argv)
                 // example: -abc <some_optional_value>
                 // means -a -b -c <some_optional_value>
                 for (size_t i = 1; i < strlen(current); i++) {
-                    char c[2] = { current[i], '\0' };
+                    char    c[2]    = { current[i], '\0' };
                     Option* sub_opt = search_option(c);
 
                     if (!sub_opt)
@@ -176,18 +177,21 @@ void parse_args(int argc, char** argv)
     }
 }
 
-Option* get_long_option(const char* long_name)
+Option*
+get_long_option(const char* long_name)
 {
     return search_option(long_name);
 }
 
-Option* get_short_option(const char short_name)
+Option*
+get_short_option(const char short_name)
 {
     char name[2] = { short_name, '\0' };
     return search_option(name);
 }
 
-Argument* get_argument(const char* name)
+Argument*
+get_argument(const char* name)
 {
     Argument* current = args;
     while (current) {

@@ -6,7 +6,8 @@
 #include <signal.h>
 #include <stdlib.h>
 
-void handle_signal(int signum)
+void
+handle_signal(int signum)
 {
     DEBUG("received signal: %d", signum);
     if (signum == SIGWINCH) {
@@ -20,7 +21,8 @@ void handle_signal(int signum)
     panel_signal_render();
 }
 
-void setup_signal_handlers(void)
+void
+setup_signal_handlers(void)
 {
     struct sigaction sa;
     sa.sa_handler = handle_signal;

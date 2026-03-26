@@ -1,0 +1,12 @@
+BasedOnStyle: WebKit
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+UseTab: Never
+IndentWidth: 4
+SortIncludes: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveMacros: true
+ColumnLimit: 120
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AlignTrailingComments: true

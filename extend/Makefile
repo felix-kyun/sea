@@ -14,6 +14,7 @@ DEBUG_CFLAGS := -g -fsanitize=address,undefined,leak -O0
 DEBUG_LDFLAGS := -fsanitize=address,undefined,leak
 RELEASE_CFLAGS := -O3
 RELEASE_LDFLAGS := -flto
+MAKEFLAGS += -j$(shell nproc)
 
 TARGET := extend
 LIBS :=
@@ -22,6 +23,7 @@ INCLUDE_DIR := include
 SOURCE_DIR := src
 BUILD_DIR := build
 TEST_DIR := tests
+.DEFAULT_GOAL := help
 
 # ======= Don't edit below this line unless you know what you're doing =======
 
@@ -32,6 +34,7 @@ ifneq ($(PKG_CONFIG_PACKAGES),)
 	LDFLAGS += $(PKG_CONFIG_LIBS)
 endif
 
+BUILD_TARGET := $(BUILD_DIR)/$(TARGET)
 INCLUDES := -I$(INCLUDE_DIR)
 SOURCES := $(shell find $(SOURCE_DIR) -type f -name '*.c')
 OBJS := $(patsubst $(SOURCE_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
@@ -44,24 +47,34 @@ all: release
 .PHONY: release
 release: CFLAGS += $(RELEASE_CFLAGS)
 release: LDFLAGS += $(RELEASE_LDFLAGS)
-release: $(TARGET)
+release: $(BUILD_TARGET)
 
 .PHONY: debug
 debug: CFLAGS += $(DEBUG_CFLAGS)
 debug: LDFLAGS += $(DEBUG_LDFLAGS)
-debug: $(TARGET)
+debug: $(BUILD_TARGET)
 
-$(TARGET): $(OBJS) | $(BUILD_DIR)
-	$(CC) $(LDFLAGS) -o $(BUILD_DIR)/$@ $^ $(LIBS)
+$(BUILD_TARGET): $(OBJS) | $(BUILD_DIR)
+	$(CC) $(LDFLAGS) -o $(BUILD_TARGET) $^ $(LIBS)
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES) -MMD -MP
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+.PHONY: help
+help:
+		@echo "Targets:"
+		@echo "all/release		Release build"
+		@echo "debug			Debug build"
+		@echo "clean			Clean build artifacts"
+		@echo "format			Format whole project"
+		@echo "test-<name> 		Run specific test"
+
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -r $(BUILD_DIR)
 
 setup:
 	@mkdir -p $(SOURCE_DIR) $(INCLUDE_DIR) $(TEST_DIR)

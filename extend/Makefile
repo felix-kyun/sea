@@ -1,4 +1,11 @@
-# Makefile
+# ============================================================================
+# Makefile - v0.1.0 - Build configuration for project
+# Author:   Praise Jacob <iampraisejacob@gmail.com>
+# Repo:     https://github.com/felix-kyun/sea
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Praise Jacob
+# ============================================================================
+
 CC := clang
 CFLAGS := -Wall -Wextra -Werror -pedantic -std=c23 \
 	-Wshadow -Wconversion -Wnull-dereference -Wformat=2 -Wundef
@@ -10,12 +17,21 @@ RELEASE_LDFLAGS := -flto
 
 TARGET := extend
 LIBS :=
+PKG_CONFIG_PACKAGES := glib-2.0 gio-2.0 gstreamer-1.0
 INCLUDE_DIR := include
 SOURCE_DIR := src
 BUILD_DIR := build
 TEST_DIR := tests
 
-# do not modify
+# ======= Don't edit below this line unless you know what you're doing =======
+
+ifneq ($(PKG_CONFIG_PACKAGES),)
+	PKG_CONFIG_CFLAGS := $(shell pkg-config --cflags $(PKG_CONFIG_PACKAGES))
+	PKG_CONFIG_LIBS := $(shell pkg-config --libs $(PKG_CONFIG_PACKAGES))
+	CFLAGS += $(subst -I,-isystem ,$(PKG_CONFIG_CFLAGS))
+	LDFLAGS += $(PKG_CONFIG_LIBS)
+endif
+
 INCLUDES := -I$(INCLUDE_DIR)
 SOURCES := $(shell find $(SOURCE_DIR) -type f -name '*.c')
 OBJS := $(patsubst $(SOURCE_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))

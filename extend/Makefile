@@ -51,9 +51,8 @@ debug: CFLAGS += $(DEBUG_CFLAGS)
 debug: LDFLAGS += $(DEBUG_LDFLAGS)
 debug: $(TARGET)
 
-# for static libs use: ar rcs $@ $^ $(LIBS)
-$(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+$(TARGET): $(OBJS) | $(BUILD_DIR)
+	$(CC) $(LDFLAGS) -o $(BUILD_DIR)/$@ $^ $(LIBS)
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c | $(BUILD_DIR)
 	$(CC) -c $< -o $@ $(CFLAGS) $(INCLUDES) -MMD -MP
@@ -62,7 +61,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
+	rm -rf $(BUILD_DIR)
 
 setup:
 	@mkdir -p $(SOURCE_DIR) $(INCLUDE_DIR) $(TEST_DIR)

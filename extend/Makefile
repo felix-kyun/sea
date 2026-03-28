@@ -67,11 +67,12 @@ $(BUILD_DIR):
 .PHONY: help
 help:
 		@echo "Targets:"
-		@echo "all/release		Release build"
-		@echo "debug			Debug build"
-		@echo "clean			Clean build artifacts"
-		@echo "format			Format whole project"
-		@echo "test-<name> 		Run specific test"
+		@echo "all/release			Release build"
+		@echo "debug				Debug build"
+		@echo "clean				Clean build artifacts"
+		@echo "format				Format whole project"
+		@echo "test-<name> 			Run specific test"
+		@echo "watch-test-<name>	Watch specific test"
 
 clean:
 	rm -r $(BUILD_DIR)

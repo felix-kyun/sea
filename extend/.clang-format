@@ -1,12 +1,26 @@
-BasedOnStyle: WebKit
-AlwaysBreakAfterReturnType: TopLevelDefinitions
 UseTab: Never
 IndentWidth: 4
-SortIncludes: true
-AlignConsecutiveDeclarations: true
-AlignConsecutiveAssignments: true
-AlignConsecutiveMacros: true
 ColumnLimit: 120
+BasedOnStyle: WebKit
+SortIncludes: true
+PointerAlignment: Right
+BinPackArguments: false
+BinPackParameters: false
+AlignTrailingComments: true
+AlignAfterOpenBracket: AlwaysBreak
+AlwaysBreakAfterReturnType: TopLevelDefinitions
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: false
-AlignTrailingComments: true
+
+AlignConsecutiveDeclarations: 
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false

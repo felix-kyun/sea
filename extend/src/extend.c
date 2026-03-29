@@ -48,7 +48,7 @@ main(int argc, char **argv)
         return 1;
     }
 
-    dbus_create_session(conn, launch_gst);
+    dbus_acquire_pipewire_session(conn, launch_gst);
 
     g_main_loop_run(loop);
     g_main_loop_unref(loop);

@@ -4,7 +4,7 @@ gchar *session_handle                   = NULL;
 void (*callback)(guint32 node, gint fd) = NULL;
 
 void
-dbus_create_session(GDBusConnection *conn, void (*cb)(guint32 node, gint fd))
+dbus_acquire_pipewire_session(GDBusConnection *conn, void (*cb)(guint32 node, gint fd))
 {
     callback                        = cb;
     g_autofree gchar *req_token     = g_strdup_printf("CreateSession_request_%d", getpid());

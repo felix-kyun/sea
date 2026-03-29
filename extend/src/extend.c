@@ -52,5 +52,6 @@ main(int argc, char **argv)
 
     g_main_loop_run(loop);
     g_main_loop_unref(loop);
+    dbus_free();
     return 0;
 }

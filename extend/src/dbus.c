@@ -30,6 +30,12 @@ dbus_acquire_pipewire_session(GDBusConnection *conn, void (*cb)(guint32 node, gi
     g_debug("[request] CreateSession: %s", request_handle);
 }
 
+void
+dbus_free()
+{
+    g_free(session_handle);
+}
+
 define_handler(
     create_session,
     {
@@ -179,5 +185,4 @@ define_handler(
                 g_debug("[success] Acquired node_id:fd=%d:%d", node_id, fd);
                 callback(node_id, fd);
             }
-            g_free(session_handle);
         })

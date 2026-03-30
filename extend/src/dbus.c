@@ -1,11 +1,19 @@
 #include "dbus.h"
+#include <gio/gio.h>
 
 gchar *session_handle                   = NULL;
 void (*callback)(guint32 node, gint fd) = NULL;
 
 void
-dbus_acquire_pipewire_session(GDBusConnection *conn, void (*cb)(guint32 node, gint fd))
+dbus_acquire_pipewire_node(void (*cb)(guint32 node, gint fd))
 {
+    g_autoptr(GError) error = NULL;
+    GDBusConnection *conn   = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, &error);
+    if (!conn) {
+        g_printerr("Failed to get session bus: %s", error->message);
+        return;
+    }
+
     callback                        = cb;
     g_autofree gchar *req_token     = g_strdup_printf("CreateSession_request_%d", getpid());
     g_autofree gchar *session_token = g_strdup_printf("session_%d", getpid());
@@ -18,7 +26,6 @@ dbus_acquire_pipewire_session(GDBusConnection *conn, void (*cb)(guint32 node, gi
     dbus_subscribe(conn, create_session_handler);
 
     // call CreateSession
-    g_autoptr(GError) error = NULL;
     g_autoptr(GVariant) out
         = dbus_call(conn, "CreateSession", g_variant_new("(a{sv})", &opts), G_VARIANT_TYPE("(o)"), &error);
     if (error) {
@@ -184,5 +191,6 @@ define_handler(
 
                 g_debug("[success] Acquired node_id:fd=%d:%d", node_id, fd);
                 callback(node_id, fd);
+                break;
             }
         })

@@ -5,17 +5,24 @@
 #include <pipewire/context.h>
 #include <pipewire/core.h>
 #include <pipewire/keys.h>
+#include <pipewire/log.h>
 #include <pipewire/loop.h>
 #include <pipewire/port.h>
 #include <pipewire/properties.h>
 #include <pipewire/stream.h>
+#include <spa/buffer/buffer.h>
 #include <spa/debug/format.h>
+#include <spa/debug/pod.h>
+#include <spa/debug/types.h>
+#include <spa/param/buffers.h>
 #include <spa/param/format.h>
 #include <spa/param/param.h>
 #include <spa/param/video/format-utils.h>
 #include <spa/param/video/format.h>
 #include <spa/pod/builder.h>
 #include <spa/pod/vararg.h>
+#include <spa/support/log.h>
+#include <spa/utils/type.h>
 #include <stddef.h>
 
 // TODO: reduce tight coupling
@@ -46,7 +53,6 @@ static GSourceFuncs source_funcs = {
 static struct pw_stream_events stream_events = {
     PW_VERSION_STREAM_EVENTS,
     .param_changed = on_param_changed,
-    .state_changed = on_state_changed,
     .process       = on_process,
 };
 
@@ -78,7 +84,7 @@ pw_setup(guint32 node, gint fd)
         PW_KEY_MEDIA_TYPE, "Video", PW_KEY_MEDIA_CATEGORY, "Capture", PW_KEY_MEDIA_ROLE, "Screen", nullptr);
     data.stream = pw_stream_new_simple(data.loop, "sea-extend", data.props, &stream_events, &data);
 
-    const struct spa_pod  *params[1];
+    const struct spa_pod  *params[2];
     uint8_t                buffer[1024];
     struct spa_pod_builder builder = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
     params[0]                      = spa_pod_builder_add_object(
@@ -95,7 +101,7 @@ pw_setup(guint32 node, gint fd)
         // format
         SPA_FORMAT_VIDEO_format,
         SPA_POD_CHOICE_ENUM_Id(
-            4, SPA_VIDEO_FORMAT_RGBx, SPA_VIDEO_FORMAT_BGRx, SPA_VIDEO_FORMAT_I420, SPA_VIDEO_FORMAT_NV12),
+            4, SPA_VIDEO_FORMAT_NV12, SPA_VIDEO_FORMAT_RGBx, SPA_VIDEO_FORMAT_BGRx, SPA_VIDEO_FORMAT_I420),
 
         // size
         SPA_FORMAT_VIDEO_size,
@@ -109,13 +115,27 @@ pw_setup(guint32 node, gint fd)
         SPA_FORMAT_VIDEO_modifier,
         SPA_POD_CHOICE_ENUM_Long(2, DRM_FORMAT_MOD_INVALID, DRM_FORMAT_MOD_INVALID));
 
+    // request dma with fallback
+    params[1] = spa_pod_builder_add_object(
+        &builder,
+        SPA_TYPE_OBJECT_ParamBuffers,
+        SPA_PARAM_Buffers,
+
+        // buffer count
+        SPA_PARAM_BUFFERS_buffers,
+        SPA_POD_CHOICE_RANGE_Int(16, 2, 16),
+
+        // buffer type
+        SPA_PARAM_BUFFERS_dataType,
+        SPA_POD_CHOICE_FLAGS_Int((1 << SPA_DATA_DmaBuf) | (1 << SPA_DATA_MemFd)));
+
     pw_stream_connect(
         data.stream,
         PW_DIRECTION_INPUT,
         data.node_id,
         PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_RT_PROCESS,
         params,
-        1);
+        2);
 }
 
 void
@@ -149,33 +169,14 @@ void
 on_param_changed(void *userdata, uint32_t id, const struct spa_pod *param)
 {
     (void)userdata;
-    g_debug("param_changed: %s, param=%p", spa_debug_type_find_name(spa_type_param, id), param);
-    if (param == nullptr || id != SPA_PARAM_Format) {
+    (void)id;
+
+    g_debug("param_changed");
+    if (param == nullptr) {
+        g_debug("param is null, returning");
         return;
     }
-
-    if (spa_format_parse(param, &data.format.media_type, &data.format.media_subtype) < 0) {
-        return;
+    if (pw_log_level_enabled(SPA_LOG_LEVEL_INFO)) {
+        spa_debug_pod(4, NULL, param);
     }
-
-    if (data.format.media_type != SPA_MEDIA_TYPE_video && data.format.media_subtype != SPA_MEDIA_SUBTYPE_raw) {
-        return;
-    }
-
-    if (spa_format_video_raw_parse(param, &data.format.info.raw) < 0) {
-        return;
-    }
-
-    g_debug(
-        "format: %d (%s)",
-        data.format.info.raw.format,
-        spa_debug_type_find_name(spa_type_video_format, data.format.info.raw.format));
-    g_debug("size: %dx%d", data.format.info.raw.size.width, data.format.info.raw.size.height);
-    g_debug("framerate: %d/%d", data.format.info.raw.framerate.num, data.format.info.raw.framerate.denom);
-}
-void
-on_state_changed(
-    [[maybe_unused]] void *userdata, enum pw_stream_state old, enum pw_stream_state state, const char *error)
-{
-    g_debug("stream state: %d -> %d (%s)", old, state, error ? error : "no error");
 }

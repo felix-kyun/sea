@@ -1,5 +1,5 @@
 # ============================================================================
-# Makefile - v0.1.0 - Build configuration for project
+# Makefile - Build configuration for project
 # Author:   Praise Jacob <iampraisejacob@gmail.com>
 # Repo:     https://github.com/felix-kyun/sea
 # SPDX-License-Identifier: MIT
@@ -7,7 +7,7 @@
 # ============================================================================
 
 CC := clang
-CFLAGS := -Wall -Wextra -Werror -pedantic -std=c23 \
+CFLAGS := -Wall -Wextra -Werror -std=gnu23 -D_GNU_SOURCE \
 	-Wshadow -Wconversion -Wnull-dereference -Wformat=2 -Wundef
 LDFLAGS :=
 DEBUG_CFLAGS := -g -fsanitize=address,undefined,leak -O0
@@ -18,7 +18,7 @@ MAKEFLAGS += -j$(shell nproc)
 
 TARGET := extend
 LIBS :=
-PKG_CONFIG_PACKAGES := glib-2.0 gio-2.0 gstreamer-1.0
+PKG_CONFIG_PACKAGES := glib-2.0 gio-2.0 gstreamer-1.0 libpipewire-0.3 libspa-0.2 libdrm
 INCLUDE_DIR := include
 SOURCE_DIR := src
 BUILD_DIR := build

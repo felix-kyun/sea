@@ -1,4 +1,5 @@
 #include "dbus.h"
+#include "gstreamer.h"
 #include "pipewire.h"
 #include <gio/gio.h>
 #include <glib.h>
@@ -22,6 +23,7 @@ main(int argc, char **argv)
 
     gst_init(&argc, &argv);
     pw_init(&argc, &argv);
+    ex_gst_init(&argc, &argv);
 
     GMainLoop      *loop    = g_main_loop_new(NULL, FALSE);
     struct pw_loop *pw_loop = pw_create_loop();

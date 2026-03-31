@@ -1,8 +1,18 @@
 #include "pipewire.h"
+#include "gstreamer.h"
 #include "utils.h"
 #include <drm_fourcc.h>
 #include <glib-unix.h>
 #include <glib.h>
+#include <gst/allocators/gstdmabuf.h>
+#include <gst/allocators/gstfdmemory.h>
+#include <gst/gstbuffer.h>
+#include <gst/gstmemory.h>
+#include <gst/video/video-format.h>
+#include <gst/video/video-frame.h>
+#include <gst/video/video-info.h>
+#include <gst/video/video.h>
+#include <locale.h>
 #include <pipewire/context.h>
 #include <pipewire/core.h>
 #include <pipewire/keys.h>
@@ -20,11 +30,15 @@
 #include <spa/param/param.h>
 #include <spa/param/video/format-utils.h>
 #include <spa/param/video/format.h>
+#include <spa/param/video/raw-utils.h>
+#include <spa/param/video/raw.h>
 #include <spa/pod/builder.h>
 #include <spa/pod/vararg.h>
 #include <spa/support/log.h>
 #include <spa/utils/type.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <sys/mman.h>
 
 // TODO: reduce tight coupling
 
@@ -115,7 +129,7 @@ pw_setup(guint32 node, gint fd)
 
         // modifier
         SPA_FORMAT_VIDEO_modifier,
-        SPA_POD_CHOICE_ENUM_Long(2, DRM_FORMAT_MOD_INVALID, DRM_FORMAT_MOD_INVALID));
+        SPA_POD_CHOICE_ENUM_Long(2, DRM_FORMAT_MOD_LINEAR, DRM_FORMAT_MOD_LINEAR));
 
     // request dma with fallback
     params[1] = spa_pod_builder_add_object(
@@ -169,10 +183,48 @@ pw_handle_dispatch(
 }
 
 void
-on_process(void *user_data)
+on_process([[maybe_unused]] void *user_data)
 {
-    (void)user_data;
     f_tag();
+    struct pw_buffer  *pw_buf;
+    struct spa_buffer *spa_buf;
+    struct spa_data   *spa_data;
+
+    if ((pw_buf = pw_stream_dequeue_buffer(data.stream)) == nullptr) {
+        return;
+    }
+
+    spa_buf  = pw_buf->buffer;
+    spa_data = &spa_buf->datas[0];
+    if (spa_data->type != SPA_DATA_DmaBuf) {
+        g_warning("spa_data is not dma-buf, skipping");
+        goto enqueue;
+    }
+
+    if (pw_log_level_enabled(SPA_LOG_LEVEL_INFO)) {
+        debug_spa_data(spa_data);
+    }
+
+    uint32_t size = (uint)spa_data->chunk->stride * 1080;
+    if (size == 0) {
+        g_warning("chunk size is 0, skipping");
+        goto enqueue;
+    }
+
+    void *ptr = mmap(NULL, size, PROT_READ, MAP_SHARED, (int)spa_data->fd, 0);
+    if (ptr == MAP_FAILED) {
+        g_warning("mmap failed, skipping");
+        goto enqueue;
+    }
+
+    unsigned char *p = (unsigned char *)ptr;
+    g_debug("first pixel: %u %u %u %u", p[0], p[1], p[2], p[3]);
+
+    GstBuffer *gst_buf = gst_buffer_new_wrapped_full(GST_MEMORY_FLAG_READONLY, ptr, size, 0, size, NULL, NULL);
+    ex_gst_push_buffer(gst_buf);
+
+enqueue:
+    pw_stream_queue_buffer(data.stream, pw_buf);
 }
 
 void
@@ -188,5 +240,22 @@ on_param_changed(void *userdata, uint32_t id, const struct spa_pod *param)
     }
     if (pw_log_level_enabled(SPA_LOG_LEVEL_INFO)) {
         spa_debug_pod(4, NULL, param);
+    }
+    // check if format caps
+    if (id == SPA_PARAM_Format) {
+        struct spa_video_info_raw info = { 0 };
+        if (spa_format_video_raw_parse(param, &info) < 0) {
+            return;
+        }
+
+        struct gst_prepare_data config = {
+            .format        = (char *)spa_debug_type_find_short_name(spa_type_video_format, info.format),
+            .width         = (int)info.size.width,
+            .height        = (int)info.size.height,
+            .framerate_num = (int)info.framerate.num,
+            .framerate_den = (int)info.framerate.denom,
+        };
+
+        ex_gst_prepare(config);
     }
 }

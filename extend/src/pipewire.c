@@ -1,4 +1,5 @@
 #include "pipewire.h"
+#include "utils.h"
 #include <drm_fourcc.h>
 #include <glib-unix.h>
 #include <glib.h>
@@ -38,6 +39,7 @@ typedef struct _pw_data {
     struct pw_context    *context;
     struct pw_core       *core;
     struct pw_properties *props;
+    void                 *tag;
     int                   pw_fd;
 
     struct spa_video_info format;
@@ -48,7 +50,7 @@ typedef struct _pw_data {
 
 static pw_data      data         = { 0 };
 static GSourceFuncs source_funcs = {
-    .dispatch = pw_dispatch_handler,
+    .dispatch = pw_handle_dispatch,
 };
 static struct pw_stream_events stream_events = {
     PW_VERSION_STREAM_EVENTS,
@@ -76,7 +78,7 @@ pw_setup(guint32 node, gint fd)
 
     // glib source
     data.source = g_source_new(&source_funcs, sizeof(GSource));
-    g_source_add_unix_fd(data.source, data.pw_fd, G_IO_IN | G_IO_ERR);
+    data.tag    = g_source_add_unix_fd(data.source, data.pw_fd, G_IO_IN | G_IO_ERR | G_IO_HUP);
     g_source_attach(data.source, nullptr);
     g_source_unref(data.source);
 
@@ -147,31 +149,39 @@ pw_free()
 }
 
 gboolean
-pw_dispatch_handler(
+pw_handle_dispatch(
     [[maybe_unused]] GSource *source, [[maybe_unused]] GSourceFunc callback, [[maybe_unused]] gpointer user_data)
 {
-    g_debug("pw_dispatch_handler invoked");
+    f_tag();
+
+    if (g_source_query_unix_fd(source, data.tag) & (G_IO_ERR | G_IO_HUP)) {
+        g_warning("pw error/hangup");
+        return G_SOURCE_REMOVE;
+    }
+
     int result = pw_loop_iterate(data.loop, 0);
     if (result < 0) {
-        g_debug("pw_dispatch_handler: pw_loop_iterate failed: %d", result);
+        g_debug("pw_loop_iterate failed: %d", result);
         return false;
     }
-    return true;
+
+    return G_SOURCE_CONTINUE;
 }
 
 void
 on_process(void *user_data)
 {
     (void)user_data;
-    g_debug("on_process invoked");
+    f_tag();
 }
+
 void
 on_param_changed(void *userdata, uint32_t id, const struct spa_pod *param)
 {
     (void)userdata;
     (void)id;
 
-    g_debug("param_changed");
+    f_tag();
     if (param == nullptr) {
         g_debug("param is null, returning");
         return;

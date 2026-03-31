@@ -8,7 +8,7 @@
 #define IFACE   "org.freedesktop.portal.ScreenCast"
 #define REQUEST "org.freedesktop.portal.Request"
 
-void dbus_acquire_pipewire_session(GDBusConnection *conn, void (*cb)(guint32 node, gint fd));
+void dbus_acquire_pipewire_node(void (*cb)(guint32 node, gint fd));
 void dbus_free();
 
 #define define_handler_prototype(name)                                                                                 \

@@ -18,7 +18,9 @@ MAKEFLAGS += -j$(shell nproc)
 
 TARGET := extend
 LIBS :=
-PKG_CONFIG_PACKAGES := glib-2.0 gio-2.0 gstreamer-1.0 libpipewire-0.3 libspa-0.2 libdrm
+PKG_CONFIG_PACKAGES := glib-2.0 gio-2.0 \
+		gstreamer-1.0 gstreamer-app-1.0 gstreamer-video-1.0 gstreamer-allocators-1.0 \
+		libpipewire-0.3 libspa-0.2 libdrm
 INCLUDE_DIR := include
 SOURCE_DIR := src
 BUILD_DIR := build

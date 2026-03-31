@@ -1,7 +1,6 @@
 #pragma once
 #include <glib.h>
 #include <spa/buffer/buffer.h>
-#include <stdint.h>
 
 #define f_tag() g_debug("%s", __FUNCTION__)
 

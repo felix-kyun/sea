@@ -1,6 +1,5 @@
 #pragma once
 #include <glib.h>
-#include <glibconfig.h>
 #include <pipewire/pipewire.h>
 
 struct pw_loop *pw_create_loop();

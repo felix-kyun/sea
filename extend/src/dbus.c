@@ -1,5 +1,4 @@
 #include "dbus.h"
-#include <gio/gio.h>
 
 gchar *session_handle                   = NULL;
 void (*callback)(guint32 node, gint fd) = NULL;

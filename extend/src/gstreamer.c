@@ -1,12 +1,5 @@
 #include "gstreamer.h"
 #include <gst/app/gstappsrc.h>
-#include <gst/gstcaps.h>
-#include <gst/gstelement.h>
-#include <gst/gstelementfactory.h>
-#include <gst/gstpipeline.h>
-#include <gst/gststructure.h>
-#include <gst/gstutils.h>
-#include <gst/gstvalue.h>
 #include <stdio.h>
 
 typedef struct _gst_data {

@@ -1,10 +1,8 @@
 #include "dbus.h"
 #include "gstreamer.h"
 #include "pipewire.h"
-#include <gio/gio.h>
 #include <glib.h>
 #include <gst/gst.h>
-#include <pipewire/loop.h>
 #include <pipewire/pipewire.h>
 
 void

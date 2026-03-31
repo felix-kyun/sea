@@ -135,7 +135,7 @@ pw_setup(guint32 node, gint fd)
         data.stream,
         PW_DIRECTION_INPUT,
         data.node_id,
-        PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_RT_PROCESS,
+        PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS /* | PW_STREAM_FLAG_RT_PROCESS */,
         params,
         2);
 }
